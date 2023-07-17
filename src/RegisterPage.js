@@ -12,7 +12,7 @@ const RegisterPage = () => {
     const userData = { name, email, password };
 
     try {
-      const response = await fetch('http://localhost:3000/register', {
+      const response = await fetch('https://kickervideoapi.vercel.app/api/v1/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
