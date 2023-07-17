@@ -11,9 +11,9 @@ const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     const userData = { name, email, password };
-
+  
     try {
       const response = await fetch(
         "https://kickervideoapi.vercel.app/api/v1/register",
@@ -25,18 +25,16 @@ const RegisterPage = () => {
           body: JSON.stringify(userData),
         }
       );
-
+  
       const data = await response.json();
-
-      if (response.ok) {
+  
+      if (response.ok && data.success) {
         setResponseMessage(`Registration successful! Welcome, ${data.name}.`);
         navigate(
-          `/dashboard?userId=${data.userId}&name=${encodeURIComponent(
-            data.name
-          )}`
+          `/dashboard?userId=${data.userId}&name=${encodeURIComponent(data.name)}`
         );
       } else {
-        setResponseMessage("Registration failed. Please try again.");
+        setResponseMessage(data.error || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during registration:", error);
