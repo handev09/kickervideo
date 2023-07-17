@@ -1,9 +1,10 @@
 import './App.css';
+import RegisterPage from './RegisterPage';
 
 function App() {
   return (
     <div className="App">
-<h1>Hi Han here!!</h1>
+        <RegisterPage />
     </div>
   );
 }
