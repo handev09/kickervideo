@@ -19,7 +19,6 @@ const RegisterPage = () => {
         "https://kickervideoapi.vercel.app/api/v1/register",
         {
           method: "POST",
-          mode: 'no-cors',
           headers: {
             "Content-Type": "application/json",
           },
