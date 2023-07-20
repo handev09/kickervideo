@@ -1,0 +1,65 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  .left-section {
+    width: 65%;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+  }
+  
+  .logo-container {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .logo {
+    /* Add any styles for your logo here */
+    max-width: 100px;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  input:focus {
+    border-color: #007bff;
+  }
+  
+  .password-toggle {
+    position: relative;
+  }
+  
+  .password-toggle span {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  

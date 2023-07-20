@@ -46,52 +46,90 @@ const RegisterPage = () => {
 
   return (
     <div className="register-parent-container">
-    <div className="register-container">
-      <h1 className="register-heading">Join KickerVideo</h1>
-      <form onSubmit={handleRegister}>
-        <div className="form-group">
-          <input
-            type="text"
-            id="name"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Full Name"
-            required
-          />
+      <div className="register-container">
+        <div className="header">
+          <h1 className="logo">KickerVideo</h1>
+        </div>
+        <div className="sign--up--form--center">
+          <div className="sign--up--form-container">
+            <h1 className="register-heading">Create an account</h1>
+            <form onSubmit={handleRegister}>
+              <div className="field">
+                <input
+                  type="text"
+                  id="name"
+                  className="form-control"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  // placeholder="Full Name"
+                  required
+                />
+                <label
+                  for="full-name"
+                  title="Full Name"
+                  data-title="Full Name"
+                ></label>
+              </div>
+
+              <div className="field">
+                <input
+                  type="email"
+                  id="email"
+                  className="form-control"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  // placeholder="Email"
+                  required
+                />
+                <label for="email" title="Email" data-title="Email"></label>
+              </div>
+
+              <div class="field">
+                <input
+                  type="password"
+                  id="password"
+                  className="form-control"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  // placeholder=""
+                  required
+                />
+                <label
+                  for="password"
+                  title="Password"
+                  data-title="Password"
+                ></label>
+              </div>
+
+              <button type="submit" className="btn-register">
+                Sign Up
+              </button>
+            </form>
+
+            <div className="sign--up--form--auth--container">
+              <p>or sign up with </p>
+              <div className="sign--up--form--social--buttons">
+                <div className="sign--up--form--google--button">
+                <img src={require('./icons/google.svg').default} className="social-icon" alt="Google" />
+                </div>
+
+                <div className="sign--up--form--facebook--button">
+                <img src={require('./icons/facebook.svg').default} className="social-icon" alt="Facebook" />
+                </div>
+
+                <div className="sign--up--form--apple--button">
+                <img src={require('./icons/apple-logo.svg').default} className="social-icon" alt="Apple" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="form-group">
-          <input
-            type="email"
-            id="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <input
-            type="password"
-            id="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            required
-          />
-        </div>
-
-        <button type="submit" className="btn-register">
-          Join Now
-        </button>
-      </form>
-
-      <div className="response-message">{responseMessage}</div>
-    </div>
+        <div className="response-message">{responseMessage}</div>
+      </div>
+      <div className="image-container">
+        <div className="img--space--signup"></div>
+      </div>
     </div>
   );
 };
