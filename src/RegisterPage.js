@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./RegisterPage.css"; // Import the CSS file for styling
 
 const RegisterPage = () => {
@@ -7,7 +7,12 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -78,7 +83,6 @@ const RegisterPage = () => {
                   className="form-control"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  // placeholder="Email"
                   required
                 />
                 <label for="email" title="Email" data-title="Email"></label>
@@ -86,7 +90,7 @@ const RegisterPage = () => {
 
               <div class="field">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   className="form-control"
                   value={password}
@@ -99,6 +103,12 @@ const RegisterPage = () => {
                   title="Password"
                   data-title="Password"
                 ></label>
+
+                <i
+                  id="toggler"
+                  className={showPassword ? "far fa-eye" : "far fa-eye-slash"} // Use the appropriate class based on showPassword state
+                  onClick={togglePasswordVisibility}
+                ></i>
               </div>
 
               <button type="submit" className="btn-register">
@@ -110,19 +120,40 @@ const RegisterPage = () => {
               <p>or sign up with </p>
               <div className="sign--up--form--social--buttons">
                 <div className="sign--up--form--google--button">
-                <img src={require('./icons/google.svg').default} className="social-icon" alt="Google" />
+                  <img
+                    src={require("./icons/google.svg").default}
+                    className="social-icon"
+                    alt="Google"
+                  />
                 </div>
 
                 <div className="sign--up--form--facebook--button">
-                <img src={require('./icons/facebook.svg').default} className="social-icon" alt="Facebook" />
+                  <img
+                    src={require("./icons/facebook.svg").default}
+                    className="social-icon"
+                    alt="Facebook"
+                  />
                 </div>
 
                 <div className="sign--up--form--apple--button">
-                <img src={require('./icons/apple-logo.svg').default} className="social-icon" alt="Apple" />
+                  <img
+                    src={require("./icons/apple-logo.svg").default}
+                    className="social-icon"
+                    alt="Apple"
+                  />
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="register-link-container">
+          <p>
+            Have an account?{" "}
+            <Link to="/" className="register-link">
+              Sign in
+            </Link>
+          </p>
         </div>
 
         <div className="response-message">{responseMessage}</div>

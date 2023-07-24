@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./LoginPage.css"; // Import the CSS file for styling
 
 const LoginPage = () => {
@@ -8,6 +8,16 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const [responseMessage, setResponseMessage] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+  const handleRememberMeChange = () => {
+    setRememberMe(!rememberMe);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,16 +25,13 @@ const LoginPage = () => {
     const userData = { name, email, password };
 
     try {
-      const response = await fetch(
-        "https://kickervideoapi.vercel.app/api/v1/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userData),
-        }
-      );
+      const response = await fetch("", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
 
       const data = await response.json();
 
@@ -69,7 +76,7 @@ const LoginPage = () => {
 
               <div class="field">
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   className="form-control"
                   value={password}
@@ -77,11 +84,52 @@ const LoginPage = () => {
                   // placeholder=""
                   required
                 />
+
                 <label
                   for="password"
                   title="Password"
                   data-title="Password"
                 ></label>
+                <i
+                  id="toggler"
+                  className={showPassword ? "far fa-eye" : "far fa-eye-slash"} // Use the appropriate class based on showPassword state
+                  onClick={togglePasswordVisibility}
+                ></i>
+              </div>
+
+              {/* <div className="additional-options-container">
+                <label className="remember-me-label">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={handleRememberMeChange}
+                  />
+                  <span className="remember-me-text">Remember Me</span>
+                </label>
+
+                <div className="forgot-password-container">
+                  <Link to="/forgot-password">Forgot Password?</Link>
+                </div>
+              </div> */}
+
+              <div className="additional-options-container">
+                <div
+                  className="remember-me-container"
+                  onClick={handleRememberMeChange}
+                >
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    readOnly // So the checkbox is not editable through the UI
+                    className="remember-me-checkbox"
+                  />
+
+                  <span className="remember-me-text">Remember me</span>
+                </div>
+
+                <div className="forgot-password-container">
+                  <Link to="/forgot-password">Forgot Password?</Link>
+                </div>
               </div>
 
               <button type="submit" className="btn-register">
@@ -116,6 +164,15 @@ const LoginPage = () => {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="register-link-container">
+              <p>
+                Don't have an account?{" "}
+                <Link to="/register" className="register-link">
+                  Sign up
+                </Link>
+              </p>
             </div>
           </div>
         </div>

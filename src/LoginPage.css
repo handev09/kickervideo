@@ -62,6 +62,14 @@
     font-size: 16px;
   }
   
+  .form-control #toggler {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
   .btn-register {
     display: block;
     width: 100%;
@@ -187,4 +195,76 @@
     width: 24px;
     height: 24px;
   }
+
+  .field i {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+
+  .additional-options-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .remember-me-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    white-space: nowrap; /* Prevents text from wrapping */
+    margin-right: 20px;
+    /* background-color: #094c8e; */
+  }
+
+
+  
+  .remember-me-checkbox {
+    margin-right: 8px; /* Adjust this value as needed */
+  }
+
+  .remember-me-text {
+    padding-right: 15px;
+  }
+  
+  .forgot-password-container {
+    margin-left: auto;
+  }
+  
+  /* Optional: Add styles for the link if desired */
+  .forgot-password-container a {
+    color: blue; /* Adjust link color as needed */
+    text-decoration: none;
+  }
+  
+  .forgot-password-container a:hover {
+    text-decoration: underline;
+  }
+
+
+  .register-link-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .register-link-container p {
+    font-size: 16px;
+    margin: 0;
+  }
+  
+  .register-link-container .register-link {
+    color: #007bff; /* Adjust link color as needed */
+    text-decoration: none;
+    padding: 5px 10px; /* Add padding to the link */
+    transition: background-color 0.3s; /* Add transition effect for smooth hover */
+    border-radius: 5px;
+  }
+  
+  .register-link-container .register-link:hover {
+    text-decoration: underline;
+    background-color: #007bff; /* Background color when hovered */
+  color: #fff;
+  }
+  
   
