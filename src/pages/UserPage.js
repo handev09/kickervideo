@@ -273,7 +273,7 @@ export default function UserPage() {
             width: 140,
             '& .MuiMenuItem-root': {
               px: 1,
-              typography: 'body2',
+              typography: 'body2',  
               borderRadius: 0.75,
             },
           },
