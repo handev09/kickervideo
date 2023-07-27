@@ -35,10 +35,10 @@ import USERLIST from '../_mock/user';
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
-  { id: 'status', label: 'Status', alignRight: false },
+  { id: 'role', label: 'Role', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
+  { id: 'phone', label: 'Phone', alignRight: false },
   { id: '' },
 ];
 
@@ -158,7 +158,7 @@ export default function UserPage() {
             Crew List
           </Typography>
           <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New Crew
+            + Add Crew
           </Button>
         </Stack>
 
@@ -292,3 +292,12 @@ export default function UserPage() {
     </>
   );
 }
+
+
+
+
+
+
+
+
+
