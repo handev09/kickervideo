@@ -1,7 +1,20 @@
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { faker } from '@faker-js/faker';
-import { useTheme, useMediaQuery, Container, Typography, Button, Card, CardContent, CardMedia, IconButton } from '@mui/material';
+import React, { useState } from "react";
+import { Helmet } from "react-helmet-async";
+import { faker } from "@faker-js/faker";
+import { Link } from "react-router-dom";
+import { Close as CloseIcon } from "@mui/icons-material";
+import {
+  useTheme,
+  useMediaQuery,
+  Container,
+  Typography,
+  Button,
+  Card,
+  Box,
+  CardContent,
+  CardMedia,
+  IconButton,
+} from "@mui/material";
 // import CloseIcon from '@mui/icons-material/Close';
 // import Iconify from '../components/iconify';
 
@@ -15,10 +28,10 @@ import {
   AppWidgetSummary,
   AppCurrentSubject,
   AppConversionRates,
-} from '../sections/@dashboard/app';
+} from "../sections/@dashboard/app";
 
-import { filter } from 'lodash';
-import { sentenceCase } from 'change-case';
+import { filter } from "lodash";
+import { sentenceCase } from "change-case";
 // import { useState } from 'react';
 // @mui
 import {
@@ -34,30 +47,27 @@ import {
   MenuItem,
   TableBody,
   TableCell,
-  // Container,
-  // Typography,
-  // IconButton,
   TableContainer,
   TablePagination,
-} from '@mui/material'; 
+} from "@mui/material";
 // components
-import Label from '../components/label';
-import Iconify from '../components/iconify';
-import Scrollbar from '../components/scrollbar';
+import Label from "../components/label";
+import Iconify from "../components/iconify";
+import Scrollbar from "../components/scrollbar";
 // sections
-import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
+import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
-import USERLIST from '../_mock/user';
+import USERLIST from "../_mock/user";
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'client', label: 'Client', alignRight: false },
-  { id: 'created', label: 'Created', alignRight: false },
-  { id: 'project-title', label: 'Project Title', alignRight: false },
-  { id: 'isV  erified', label: 'Verified', alignRight: false },
-  { id: 'budget-amount', label: 'Budget Amount', alignRight: false },
-  { id: '' },
+  { id: "client", label: "Client", alignRight: false },
+  { id: "created", label: "Created", alignRight: false },
+  { id: "project-title", label: "Project Title", alignRight: false },
+  { id: "isV  erified", label: "Verified", alignRight: false },
+  { id: "budget-amount", label: "Budget Amount", alignRight: false },
+  { id: "" },
 ];
 
 // ----------------------------------------------------------------------
@@ -73,7 +83,7 @@ function descendingComparator(a, b, orderBy) {
 }
 
 function getComparator(order, orderBy) {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
@@ -86,14 +96,18 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(
+      array,
+      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+    );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
 export default function DashboardAppPage() {
+  // const history = useHistory();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   // State to control the cards visibility
   const [isFirstCardOpen, setIsFirstCardOpen] = useState(true);
@@ -111,13 +125,13 @@ export default function DashboardAppPage() {
 
   const [page, setPage] = useState(0);
 
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState("asc");
 
   const [selected, setSelected] = useState([]);
 
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState("name");
 
-  const [filterName, setFilterName] = useState('');
+  const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -130,8 +144,8 @@ export default function DashboardAppPage() {
   };
 
   const handleRequestSort = (event, property) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -154,7 +168,10 @@ export default function DashboardAppPage() {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
     }
     setSelected(newSelected);
   };
@@ -173,9 +190,14 @@ export default function DashboardAppPage() {
     setFilterName(event.target.value);
   };
 
-  const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+  const emptyRows =
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
-  const filteredUsers = applySortFilter(USERLIST, getComparator(order, orderBy), filterName);
+  const filteredUsers = applySortFilter(
+    USERLIST,
+    getComparator(order, orderBy),
+    filterName
+  );
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -186,25 +208,63 @@ export default function DashboardAppPage() {
       </Helmet>
 
       <Container>
-
-      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={5}
+        >
           <Typography variant="h4" gutterBottom>
             Wecome Paul
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            + Create a Budget
+          <Button
+            variant="contained"
+            sx={{ backgroundColor: "#E05858FF" }}
+            startIcon={<Iconify icon="eva:plus-fill" />}
+            component={Link} // Use the Link component
+            to="/dashboard/add-budget"
+          >
+            Create a Budget
           </Button>
-        </Stack>  
+        </Stack>
 
-      <Container maxWidth="xl" sx={{ display: 'flex', justifyContent: 'space-between', gap: '20px', marginTop: '20px', flexDirection: isMobile ? 'column' : 'row' }}>
-        {isFirstCardOpen && (
-          <Card sx={{ width: isMobile ? '100%' : '48%', marginBottom: isMobile ? '20px' : '0' }}>
+        <Container sx={{ display: "flex", flexDirection: "row" }}>
+          <Card
+            sx={{
+              width: isMobile ? "100%" : "40%",
+              marginBottom: isMobile ? "20px" : "0",
+              backgroundColor: "#E05858FF",
+            }}
+          >
             <CardContent>
-              <Typography variant="h5">Card 1 Title</Typography>
-              <Typography variant="body1">
-                This is the content of the first card. You can add your paragraph here.
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h3">Welcome to vBudget</Typography>
+                <IconButton onClick={handleFirstCardClose}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              <Typography
+                variant="body1"
+                sx={{ width: "80%", marginBottom: 5 }}
+              >
+                See how VBudget helps video pros like you quickly develop
+                prduction budgets
               </Typography>
-              <div style={{ marginTop: '10px', marginBottom: '20px', paddingTop: '56.25%', position: 'relative' }}>
+              <div
+                style={{
+                  marginTop: "10px",
+                  marginBottom: "20px",
+                  paddingTop: "56.25%",
+                  position: "relative",
+                }}
+              >
                 {/* Your video section goes here */}
                 {/* For example, you can use an embedded video player */}
                 <iframe
@@ -215,7 +275,7 @@ export default function DashboardAppPage() {
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-                  style={{ position: 'absolute', top: 0, left: 0 }}
+                  style={{ position: "absolute", top: 0, left: 0 }}
                 ></iframe>
               </div>
               <IconButton onClick={handleFirstCardClose}>
@@ -223,42 +283,81 @@ export default function DashboardAppPage() {
               </IconButton>
             </CardContent>
           </Card>
-        )}
 
-        {isSecondCardOpen && (
-          <Card sx={{ width: isMobile ? '100%' : '48%', marginBottom: isMobile ? '20px' : '0' }}>
+          {/* new card */}
+
+          <Card
+            sx={{
+              width: isMobile ? "100%" : "40%",
+              marginBottom: isMobile ? "20px" : "0",
+              backgroundColor: "#CCCCCCFF",
+              marginLeft: "20px",
+            }}
+          >
             <CardContent>
-              <Typography variant="h5">Card 2 Title</Typography>
-              <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                <Button variant="contained" color="primary">
-                  Click Me
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <Typography variant="h3">Create</Typography>
+                <IconButton onClick={handleFirstCardClose}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "300px",
+                  backgroundColor: "#fff",
+                  borderRadius: "5px",
+                  display: "flex",
+                  flexDirection: "column",
+                  marginTop: "20px",
+                  // justifyContent: 'center',
+
+                  alignItems: "center",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  sx={{ width: "80%", marginBottom: 5, marginTop: "50px" }}
+                >
+                  See how VBudget helps video pros like you quickly develop
+                  production budgets
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ backgroundColor: "#E05858FF" }}
+                >
+                  Create a Budget
                 </Button>
               </div>
-              <div style={{ marginTop: 'auto' }}>
-                {/* Your image goes here */}
-                <CardMedia
-                  component="img"
-                  height="140"
-                  image="https://via.placeholder.com/300"
-                  alt="Card 2 Image"
-                />
-              </div>
-              <IconButton onClick={handleSecondCardClose}>
-                {/* <CloseIcon /> */}
-              </IconButton>
             </CardContent>
           </Card>
-        )}
-      </Container>
+        </Container>
 
-      <Card>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="h2" gutterBottom>
-            Budgets
-          </Typography>
-          
-        </Stack> 
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+        <Card>
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Typography variant="h2" gutterBottom>
+              Budgets
+            </Typography>
+          </Stack>
+          <UserListToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -273,43 +372,78 @@ export default function DashboardAppPage() {
                   onSelectAllClick={handleSelectAllClick}
                 />
                 <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                  {filteredUsers
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row) => {
+                      const {
+                        id,
+                        name,
+                        role,
+                        status,
+                        company,
+                        avatarUrl,
+                        isVerified,
+                      } = row;
+                      const selectedUser = selected.indexOf(name) !== -1;
 
-                    return (
-                      <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
-                        <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
-                        </TableCell>
+                      return (
+                        <TableRow
+                          hover
+                          key={id}
+                          tabIndex={-1}
+                          role="checkbox"
+                          selected={selectedUser}
+                        >
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedUser}
+                              onChange={(event) => handleClick(event, name)}
+                            />
+                          </TableCell>
 
-                        <TableCell component="th" scope="row" padding="none">
-                          <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
-                            <Typography variant="subtitle2" noWrap>
-                              {name}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
+                          <TableCell component="th" scope="row" padding="none">
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              spacing={2}
+                            >
+                              <Avatar alt={name} src={avatarUrl} />
+                              <Typography variant="subtitle2" noWrap>
+                                {name}
+                              </Typography>
+                            </Stack>
+                          </TableCell>
 
-                        <TableCell align="left">{company}</TableCell>
+                          <TableCell align="left">{company}</TableCell>
 
-                        <TableCell align="left">{role}</TableCell>
+                          <TableCell align="left">{role}</TableCell>
 
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                          <TableCell align="left">
+                            {isVerified ? "Yes" : "No"}
+                          </TableCell>
 
-                        <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
-                        </TableCell>
+                          <TableCell align="left">
+                            <Label
+                              color={
+                                (status === "banned" && "error") || "success"
+                              }
+                            >
+                              {sentenceCase(status)}
+                            </Label>
+                          </TableCell>
 
-                        <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
-                            <Iconify icon={'eva:more-vertical-fill'} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                          <TableCell align="right">
+                            <IconButton
+                              size="large"
+                              color="inherit"
+                              onClick={handleOpenMenu}
+                            >
+                              <Iconify icon={"eva:more-vertical-fill"} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   {emptyRows > 0 && (
                     <TableRow style={{ height: 53 * emptyRows }}>
                       <TableCell colSpan={6} />
@@ -323,7 +457,7 @@ export default function DashboardAppPage() {
                       <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
                         <Paper
                           sx={{
-                            textAlign: 'center',
+                            textAlign: "center",
                           }}
                         >
                           <Typography variant="h6" paragraph>
@@ -333,7 +467,8 @@ export default function DashboardAppPage() {
                           <Typography variant="body2">
                             No results found for &nbsp;
                             <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete words.
+                            <br /> Try checking for typos or using complete
+                            words.
                           </Typography>
                         </Paper>
                       </TableCell>
@@ -354,35 +489,33 @@ export default function DashboardAppPage() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
-
-
       </Container>
 
       <Popover
         open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "top", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "right" }}
         PaperProps={{
           sx: {
             p: 1,
             width: 140,
-            '& .MuiMenuItem-root': {
+            "& .MuiMenuItem-root": {
               px: 1,
-              typography: 'body2',  
+              typography: "body2",
               borderRadius: 0.75,
             },
           },
         }}
       >
         <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
+          <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
+        <MenuItem sx={{ color: "error.main" }}>
+          <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>

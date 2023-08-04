@@ -11,6 +11,11 @@ import ProductsPage from './pages/ProductsPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import SignupPage from './pages/SignupPage';
 import AddCrewForm from './pages/AddCrewForm';
+import CreateNewLineItem from './pages/CreateNewLineItem';
+import MyDropdown from './pages/DropDown';
+import AddBudget from './pages/AddBudget';
+import MainComponent from './pages/test/dialog-page-data/MainComponent';
+import CustomDropdown from './components/item-price-dropdown/DropDown';
 
 // ----------------------------------------------------------------------
 
@@ -26,6 +31,12 @@ export default function Router() {
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'addcrew', element: <AddCrewForm /> },
+        { path: 'create-item', element: <CreateNewLineItem /> },
+        { path: 'drop-down', element: <MyDropdown /> },
+        { path: 'add-budget', element: <AddBudget /> },
+        { path: 'dialog', element: <MainComponent /> },
+        { path: 'dropdown', element: <CustomDropdown /> }
+
       ],
     },
     {

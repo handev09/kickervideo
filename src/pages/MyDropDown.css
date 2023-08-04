@@ -1,0 +1,85 @@
+/* MyDropdown.css */
+
+/* No changes to the initial CSS */
+
+.dropdown {
+    position: relative;
+    width: 400px;
+    /* margin: 0 20px; */
+    /* padding: 2px; */
+    font-family: "Lato", sans-serif;
+  }
+  
+  /* Add a new class for the input and set its width to 100% */
+  .dropdown__input {
+    width: 100%;
+  }
+  
+  .dropdown__filter {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    color: #595959;
+    background-color: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 5px;
+    font-size: 14px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  
+  .dropdown__filter-selected {
+    flex-grow: 1;
+  }
+  
+  .dropdown__arrow {
+    font-size: 12px;
+    margin-left: 5px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .rotate {
+    transform: rotate(-180deg);
+  }
+  
+  /* Adjust the width to match the .dropdown__filter class */
+  .dropdown__select {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%; /* Set the width to 100% */
+    margin-top: 0; /* Remove the space between the input and dropdown menu */
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 5px 10px 0 rgba(152, 152, 152, 0.6);
+    font-weight: 300;
+    background-color: #fff;
+    border: 1px solid #d6d6d6;
+    border-radius: 5px;
+    z-index: 1;
+    margin-top: 8px;
+  }
+  
+  .dropdown__select-option {
+    padding: 10px;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  
+  .dropdown__select-option:hover {
+    background-color: #f9f9f9;
+  }
+  
+  /* Optional: Add styles for focus state */
+  .dropdown__filter:focus,
+  .dropdown__select-option:focus {
+    outline: none;
+    box-shadow: 0 0 5px 3px #918FF4;
+  }
+  
+  .arrow__down {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+  
