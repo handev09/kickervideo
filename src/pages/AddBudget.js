@@ -20,14 +20,15 @@ import {
   Send as SendIcon,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-import MyDropdown from "../components/dropdown/DropDown";
 import ServiceDropDown from "../components/service-dropdown/Dropdown";
 import RatingContainer from "../components/rating/Rating";
-import UnitPriceCalculator from "../components/unit-price/UnitPrice";
 import CreateNewLineItem from "./CreateNewLineItem";
 import CustomDropdown from "../components/item-price-dropdown/DropDown";
+
+import { useDispatch } from "react-redux";
+import { addBudget } from "../state/redux/actions/budget/budgetActions";
+import { useNavigate } from "react-router-dom";
 
 const AddBudget = () => {
   const [dialogData, setDialogData] = useState([]);
@@ -35,6 +36,56 @@ const AddBudget = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [quantity, setQuantity] = useState(1); // Initialize with a default quantity of 1
   const [customDropdownUnitPrice, setCustomDropdownUnitPrice] = useState(0);
+
+  // States for Dialog
+  const [newService, setNewService] = useState({
+    name: "",
+    description: "",
+    price: {
+      cost: "",
+      markup: "",
+      unitPrice: "",
+    },
+    crew: "",
+  });
+
+  const navigate = useNavigate();
+  // const [budget, setBudget] = useState('');
+  const dispatch = useDispatch();
+  const [budgetData, setBudgetData] = useState({
+    client: "",
+    projectTitle: "",
+    services: [],
+    subtotal: 0,
+    discount: 0,
+    tax: 0,
+    total: 0,
+    internalNotes: "",
+    attachments: [],
+  });
+  const handleAddBudget = () => {
+    // Create the budget object
+    console.log(budgetData.client);
+    const newBudget = {
+      client: budgetData.client,
+      projectTitle: budgetData.projectTitle,
+      services: budgetData.services,
+      subtotal: budgetData.subtotal,
+      discount: budgetData.discount,
+      tax: budgetData.tax,
+      total: budgetData.total,
+      internalNotes: budgetData.internalNotes,
+      attachments: budgetData.attachments,
+    };
+
+
+
+    // Dispatch the new budget to the Redux store
+    dispatch(addBudget(newBudget));
+
+    //Navigate to Home Page
+    navigate("/");
+  };
 
   const handleDialogData = (data) => {
     // setDialogData(data)
@@ -44,7 +95,7 @@ const AddBudget = () => {
       console.log(data.name); // Full Name
       console.log(data.description); // Description
       console.log(data.optionValue);
-    } 
+    }
 
     setIsDialogOpen(false);
   };
@@ -55,13 +106,6 @@ const AddBudget = () => {
   const handleDropdownClose = () => {
     setIsDropdownOpen(false);
   };
-
-  // States for Dialog
-  const [newService, setNewService] = useState({
-    name: "",
-    description: "",
-    price: "",
-  });
 
   const handleQuantityChange = (event) => {
     const newQuantity = parseInt(event.target.value);
@@ -83,22 +127,22 @@ const AddBudget = () => {
     setIsDialogOpen(true);
   };
 
-
-
   const handleAddService = (serviceData) => {
     if (serviceData.name && serviceData.price) {
       const newOption = {
         name: serviceData.name,
-        price: parseFloat(serviceData.price), // Convert to a float number
+        price: {
+          cost: parseFloat(serviceData.cost),
+          markup: parseFloat(serviceData.markup),
+          unitPrice: parseFloat(serviceData.unitPrice),
+        }, // Convert to a float number
       };
       setOptions((prevOptions) => [...prevOptions, newOption]);
       setIsDialogOpen(false);
     } else {
-      setIsDialogOpen(false)
+      setIsDialogOpen(false);
     }
   };
-
-
 
   const [selectedOption, setSelectedOption] = useState({
     cost: 0,
@@ -107,7 +151,9 @@ const AddBudget = () => {
 
   const handleServiceOptionSelect = (price, cost, markup) => {
     setSelectedService({ price, cost, markup }); // Store the selected service's data
+    console.log(selectedService);
     setSelectedOption({ price, cost, markup });
+    console.log(`Dropdown act: ${selectedOption}`);
   };
 
   const handleCostChange = (newCost) => {
@@ -181,6 +227,10 @@ const AddBudget = () => {
             }}
             variant="outlined"
             InputProps={{ disableUnderline: true }}
+            value={budgetData.client}
+            onChange={(e) =>
+              setBudgetData({ ...budgetData, client: e.target.value })
+            }
           />
 
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
@@ -201,6 +251,10 @@ const AddBudget = () => {
               }}
               variant="outlined"
               InputProps={{ disableUnderline: true }}
+              value={budgetData.projectTitle}
+              onChange={(e) =>
+                setBudgetData({ ...budgetData, projectTitle: e.target.value })
+              }
             />
           </Box>
         </Box>
@@ -282,9 +336,9 @@ const AddBudget = () => {
             <ServiceDropDown
               dialogData={dialogData}
               onAddNewOption={handleAddService}
-              onSelectServiceOption={(price, cost, markup) => {
-                handleServiceOptionSelect(price, cost, markup);
-                setSelectedService({ price, cost, markup });
+              onSelectServiceOption={(unitPrice, cost, markup) => {
+                handleServiceOptionSelect(unitPrice, cost, markup);
+                setSelectedService({ unitPrice, cost, markup });
               }}
             />
           </Box>
@@ -425,6 +479,7 @@ const AddBudget = () => {
               textAlign: "center",
               display: "flex",
               flexDirection: "row",
+              // eslint-disable-next-line no-dupe-keys
               textAlign: "center",
               justifyContent: "center",
             }}
@@ -443,20 +498,6 @@ const AddBudget = () => {
           </Box>
         </Paper>
       </Container>
-      {/* <Container  sx={{
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: "150px",
-          width: "100%",
-          padding: "10px",
-        }}>
-          <Box>
-
-          <Button variant="outlined">Cancel</Button>
-          <Button variant="outlined">Save Draft</Button>
-          <Button variant="outlined">Cancel</Button>
-          </Box>
-        </Container> */}
 
       <Container
         sx={{
@@ -486,7 +527,8 @@ const AddBudget = () => {
             }}
             variant="filled"
             endIcon={<ExpandMoreIcon />}
-            onClick={handleClick}
+            // onClick={handleClick}
+            onClick={handleAddBudget}
           >
             Save And...
           </Button>

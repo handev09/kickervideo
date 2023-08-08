@@ -9,10 +9,13 @@ const ServiceDropDown = (props) => {
   const [newService, setNewService] = useState({
     name: '',
     description: '',
-    unitPrice: '',
-  });
-
-  
+    price: {
+      cost: '',
+      markup: '',
+      unitPrice: ''
+    },
+    crew: ''
+  }); 
 
 
   useEffect(() => {
@@ -24,24 +27,38 @@ const ServiceDropDown = (props) => {
 
 
 
-  const handleAddService = () => {
+  // const handleAddService = () => {
     if (newService.name.trim() !== "" && newService.price.trim() !== "") {
       const newOption = {
         name: newService.name.trim(),
-        price: parseFloat(newService.price),
+        price: {
+          cost: parseFloat(newService.price.cost),
+          markup: parseFloat(newService.price.markup),
+          unitPrice: parseFloat(newService.price.unitPrice)
+        },
+        description: newService.description.trim(),
+        crew: newService.crew
         // Add more properties as needed (e.g., description)
       };
       onAddNewOption(newOption); // Use onAddNewOption function to pass the new option to the parent component
+      // console.log(newOption)
+      // console.log(newService)
       setOptions([...options, newOption]);
+      // set
+      onSelectServiceOption(newOption.price.unitPrice, newOption.price.cost, newOption.price.markup); // Pass appropriate data
       setNewService({
         name: "",
         description: "",
-        price: "",
+        price: {
+          cost: "",
+          markup: "",
+          unitPrice: "",
+        },
+        crew: ""
       });
       setIsDialogOpen(false);
-      onSelectServiceOption(newOption.price, newOption.cost, newOption.markup); // Pass appropriate data
     }
-  };
+  
 
   const toggleDropdown = () => {
     setIsDialogOpen((prevOpen) => !prevOpen);

@@ -18,18 +18,6 @@ import {
 // import CloseIcon from '@mui/icons-material/Close';
 // import Iconify from '../components/iconify';
 
-import {
-  AppTasks,
-  AppNewsUpdate,
-  AppOrderTimeline,
-  AppCurrentVisits,
-  AppWebsiteVisits,
-  AppTrafficBySite,
-  AppWidgetSummary,
-  AppCurrentSubject,
-  AppConversionRates,
-} from "../sections/@dashboard/app";
-
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
 // import { useState } from 'react';
@@ -58,6 +46,7 @@ import Scrollbar from "../components/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
+import { useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
@@ -105,6 +94,10 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function DashboardAppPage() {
+  //budgets from state
+  const budgets = useSelector((state) => state.budgets.budgets);
+
+  console.log(budgets);
   // const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -343,141 +336,138 @@ export default function DashboardAppPage() {
           </Card>
         </Container>
 
+        <Typography
+          variant="h3"
+          sx={{ width: "80%", marginBottom: 5, marginTop: "50px" }}
+        >
+          Budgets
+        </Typography>
+
         <Card>
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-          >
-            <Typography variant="h2" gutterBottom>
-              Budgets
-            </Typography>
-          </Stack>
           <UserListToolbar
             numSelected={selected.length}
             filterName={filterName}
             onFilterName={handleFilterByName}
           />
 
-          <Scrollbar>
-            <TableContainer sx={{ minWidth: 800 }}>
-              <Table>
-                <UserListHead
-                  order={order}
-                  orderBy={orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={USERLIST.length}
-                  numSelected={selected.length}
-                  onRequestSort={handleRequestSort}
-                  onSelectAllClick={handleSelectAllClick}
-                />
-                <TableBody>
-                  {filteredUsers
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      const {
-                        id,
-                        name,
-                        role,
-                        status,
-                        company,
-                        avatarUrl,
-                        isVerified,
-                      } = row;
-                      const selectedUser = selected.indexOf(name) !== -1;
+          {/* <Scrollbar sx={{backgroundColor: '#000'}}> */}
+          <TableContainer sx={{ minWidth: 800 }}>
+            <Table>
+              <UserListHead
+                order={order}
+                orderBy={orderBy}
+                headLabel={TABLE_HEAD}
+                rowCount={USERLIST.length}
+                numSelected={selected.length}
+                onRequestSort={handleRequestSort}
+                onSelectAllClick={handleSelectAllClick}
+              />
+              <TableBody sx={{ backgroundColor: "#fff" }}>
+                {filteredUsers
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    const {
+                      id,
+                      name,
+                      role,
+                      status,
+                      company,
+                      avatarUrl,
+                      isVerified,
+                    } = row;
+                    const selectedUser = selected.indexOf(name) !== -1;
 
-                      return (
-                        <TableRow
-                          hover
-                          key={id}
-                          tabIndex={-1}
-                          role="checkbox"
-                          selected={selectedUser}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              checked={selectedUser}
-                              onChange={(event) => handleClick(event, name)}
-                            />
-                          </TableCell>
+                    return (
+                      <TableRow
+                        hover
+                        key={id}
+                        tabIndex={-1}
+                        role="checkbox"
+                        selected={selectedUser}
+                      >
+                        <TableCell>
+                          {/* <Checkbox
+                            checked={selectedUser}
+                            onChange={(event) => handleClick(event, name)}
+                          /> */}
+                        </TableCell>
 
-                          <TableCell component="th" scope="row" padding="none">
-                            <Stack
-                              direction="row"
-                              alignItems="center"
-                              spacing={2}
-                            >
-                              <Avatar alt={name} src={avatarUrl} />
-                              <Typography variant="subtitle2" noWrap>
-                                {name}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
+                        <TableCell component="th" scope="row" padding="none">
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            // spacing={}
+                          >
+                            {/* <Avatar alt={name} src={avatarUrl} /> */}
+                            <Typography variant="subtitle2" noWrap>
+                              {name}
+                            </Typography>
+                          </Stack>
+                        </TableCell>
 
-                          <TableCell align="left">{company}</TableCell>
+                        <TableCell align="left">{company}</TableCell>
 
-                          <TableCell align="left">{role}</TableCell>
+                        <TableCell align="left">{role}</TableCell>
 
-                          <TableCell align="left">
-                            {isVerified ? "Yes" : "No"}
-                          </TableCell>
+                        <TableCell align="left">
+                          {isVerified ? "Yes" : "No"}
+                        </TableCell>
 
-                          <TableCell align="left">
-                            <Label
-                              color={
-                                (status === "banned" && "error") || "success"
-                              }
-                            >
-                              {sentenceCase(status)}
-                            </Label>
-                          </TableCell>
+                        <TableCell align="left">
+                          <Label
+                            color={
+                              (status === "banned" && "error") || "success"
+                            }
+                          >
+                            {sentenceCase(status)}
+                          </Label>
+                        </TableCell>
 
-                          <TableCell align="right">
-                            <IconButton
-                              size="large"
-                              color="inherit"
-                              onClick={handleOpenMenu}
-                            >
-                              <Iconify icon={"eva:more-vertical-fill"} />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  {emptyRows > 0 && (
-                    <TableRow style={{ height: 53 * emptyRows }}>
-                      <TableCell colSpan={6} />
-                    </TableRow>
-                  )}
-                </TableBody>
-
-                {isNotFound && (
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
-                        <Paper
-                          sx={{
-                            textAlign: "center",
-                          }}
-                        >
-                          <Typography variant="h6" paragraph>
-                            Not found
-                          </Typography>
-
-                          <Typography variant="body2">
-                            No results found for &nbsp;
-                            <strong>&quot;{filterName}&quot;</strong>.
-                            <br /> Try checking for typos or using complete
-                            words.
-                          </Typography>
-                        </Paper>
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
+                        <TableCell align="right">
+                          <IconButton
+                            size="large"
+                            color="inherit"
+                            onClick={handleOpenMenu}
+                          >
+                            <Iconify icon={"eva:more-vertical-fill"} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                {emptyRows > 0 && (
+                  <TableRow style={{ height: 53 * emptyRows }}>
+                    <TableCell colSpan={6} />
+                  </TableRow>
                 )}
-              </Table>
-            </TableContainer>
-          </Scrollbar>
+              </TableBody>
+
+              {isNotFound && (
+                <TableBody>
+                  <TableRow>
+                    <TableCell align="center" colSpan={6} sx={{ py: 3 }}>
+                      <Paper
+                        sx={{
+                          textAlign: "center",
+                        }}
+                      >
+                        <Typography variant="h6" paragraph>
+                          Not found
+                        </Typography>
+
+                        <Typography variant="body2">
+                          No results found for &nbsp;
+                          <strong>&quot;{filterName}&quot;</strong>.
+                          <br /> Try checking for typos or using complete words.
+                        </Typography>
+                      </Paper>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              )}
+            </Table>
+          </TableContainer>
+          {/* </Scrollbar> */}
 
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
