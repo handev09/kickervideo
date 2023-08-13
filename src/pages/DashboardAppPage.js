@@ -51,10 +51,11 @@ import { useSelector } from "react-redux";
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: "client", label: "Client", alignRight: false },
+  { id: "client", label: "Client", alignLeft: true },
   { id: "created", label: "Created", alignRight: false },
   { id: "project-title", label: "Project Title", alignRight: false },
-  { id: "isV  erified", label: "Verified", alignRight: false },
+  // { id: "isV  erified", label: "Verified", alignRight: false },
+  { id: "isV  erified", label: "", alignRight: false },
   { id: "budget-amount", label: "Budget Amount", alignRight: false },
   { id: "" },
 ];
@@ -187,7 +188,7 @@ export default function DashboardAppPage() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(
-    USERLIST,
+    budgets,
     getComparator(order, orderBy),
     filterName
   );
@@ -210,6 +211,8 @@ export default function DashboardAppPage() {
           <Typography variant="h4" gutterBottom>
             Wecome Paul
           </Typography>
+
+      
           <Button
             variant="contained"
             sx={{ backgroundColor: "#E05858FF" }}
@@ -357,7 +360,7 @@ export default function DashboardAppPage() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={USERLIST.length}
+                rowCount={budgets.length}
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
                 onSelectAllClick={handleSelectAllClick}
@@ -367,27 +370,28 @@ export default function DashboardAppPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const {
-                      id,
-                      name,
-                      role,
-                      status,
-                      company,
-                      avatarUrl,
-                      isVerified,
+                      // id,
+                      client,
+                      createdAt,
+                      projectTitle,
+                      subtotal,
+                      internalNotes,
+                      tax,
                     } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                    const selectedBudget = selected.indexOf(client) !== -1;
 
                     return (
                       <TableRow
                         hover
-                        key={id}
+                        // key={id}
+                        key={client}
                         tabIndex={-1}
                         role="checkbox"
-                        selected={selectedUser}
+                        selected={selectedBudget}
                       >
                         <TableCell>
                           {/* <Checkbox
-                            checked={selectedUser}
+                            checked={selectedBudget}
                             onChange={(event) => handleClick(event, name)}
                           /> */}
                         </TableCell>
@@ -400,33 +404,34 @@ export default function DashboardAppPage() {
                           >
                             {/* <Avatar alt={name} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {name}
+                              {client}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{company}</TableCell>
+                        <TableCell align="left">{createdAt}</TableCell>
 
-                        <TableCell align="left">{role}</TableCell>
-
-                        <TableCell align="left">
-                          {isVerified ? "Yes" : "No"}
-                        </TableCell>
+                        <TableCell align="left">{projectTitle}</TableCell>
 
                         <TableCell align="left">
                           <Label
                             color={
-                              (status === "banned" && "error") || "success"
+                              (client === "banned" && "error") || "success"
                             }
                           >
-                            {sentenceCase(status)}
+                            {sentenceCase(client)}
                           </Label>
                         </TableCell>
+                        <TableCell align="left">
+                         {`$${subtotal}`}
+                        </TableCell>
+
 
                         <TableCell align="right">
                           <IconButton
                             size="large"
                             color="inherit"
+                            // sx={{width: '200px'}}
                             onClick={handleOpenMenu}
                           >
                             <Iconify icon={"eva:more-vertical-fill"} />

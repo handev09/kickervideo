@@ -6,11 +6,13 @@ const CustomDropdown = ({
   selectedServiceMarkup,
   onCostChange,
   onMarkupChange,
-  onUnitPriceChange
+  onUnitPriceChange,
+  selectServiceId
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localCost, setLocalCost] = useState(selectedServiceCost);
   const [markup, setMarkup] = useState(selectedServiceMarkup);
+  // console.log(selectServiceId)
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -19,14 +21,14 @@ const CustomDropdown = ({
   const handleCostChange = (event) => {
     const newCost = parseFloat(event.target.value);
     setLocalCost(newCost);
-    onCostChange(newCost);
+    onCostChange(selectServiceId,newCost);
   };
 
   const handleMarkupChange = (event) => {
     const inputValue = event.target.value.replace("%", "");
     if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
       setMarkup(inputValue);
-      onMarkupChange(inputValue);
+      onMarkupChange(selectServiceId,inputValue);
     }
   };
 
@@ -46,7 +48,7 @@ const CustomDropdown = ({
   useEffect(() => {
     if (!isNaN(localCost) && !isNaN(parseFloat(markup))) {
       const calculatedUnitPrice = localCost + localCost * (parseFloat(markup) / 100);
-      onUnitPriceChange(calculatedUnitPrice);
+      onUnitPriceChange(selectServiceId,calculatedUnitPrice);
     }
   }, [localCost, markup, onUnitPriceChange]);
 

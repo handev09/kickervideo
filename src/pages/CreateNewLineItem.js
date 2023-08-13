@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+
 import {
   Typography,
   Container,
@@ -33,12 +35,14 @@ const CreateNewLineItem = ({ openDialog, onClose }) => {
 
   const handleClos = () => {
     const newItem = {
+      id: uuidv4(),
       name: fullName,
       description: description,
       optionValue: employmentType,
       unitPrice: parseFloat(unitPrice),
       cost: parseFloat(cost),
       markup: parseFloat(markup),
+      quantity: 1
       // Convert unitPrice to a float number
       // You can add other properties as needed
     };
@@ -53,6 +57,7 @@ const CreateNewLineItem = ({ openDialog, onClose }) => {
 
   const handleNormalClose = () => {
     const newItem = {
+      id: "",
       name: "",
       description: "",
       optionValue: "",
@@ -234,7 +239,7 @@ const CreateNewLineItem = ({ openDialog, onClose }) => {
 
 
 
-              
+
 
               <TextField
                 id="filled-textarea"

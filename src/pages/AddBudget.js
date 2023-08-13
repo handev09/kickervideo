@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Typography,
   Container,
@@ -36,6 +36,9 @@ const AddBudget = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [quantity, setQuantity] = useState(1); // Initialize with a default quantity of 1
   const [customDropdownUnitPrice, setCustomDropdownUnitPrice] = useState(0);
+  const [budgetSubTotal, setBudgetSubTotal] = useState(0);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [notes, setNotes] = useState("");
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -62,6 +65,7 @@ const AddBudget = () => {
     total: 0,
     internalNotes: "",
     attachments: [],
+    createdAt: ""
   });
   const handleAddBudget = () => {
     // Create the budget object
@@ -76,11 +80,15 @@ const AddBudget = () => {
       total: budgetData.total,
       internalNotes: budgetData.internalNotes,
       attachments: budgetData.attachments,
+      createdAt: new Date().toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+
     };
 
-
-
-    // Dispatch the new budget to the Redux store
+    // Dispatch the new budget tothe Redux store
     dispatch(addBudget(newBudget));
 
     //Navigate to Home Page
@@ -95,10 +103,33 @@ const AddBudget = () => {
       console.log(data.name); // Full Name
       console.log(data.description); // Description
       console.log(data.optionValue);
+
+      // Update the services array in budgetData
+      setBudgetData((prevBudgetData) => ({
+        ...prevBudgetData,
+        services: [...prevBudgetData.services, data],
+      }));
     }
 
     setIsDialogOpen(false);
   };
+
+  const handleNotes = (e) => {
+    setNotes(e.target.value);
+    setBudgetData((prevBudgetData) => ({
+      ...prevBudgetData,
+      internalNotes: e.target.value,
+    }));
+  };
+
+  //follow up for case where service options reset to default values when the selected option is changed
+
+  useEffect(() => {
+    const subtotal = dialogData.reduce((sum, item) => sum + item.unitPrice, 0);
+    setBudgetSubTotal(subtotal);
+    setCustomDropdownUnitPrice(customDropdownUnitPrice);
+  }, [dialogData]);
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleDropdownOpen = () => {
     setIsDropdownOpen(true);
@@ -110,53 +141,71 @@ const AddBudget = () => {
   const handleQuantityChange = (event) => {
     const newQuantity = parseInt(event.target.value);
     setQuantity(newQuantity);
+    const index = dialogData.findIndex((item) => item.id === selectedOption.id);
+    if (dialogData[index].id == selectedOption.id) {
+      dialogData[index].quantity = newQuantity;
+    } else {
+      console.log("error");
+    }
+    console.log(dialogData[index]);
   };
 
-  const handleCustomDropdownPriceChange = (newPrice) => {
+  useEffect(() => {
+    const subtotal = dialogData.reduce(
+      (sum, item) => sum + item.unitPrice * item.quantity,
+      0
+    );
+    setBudgetSubTotal(subtotal);
+    setBudgetData((prevBudgetData) => ({
+      ...prevBudgetData,
+      subtotal: subtotal,
+      total: subtotal,
+    }));
+  }, [dialogData]);
+
+  const handleCustomDropdownPriceChange = (id, newPrice) => {
     setCustomDropdownUnitPrice(newPrice);
+    // const index = dialogData.findIndex(item => item.id === id);
+    //   setDialogData((prevData)=>[...prevData, dialogData[index].unitPrice = newPrice])
+
+    const updatedDialogData = dialogData.map((item) => {
+      if (item.id === id) {
+        return { ...item, unitPrice: customDropdownUnitPrice };
+      }
+      return item;
+    });
+
+    // Update the state with the new dialogData
+    setDialogData(updatedDialogData);
   };
 
-  const initialOptions = [
-    { name: "Option 1", price: 100 },
-    { name: "Option 2", price: 200 },
-    { name: "Option 3", price: 300 },
-  ];
-  const [options, setOptions] = useState(initialOptions);
+  const [options, setOptions] = useState([]);
 
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
   };
 
-  const handleAddService = (serviceData) => {
-    if (serviceData.name && serviceData.price) {
-      const newOption = {
-        name: serviceData.name,
-        price: {
-          cost: parseFloat(serviceData.cost),
-          markup: parseFloat(serviceData.markup),
-          unitPrice: parseFloat(serviceData.unitPrice),
-        }, // Convert to a float number
-      };
-      setOptions((prevOptions) => [...prevOptions, newOption]);
-      setIsDialogOpen(false);
-    } else {
-      setIsDialogOpen(false);
-    }
-  };
-
   const [selectedOption, setSelectedOption] = useState({
+    price: 0,
     cost: 0,
     markup: "",
   });
 
-  const handleServiceOptionSelect = (price, cost, markup) => {
-    setSelectedService({ price, cost, markup }); // Store the selected service's data
-    console.log(selectedService);
-    setSelectedOption({ price, cost, markup });
-    console.log(`Dropdown act: ${selectedOption}`);
+  //have to handle option showing error screen at first select***
+
+  const handleServiceOptionSelect = (id, unitPrice, cost, markup) => {
+    setSelectedService({ id, unitPrice, cost, markup }); // Store the selected service's data
+    // console.log(selectedService.unitPrice);
+    setSelectedOption({ id, unitPrice, cost, markup });
+    console.log(selectedOption.id);
+    // console.log(`Dropdown act: ${selectedOption.unitPrice}`);
+    setQuantity(1);
   };
 
-  const handleCostChange = (newCost) => {
+  const handleCostChange = (id, newCost) => {
+    const index = dialogData.findIndex((item) => item.id === id);
+    dialogData[index].cost = newCost;
+
     setNewService((prevService) => ({
       ...prevService,
       price: newCost,
@@ -183,6 +232,31 @@ const AddBudget = () => {
   const open = Boolean(anchorEl);
   const id = open ? "popover" : undefined;
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
+  const handleSelect = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+    console.log(selectedFiles)
+  
+    // Update the budgetData with the new attachments
+    setBudgetData((prevBudgetData) => ({
+      ...prevBudgetData,
+      attachments: [...prevBudgetData.attachments, ...files],
+    }));
+  };
+  
+  
   return (
     <form>
       <Box>
@@ -335,10 +409,13 @@ const AddBudget = () => {
           <Box sx={{ mt: 1 }}>
             <ServiceDropDown
               dialogData={dialogData}
-              onAddNewOption={handleAddService}
-              onSelectServiceOption={(unitPrice, cost, markup) => {
-                handleServiceOptionSelect(unitPrice, cost, markup);
-                setSelectedService({ unitPrice, cost, markup });
+              // onAddNewOption={handleAddService}
+              //come back and tract ui chnages when the selected option is changed
+              //so that we update the values on the ui ***
+              onSelectServiceOption={(id, unitPrice, cost, markup) => {
+                handleServiceOptionSelect(id, unitPrice, cost, markup);
+                console.log(id, unitPrice, cost, markup);
+                setSelectedService({ id, unitPrice, cost, markup });
               }}
             />
           </Box>
@@ -382,6 +459,7 @@ const AddBudget = () => {
               selectedServiceMarkup={selectedOption.markup} // Pass the selected option's markup
               onCostChange={handleCostChange} // Handle cost change
               onMarkupChange={handleMarkupChange}
+              selectServiceId={selectedOption.id}
               onUnitPriceChange={handleCustomDropdownPriceChange}
             />
           </Box>
@@ -433,7 +511,7 @@ const AddBudget = () => {
 
         {/* Right Column */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <Typography variant="body1">$0.00</Typography>
+          <Typography variant="body1">{`$${budgetSubTotal}`}</Typography>
           <Button variant="text" fullWidth>
             Add Discount
           </Button>
@@ -460,6 +538,8 @@ const AddBudget = () => {
             rows={4}
             fullWidth
             variant="outlined"
+            value={budgetData.internalNotes}
+            onChange={handleNotes}
           />
         </Box>
 
@@ -484,17 +564,33 @@ const AddBudget = () => {
               justifyContent: "center",
             }}
           >
-            <Typography variant="body2" sx={{ color: "#666" }}>
-              Drag and drop files or
-            </Typography>
-            <Box>
-              <input type="file" style={{ display: "none" }} />
-              <label htmlFor="file-upload">
-                <Button variant="filled" type="text" color="primary">
-                  Select a File
-                </Button>
-              </label>
-            </Box>
+            <div>
+              <Paper
+                // className={classes.dropArea}
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+              >
+                <input
+                  type="file"
+                  id="file-input"
+                  multiple
+                  style={{ display: "none" }}
+                  onChange={handleSelect}
+                />
+                <label htmlFor="file-input">
+                  <Button variant="contained" component="span">
+                    Select Files
+                  </Button>
+                </label>
+                <p>or</p>
+                <p>Drag and drop files here</p>
+              </Paper>
+              <ul>
+                {selectedFiles.map((file) => (
+                  <li key={file.name}>{file.name}</li>
+                ))}
+              </ul>
+            </div>
           </Box>
         </Paper>
       </Container>

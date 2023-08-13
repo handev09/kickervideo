@@ -25,7 +25,7 @@
     border: 1px solid #d6d6d6;
     border-radius: 5px;
     font-size: 14px;
-    text-transform: uppercase;
+    /* text-transform: uppercase; */
     cursor: pointer;
     z-index: 999;
   }
