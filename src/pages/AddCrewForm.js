@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Typography,
@@ -19,13 +19,188 @@ import {
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 
 import MyDropdown from "../components/dropdown/DropDown";
+import { useDispatch } from "react-redux";
+import { addUser } from "../state/redux/actions/users/userActions";
+import { useNavigate } from "react-router-dom";
 
 const AddCrewForm = () => {
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
   const [employmentType, setEmploymentType] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [street, setStreet] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [zip, setZip] = useState("");
+  const [role, setRole] = useState("");
+  const [cost, setCost] = useState("");
+  const [markup, setMarkup] = useState("");
+  const [unitPrice, setUnitPrice] = useState("");
+
+  const [userData, setUserData] = useState({
+    fullName: "",
+    phone: "",
+    email: "",
+    address: "",
+    street: "",
+    state: "",
+    city: "",
+    zip: "",
+    role: "",
+    contractType: "",
+    cost: 0,
+    markup: 0,
+    unitPrice: 0,
+  });
+
+  const handleFullNameChange = (event) => {
+    setFullName(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      fullName: event.target.value,
+    }));
+  };
+
+  const handlePhoneChange = (event) => {
+    setPhone(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      phone: event.target.value,
+    }));
+  };
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      email: event.target.value,
+    }));
+  };
+
+  const handleAddressChange = (event) => {
+    setAddress(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      address: event.target.value,
+    }));
+  };
+
+  const handleStreetChange = (event) => {
+    setStreet(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      street: event.target.value,
+    }));
+  };
+
+  const handleStateChange = (event) => {
+    setState(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      state: event.target.value,
+    }));
+  };
+
+  const handlCityChange = (event) => {
+    setCity(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      city: event.target.value,
+    }));
+  };
+
+  const handleCostChange = (e) => {
+    const value = e.target.value;
+    // Validate that the input is a valid number (either an integer or a decimal)
+    if (/^[0-9]*\.?[0-9]*$/.test(value) || value === "") {
+      setCost(value);
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        cost: e.target.value,
+      }));
+    }
+  };
+
+  const handleMarkupChange = (e) => {
+    const value = e.target.value;
+    // Validate that the input is a valid integer
+    if (/^[0-9]*$/.test(value) || value === "") {
+      setMarkup(value);
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        markup: e.target.value,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    if (cost && markup) {
+      const calculatedUnitPrice =
+        parseFloat(cost) + parseFloat(cost) * (parseFloat(markup) / 100);
+      setUnitPrice(calculatedUnitPrice.toFixed(2)); // Round to 2 decimal places
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        unitPrice: calculatedUnitPrice.toFixed(2),
+      }));
+    } else {
+      setUnitPrice("");
+    }
+  }, [cost, markup]);
+
+  const navigate = useNavigate();
+  // const [budget, setBudget] = useState('');
+  const dispatch = useDispatch();
+
+  const handleZipChange = (event) => {
+    setZip(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      zip: event.target.value,
+    }));
+  };
+
+  const handleRoleChange = (event) => {
+    setRole(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      role: event.target.value,
+    }));
+  };
+
+  const handleAddUser = () => {
+    // Create the budget object
+    // console.log(budgetData.client);
+    const newUser = {
+      fullName: userData.fullName,
+      phone: userData.phone,
+      email: userData.email,
+      address: userData.address,
+      street: userData.street,
+      state: userData.state,
+      city: userData.city,
+      zip: userData.zip,
+      role: userData.role,
+      contractType: userData.contractType,
+      cost: userData,
+      markup: userData.markup,
+      unitPrice: userData.unitPrice,
+    };
+
+    // Dispatch the new budget tothe Redux store
+    dispatch(addUser(newUser));
+
+    //Navigate to Home Page
+    navigate("/dashboard/user");
+  };
 
   const handleEmploymentTypeChange = (event) => {
     setEmploymentType(event.target.value);
+    setUserData((prevUserData) => ({
+      ...prevUserData,
+      contractType: event.target.value,
+    }));
   };
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -127,13 +302,15 @@ const AddCrewForm = () => {
           <input
             type="text"
             placeholder="Full Name or company name"
+            value={fullName}
+            onChange={handleFullNameChange}
             style={{
               width: "100%",
               padding: "12px",
               backgroundColor: "#F3F4F6FF",
               border: "1px solid transparent",
               borderColor: "transparent",
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           />
         </Box>
@@ -144,13 +321,15 @@ const AddCrewForm = () => {
           <input
             type="text"
             placeholder="Phone"
+            value={phone}
+            onChange={handlePhoneChange}
             style={{
               width: "100%",
               padding: "12px",
               backgroundColor: "#F3F4F6FF",
               border: "1px solid transparent",
               borderColor: "transparent",
-              fontWeight: "bold"
+              fontWeight: "bold",
             }}
           />
         </Box>
@@ -158,66 +337,134 @@ const AddCrewForm = () => {
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             Email
           </Typography>
-          <TextField
+          <input
+            type="text"
+            value={email}
+            onChange={handleEmailChange}
             placeholder="Email"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             Address
           </Typography>
-          <TextField
+          <input
+            type="text"
+            value={address}
+            onChange={handleAddressChange}
             placeholder="Address"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             Street
           </Typography>
-          <TextField
+          <input
+            type="text"
             placeholder="Street"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+            value={street}
+            onChange={handleStreetChange}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             State / Province
           </Typography>
-          <TextField
+          <input
+            type="text"
+            value={state}
+            onChange={handleStateChange}
             placeholder="State / Province"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             City
           </Typography>
-          <TextField
+          <input
+            type="text"
             placeholder="City"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+            value={city}
+            onChange={handlCityChange}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             Ward
           </Typography>
-          <TextField
-            placeholder="Zip / Postal code"
-            variant="outlined"
-            size="small"
-            sx={{ width: "100%", backgroundColor: "#F3F4F6FF" }}
+          <input
+            type="text"
+            placeholder="Zip / Postal Code"
+            value={zip}
+            onChange={handleZipChange}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
+          <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+            Role
+          </Typography>
+          <input
+            type="text"
+            placeholder="ex: Developer"
+            value={role}
+            onChange={handleRoleChange}
+            style={{
+              width: "100%",
+              padding: "12px",
+              backgroundColor: "#F3F4F6FF",
+              border: "1px solid transparent",
+              borderColor: "transparent",
+              fontWeight: "bold",
+            }}
           />
         </Box>
       </Container>
@@ -244,6 +491,9 @@ const AddCrewForm = () => {
             variant="outlined"
             size="small"
             sx={{ width: "100%" }}
+            value={cost}
+            type="number"
+            onChange={handleCostChange}
           />
         </Box>
         <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -253,6 +503,9 @@ const AddCrewForm = () => {
             variant="outlined"
             size="small"
             sx={{ width: "100%" }}
+            value={markup}
+            onChange={handleMarkupChange}
+            type="number"
           />
         </Box>
 
@@ -260,9 +513,14 @@ const AddCrewForm = () => {
           <Typography variant="body1" sx={{ textAlign: "center" }}>
             TOTAL
           </Typography>
-          <Typography variant="body1" sx={{ textAlign: "center" }}>
-            0.00
-          </Typography>
+          <TextField
+            placeholder="0.00"
+            variant="outlined"
+            size="small"
+            sx={{ width: "100%" }}
+            value={unitPrice}
+            type="number"
+          />
         </Box>
       </Container>
 
@@ -297,6 +555,7 @@ const AddCrewForm = () => {
               color: "#fff",
               borderRadius: "3px",
             }}
+            onClick={handleAddUser}
             variant="filled"
             endIcon={<ExpandMoreIcon />}
             // onClick={handleClick}
