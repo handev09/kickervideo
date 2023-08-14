@@ -183,7 +183,7 @@ const AddCrewForm = () => {
       zip: userData.zip,
       role: userData.role,
       contractType: userData.contractType,
-      cost: userData,
+      cost: userData.cost,
       markup: userData.markup,
       unitPrice: userData.unitPrice,
     };
