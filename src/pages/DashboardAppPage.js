@@ -99,6 +99,11 @@ export default function DashboardAppPage() {
   const budgets = useSelector((state) => state.budgets.budgets);
 
   console.log(budgets);
+
+  const registrationStatus = useSelector((state) => state.auth.registrationStatus);
+const registrationError = useSelector((state) => state.auth.registrationError);
+
+console.log(registrationStatus);
   // const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));

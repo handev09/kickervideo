@@ -15,8 +15,9 @@ import useResponsive from "../hooks/useResponsive";
 // components
 import Logo from "../components/logo";
 import Iconify from "../components/iconify";
-// sections
-import SignupForm from "../sections/auth/signup/SignupForm";
+
+import {SignupForm} from "../sections/auth/signup/SignupForm";
+
 
 // ----------------------------------------------------------------------
 
@@ -50,6 +51,8 @@ const StyledContent = styled("div")(({ theme }) => ({
 
 export default function SignupPage() {
   const mdUp = useResponsive("up", "md");
+  
+
 
   return (
     <>
