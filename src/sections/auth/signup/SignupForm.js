@@ -11,6 +11,7 @@ import { Stack, IconButton, InputAdornment, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
+import { v4 as uuidv4 } from 'uuid';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +21,7 @@ export default function SignupForm() {
     name: "",
     email: "",
     password: "",
+    userId: uuidv4()
   });
 
   const handleSubmit = (e) => {

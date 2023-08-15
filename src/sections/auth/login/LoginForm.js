@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // @mui
 import {
@@ -13,7 +13,7 @@ import {
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginRequest } from "../../../state/redux/actions/users/loginUser";
 
 // ----------------------------------------------------------------------
@@ -25,18 +25,31 @@ export default function LoginForm() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const loginError = useSelector((state) => state.login.error);
+  const isAuthenticated = useSelector(state => state.login.isLoggedIn);
 
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginRequest(email, password));
-    navigate("/dashboard", { replace: true });
+    try {
+      await dispatch(loginRequest(email, password));
+  
+      if (isAuthenticated) {
+        // Navigate to the dashboard
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Handle login failure, if needed
+      }
+    } catch (error) {
+      // Handle any errors that might occur during dispatch or API call
+      console.error("Error during login:", error);
+    }
   };
 
-  const handleClick = () => {
-  };
+  const handleClick = () => {};
 
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <Stack spacing={3}>
         <TextField
           name="email"
@@ -86,12 +99,14 @@ export default function LoginForm() {
         </Link>
       </Stack>
 
+      {loginError && <p>Error: {loginError}</p>}
+
       <LoadingButton
         fullWidth
         size="large"
         type="submit"
         variant="contained"
-        onClick={handleSubmit}
+        // onClick={handleSubmit}
         sx={{
           backgroundColor: "rgba(224, 88, 88, 1)",
           "&:hover": {
@@ -101,6 +116,6 @@ export default function LoginForm() {
       >
         Sign In
       </LoadingButton>
-    </>
+    </form>
   );
 }

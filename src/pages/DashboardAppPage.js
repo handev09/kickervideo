@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { faker } from "@faker-js/faker";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Close as CloseIcon } from "@mui/icons-material";
 import {
   useTheme,
@@ -95,6 +95,7 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function DashboardAppPage() {
+  const navigate = useNavigate();
   //budgets from state
   const budgets = useSelector((state) => state.budgets.budgets);
 
@@ -105,6 +106,8 @@ const registrationError = useSelector((state) => state.auth.registrationError);
 
 const user = useSelector(state => state.login.user);
 console.log(user);
+
+
 
 console.log(registrationStatus);
   // const history = useHistory();
@@ -201,6 +204,14 @@ console.log(registrationStatus);
     filterName
   );
 
+  useEffect(() => {
+    // Check if the user is not logged in
+    if (!user) {
+      // Redirect to the login page
+      navigate("/login");
+    }
+  }, [user]);
+
   const isNotFound = !filteredUsers.length && !!filterName;
 
   return (
@@ -217,7 +228,7 @@ console.log(registrationStatus);
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-           { `Wecome ${user.name}`}
+          {user && user.name ? `Welcome ${user.name}` : "Welcome"}
           </Typography>
 
       
@@ -233,6 +244,7 @@ console.log(registrationStatus);
         </Stack>
 
         <Container sx={{ display: "flex", flexDirection: "row" }}>
+        {isFirstCardOpen && (
           <Card
             sx={{
               width: isMobile ? "100%" : "40%",
@@ -287,9 +299,10 @@ console.log(registrationStatus);
               </IconButton>
             </CardContent>
           </Card>
+)}
 
           {/* new card */}
-
+          {isSecondCardOpen && (
           <Card
             sx={{
               width: isMobile ? "100%" : "40%",
@@ -308,7 +321,7 @@ console.log(registrationStatus);
                 }}
               >
                 <Typography variant="h3">Create</Typography>
-                <IconButton onClick={handleFirstCardClose}>
+                <IconButton onClick={handleSecondCardClose}>
                   <CloseIcon />
                 </IconButton>
               </Box>
@@ -345,6 +358,7 @@ console.log(registrationStatus);
               </div>
             </CardContent>
           </Card>
+          )}
         </Container>
 
         <Typography

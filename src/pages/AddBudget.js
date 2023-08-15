@@ -26,9 +26,10 @@ import RatingContainer from "../components/rating/Rating";
 import CreateNewLineItem from "./CreateNewLineItem";
 import CustomDropdown from "../components/item-price-dropdown/DropDown";
 
-import { useDispatch } from "react-redux";
+import { useDispatch,useSelector } from "react-redux";
 import { addBudget } from "../state/redux/actions/budget/budgetActions";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from 'uuid';
 
 const AddBudget = () => {
   const [dialogData, setDialogData] = useState([]);
@@ -39,6 +40,7 @@ const AddBudget = () => {
   const [budgetSubTotal, setBudgetSubTotal] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [notes, setNotes] = useState("");
+  const user = useSelector(state => state.login.user);
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -65,7 +67,9 @@ const AddBudget = () => {
     total: 0,
     internalNotes: "",
     attachments: [],
-    createdAt: ""
+    createdAt: "",
+    userId: "",
+    budgetId: uuidv4(),
   });
   const handleAddBudget = () => {
     // Create the budget object
@@ -79,12 +83,14 @@ const AddBudget = () => {
       tax: budgetData.tax,
       total: budgetData.total,
       internalNotes: budgetData.internalNotes,
-      attachments: budgetData.attachments,
+      // attachments: budgetData.attachments,
       createdAt: new Date().toLocaleDateString("en-US", {
         month: "long",
         day: "numeric",
         year: "numeric",
       }),
+      userId: user.id,
+      budgetId: budgetData.budgetId,
 
     };
 
