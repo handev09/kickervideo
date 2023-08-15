@@ -103,6 +103,9 @@ export default function DashboardAppPage() {
   const registrationStatus = useSelector((state) => state.auth.registrationStatus);
 const registrationError = useSelector((state) => state.auth.registrationError);
 
+const user = useSelector(state => state.login.user);
+console.log(user);
+
 console.log(registrationStatus);
   // const history = useHistory();
   const theme = useTheme();
@@ -214,7 +217,7 @@ console.log(registrationStatus);
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Wecome Paul
+           { `Wecome ${user.name}`}
           </Typography>
 
       

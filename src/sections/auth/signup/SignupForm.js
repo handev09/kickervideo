@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 // sections
-import SignupFormSection from "../sections/auth/signup/SignupForm"; // Rename the import statement to avoid naming conflict
-import { registerUser } from "../state/redux/actions/users/registerUser";
+// import SignupFormSection from "../sections/auth/signup/SignupForm"; // Rename the import statement to avoid naming conflict
+// import { registerUser } from "../state/redux/actions/users/registerUser";
+
+import { registerUser } from "../../../state/redux/actions/users/registerUser";
 // @mui
 import { Stack, IconButton, InputAdornment, TextField } from "@mui/material";
 import { LoadingButton } from "@mui/lab";

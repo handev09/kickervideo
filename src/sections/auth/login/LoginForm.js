@@ -13,6 +13,8 @@ import {
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
+import { useDispatch } from "react-redux";
+import { loginRequest } from "../../../state/redux/actions/users/loginUser";
 
 // ----------------------------------------------------------------------
 
@@ -20,19 +22,34 @@ export default function LoginForm() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(loginRequest(email, password));
+    navigate("/dashboard", { replace: true });
+  };
 
   const handleClick = () => {
-    navigate("/dashboard", { replace: true });
   };
 
   return (
     <>
       <Stack spacing={3}>
-        <TextField name="email" label="Email address" />
+        <TextField
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          label="Email address"
+        />
 
         <TextField
           name="password"
           label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           type={showPassword ? "text" : "password"}
           InputProps={{
             endAdornment: (
@@ -74,10 +91,10 @@ export default function LoginForm() {
         size="large"
         type="submit"
         variant="contained"
-        onClick={handleClick}
+        onClick={handleSubmit}
         sx={{
           backgroundColor: "rgba(224, 88, 88, 1)",
-          '&:hover': {
+          "&:hover": {
             backgroundColor: "rgba(224, 88, 88, 0.8)", // Decreased opacity on hover
           },
         }}

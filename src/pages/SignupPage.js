@@ -16,7 +16,9 @@ import useResponsive from "../hooks/useResponsive";
 import Logo from "../components/logo";
 import Iconify from "../components/iconify";
 
-import {SignupForm} from "../sections/auth/signup/SignupForm";
+// import { SignupForm } from "../sections/auth/signup";
+
+import { SignupForm } from "../sections/auth/signup";
 
 
 // ----------------------------------------------------------------------
