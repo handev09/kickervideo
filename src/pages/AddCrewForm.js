@@ -20,7 +20,7 @@ import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 
 import MyDropdown from "../components/dropdown/DropDown";
 import { useDispatch } from "react-redux";
-import { addUser } from "../state/redux/actions/users/userActions";
+import { addUser } from "../state/redux/actions/crew/crewActions";
 import { useNavigate } from "react-router-dom";
 
 const AddCrewForm = () => {

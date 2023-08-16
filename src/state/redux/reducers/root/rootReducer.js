@@ -4,12 +4,14 @@ import budgetReducer from '../budget/budgetReducer';
 import userReducer from '../users/usersReducer';
 import authReducer from '../auth/authReducer';
 import loginReducer from '../auth/loginReducer';
+import crewReducer from '../crew/crewReducer';
 
 const rootReducer = combineReducers({
   budgets: budgetReducer,
   users: userReducer,
   auth: authReducer,
-  login: loginReducer
+  login: loginReducer,
+  crew: crewReducer
 });
 
 export default rootReducer;
