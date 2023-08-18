@@ -32,6 +32,11 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 
 const AddBudget = () => {
+  const storedUser = localStorage.getItem('user');
+  console.log(storedUser);
+  const user = useSelector(state => state.login.user);
+  console.log(user.userId);
+  const user_id = user.userId;
   const [dialogData, setDialogData] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
@@ -40,7 +45,6 @@ const AddBudget = () => {
   const [budgetSubTotal, setBudgetSubTotal] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [notes, setNotes] = useState("");
-  const user = useSelector(state => state.login.user);
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -70,8 +74,10 @@ const AddBudget = () => {
     createdAt: "",
     userId: "",
     budgetId: uuidv4(),
+    status: "draft",
   });
   const handleAddBudget = () => {
+
     // Create the budget object
     console.log(budgetData.client);
     const newBudget = {
@@ -89,10 +95,12 @@ const AddBudget = () => {
         day: "numeric",
         year: "numeric",
       }),
-      userId: user.id,
+      userId: user_id,
       budgetId: budgetData.budgetId,
+      status: budgetData.status,
 
     };
+    console.log(newBudget)
 
     // Dispatch the new budget tothe Redux store
     dispatch(addBudget(newBudget));

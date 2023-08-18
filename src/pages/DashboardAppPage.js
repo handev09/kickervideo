@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { faker } from "@faker-js/faker";
 import { Link, useNavigate } from "react-router-dom";
@@ -46,7 +46,12 @@ import Scrollbar from "../components/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
+// import { updateUser } from '../redux/actions/authActions';
+
+import {updateUser} from '../state/redux/actions/users/updateUserAction'
+import {fetchUserBudgets} from '../state/redux/actions/budget/updateUserBudgetsAction'
+import StateIndicator from "../components/status-indicator/status";
 
 // ----------------------------------------------------------------------
 
@@ -88,28 +93,34 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_user) => _user.client_name.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
 }
 
 export default function DashboardAppPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const isAuthenticated = useSelector((state) => state.auth.isLoggedIn);
   //budgets from state
   const budgets = useSelector((state) => state.budgets.budgets);
+  const loading = useSelector((state) => state.budgets.loading);
+  const error = useSelector((state) => state.budgets.error);
 
   console.log(budgets);
 
-  const registrationStatus = useSelector((state) => state.auth.registrationStatus);
-const registrationError = useSelector((state) => state.auth.registrationError);
+  const registrationStatus = useSelector(
+    (state) => state.auth.registrationStatus
+  );
+  const registrationError = useSelector(
+    (state) => state.auth.registrationError
+  );
 
-const user = useSelector(state => state.login.user);
-console.log(user);
+  const user = useSelector((state) => state.login.user);
+  console.log(user);
 
-
-
-console.log(registrationStatus);
+  console.log(registrationStatus);
   // const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -139,6 +150,7 @@ console.log(registrationStatus);
   const [filterName, setFilterName] = useState("");
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [budgetsTotal, setBudgetsTotal] = useState(0);
 
   const handleOpenMenu = (event) => {
     setOpen(event.currentTarget);
@@ -181,7 +193,7 @@ console.log(registrationStatus);
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
@@ -204,13 +216,57 @@ console.log(registrationStatus);
     filterName
   );
 
+  // useEffect(() => {
+  //   // Check if the user is not logged in
+  //   if (!user) {
+  //     // Redirect to the login page
+  //     navigate("/login");
+  //   } else {
+  //     const storedUser = localStorage.getItem("user");
+  //     console.log(storedUser)
+  //   }
+  // }, [user]);
+
+
   useEffect(() => {
     // Check if the user is not logged in
-    if (!user) {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
       // Redirect to the login page
-      navigate("/login");
+      navigate('/login');
+    } else {
+      // Retrieve user data from local storage
+      const storedUser = localStorage.getItem('user');
+      const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
+      const id = parsedUser.userId; // Access the userId property
+      dispatch(fetchUserBudgets(id));
+      setBudgetsTotal(budgets.length);
+      console.log(budgetsTotal);
+
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+
+        // Dispatch the updateUser action to update the user state in Redux store
+        dispatch(updateUser(parsedUser));
+      }
     }
-  }, [user]);
+  }, [dispatch, isAuthenticated, navigate]);
+
+
+  // useEffect(() => {
+  //   if (user && user.id) {
+  //     // Fetch user budgets when the user is logged in
+  //     dispatch(fetchUserBudgets(user.id));
+  //   }
+  // }, [dispatch, user]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
@@ -228,13 +284,19 @@ console.log(registrationStatus);
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-          {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+            {user && user.name ? `Welcome ${user.name}` : "Welcome"}
           </Typography>
 
-      
           <Button
             variant="contained"
-            sx={{ backgroundColor: "#E05858FF" }}
+            sx={{
+              backgroundColor: "#E05858FF",
+              transition: "opacity 0.3s ease-in-out", // Adding a transition for smooth effect
+              "&:hover": {
+                opacity: 0.8,
+                backgroundColor: "#E05858FF", // Adjust the opacity value as needed
+              },
+            }}
             startIcon={<Iconify icon="eva:plus-fill" />}
             component={Link} // Use the Link component
             to="/dashboard/add-budget"
@@ -244,120 +306,120 @@ console.log(registrationStatus);
         </Stack>
 
         <Container sx={{ display: "flex", flexDirection: "row" }}>
-        {isFirstCardOpen && (
-          <Card
-            sx={{
-              width: isMobile ? "100%" : "40%",
-              marginBottom: isMobile ? "20px" : "0",
-              backgroundColor: "#E05858FF",
-            }}
-          >
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h3">Welcome to vBudget</Typography>
+          {isFirstCardOpen && (
+            <Card
+              sx={{
+                width: isMobile ? "100%" : "40%",
+                marginBottom: isMobile ? "20px" : "0",
+                backgroundColor: "#E05858FF",
+              }}
+            >
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="h3">Welcome to vBudget</Typography>
+                  <IconButton onClick={handleFirstCardClose}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+                <Typography
+                  variant="body1"
+                  sx={{ width: "80%", marginBottom: 5 }}
+                >
+                  See how VBudget helps video pros like you quickly develop
+                  prduction budgets
+                </Typography>
+                <div
+                  style={{
+                    marginTop: "10px",
+                    marginBottom: "20px",
+                    paddingTop: "56.25%",
+                    position: "relative",
+                  }}
+                >
+                  {/* Your video section goes here */}
+                  {/* For example, you can use an embedded video player */}
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{ position: "absolute", top: 0, left: 0 }}
+                  ></iframe>
+                </div>
                 <IconButton onClick={handleFirstCardClose}>
-                  <CloseIcon />
+                  {/* <CloseIcon /> */}
                 </IconButton>
-              </Box>
-              <Typography
-                variant="body1"
-                sx={{ width: "80%", marginBottom: 5 }}
-              >
-                See how VBudget helps video pros like you quickly develop
-                prduction budgets
-              </Typography>
-              <div
-                style={{
-                  marginTop: "10px",
-                  marginBottom: "20px",
-                  paddingTop: "56.25%",
-                  position: "relative",
-                }}
-              >
-                {/* Your video section goes here */}
-                {/* For example, you can use an embedded video player */}
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{ position: "absolute", top: 0, left: 0 }}
-                ></iframe>
-              </div>
-              <IconButton onClick={handleFirstCardClose}>
-                {/* <CloseIcon /> */}
-              </IconButton>
-            </CardContent>
-          </Card>
-)}
+              </CardContent>
+            </Card>
+          )}
 
           {/* new card */}
           {isSecondCardOpen && (
-          <Card
-            sx={{
-              width: isMobile ? "100%" : "40%",
-              marginBottom: isMobile ? "20px" : "0",
-              backgroundColor: "#CCCCCCFF",
-              marginLeft: "20px",
-            }}
-          >
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography variant="h3">Create</Typography>
-                <IconButton onClick={handleSecondCardClose}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-
-              <div
-                style={{
-                  position: "relative",
-                  width: "100%",
-                  height: "300px",
-                  backgroundColor: "#fff",
-                  borderRadius: "5px",
-                  display: "flex",
-                  flexDirection: "column",
-                  marginTop: "20px",
-                  // justifyContent: 'center',
-
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{ width: "80%", marginBottom: 5, marginTop: "50px" }}
+            <Card
+              sx={{
+                width: isMobile ? "100%" : "40%",
+                marginBottom: isMobile ? "20px" : "0",
+                backgroundColor: "#CCCCCCFF",
+                marginLeft: "20px",
+              }}
+            >
+              <CardContent>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  See how VBudget helps video pros like you quickly develop
-                  production budgets
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ backgroundColor: "#E05858FF" }}
+                  <Typography variant="h3">Create</Typography>
+                  <IconButton onClick={handleSecondCardClose}>
+                    <CloseIcon />
+                  </IconButton>
+                </Box>
+
+                <div
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "300px",
+                    backgroundColor: "#fff",
+                    borderRadius: "5px",
+                    display: "flex",
+                    flexDirection: "column",
+                    marginTop: "20px",
+                    // justifyContent: 'center',
+
+                    alignItems: "center",
+                  }}
                 >
-                  Create a Budget
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                  <Typography
+                    variant="body1"
+                    sx={{ width: "80%", marginBottom: 5, marginTop: "50px" }}
+                  >
+                    See how VBudget helps video pros like you quickly develop
+                    production budgets
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ backgroundColor: "#E05858FF" }}
+                  >
+                    Create a Budget
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </Container>
 
@@ -387,26 +449,27 @@ console.log(registrationStatus);
                 onRequestSort={handleRequestSort}
                 onSelectAllClick={handleSelectAllClick}
               />
-              <TableBody sx={{ backgroundColor: "#fff" }}>
+              <TableBody>
                 {filteredUsers
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => {
                     const {
-                      // id,
-                      client,
-                      createdAt,
-                      projectTitle,
+                      id,
+                      client_name,
+                      created_at,
+                      project_title,
                       subtotal,
                       internalNotes,
                       tax,
+                      status
                     } = row;
-                    const selectedBudget = selected.indexOf(client) !== -1;
+                    const selectedBudget = selected.indexOf(client_name) !== -1;
 
                     return (
                       <TableRow
                         hover
                         // key={id}
-                        key={client}
+                        key={client_name}
                         tabIndex={-1}
                         role="checkbox"
                         selected={selectedBudget}
@@ -426,28 +489,19 @@ console.log(registrationStatus);
                           >
                             {/* <Avatar alt={name} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {client}
+                              {client_name}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{createdAt}</TableCell>
+                        <TableCell align="left">{created_at}</TableCell>
 
-                        <TableCell align="left">{projectTitle}</TableCell>
+                        <TableCell align="left">{project_title}</TableCell>
 
                         <TableCell align="left">
-                          <Label
-                            color={
-                              (client === "banned" && "error") || "success"
-                            }
-                          >
-                            {sentenceCase(client)}
-                          </Label>
+                        <StateIndicator status={status} />
                         </TableCell>
-                        <TableCell align="left">
-                         {`$${subtotal}`}
-                        </TableCell>
-
+                        <TableCell align="left">{`$${subtotal}`}</TableCell>
 
                         <TableCell align="right">
                           <IconButton
@@ -499,13 +553,17 @@ console.log(registrationStatus);
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={budgets.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
+
+
+
+       
       </Container>
 
       <Popover

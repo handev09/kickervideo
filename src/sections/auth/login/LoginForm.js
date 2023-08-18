@@ -27,6 +27,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const loginError = useSelector((state) => state.login.error);
   const isAuthenticated = useSelector(state => state.login.isLoggedIn);
+  const user = useSelector(state => state.login.user);
 
   
   const handleSubmit = async (e) => {
@@ -36,6 +37,7 @@ export default function LoginForm() {
   
       if (isAuthenticated) {
         // Navigate to the dashboard
+        localStorage.setItem("user", JSON.stringify(user));
         navigate("/dashboard", { replace: true });
       } else {
         // Handle login failure, if needed

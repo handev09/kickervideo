@@ -14,14 +14,16 @@ import {
   Button,
   Box,
   Divider,
+  Icon,
 } from "@mui/material";
 
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 
 import MyDropdown from "../components/dropdown/DropDown";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../state/redux/actions/crew/crewActions";
 import { useNavigate } from "react-router-dom";
+import Iconify from "../components/iconify/Iconify";
 
 const AddCrewForm = () => {
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
@@ -39,6 +41,11 @@ const AddCrewForm = () => {
   const [markup, setMarkup] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
 
+  const storedUser = localStorage.getItem('user');
+  const user = useSelector(state => state.login.user);
+  console.log(user.userId);
+  const user_id = user.userId;
+
   const [userData, setUserData] = useState({
     fullName: "",
     phone: "",
@@ -53,6 +60,7 @@ const AddCrewForm = () => {
     cost: 0,
     markup: 0,
     unitPrice: 0,
+    userId: user_id,
   });
 
   const handleFullNameChange = (event) => {
@@ -186,9 +194,10 @@ const AddCrewForm = () => {
       cost: userData.cost,
       markup: userData.markup,
       unitPrice: userData.unitPrice,
+      userId: userData.userId,
     };
 
-    // Dispatch the new budget tothe Redux store
+    // Dispatch the new user tothe Redux store
     dispatch(addUser(newUser));
 
     //Navigate to Home Page
@@ -220,14 +229,24 @@ const AddCrewForm = () => {
   return (
     <form>
       {/* Title */}
-      <Typography variant="h4" gutterBottom>
+      <Container>
+      <Typography variant="h4" gutterBottom sx={{marginBottom: '30px'}}>
         Add Crew
       </Typography>
+      </Container>
+      
 
       {/* Subtitle */}
-      <Typography variant="h6" gutterBottom>
+      <Container>
+        <Box sx={{borderBottom: 'solid 5px #E05858FF', maxWidth: '25%', marginBottom: '20px', display: 'flex', gap: '10px'}}>
+          <Iconify icon="ri:checkbox-circle-line" color="#E05858FF"/>
+        <Typography variant="h6" gutterBottom sx={{color: '#E05858FF'}}>
         Profile Details
       </Typography>
+        </Box>
+
+      
+      </Container>
 
       <FormControl
         component="fieldset"

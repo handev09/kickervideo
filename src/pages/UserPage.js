@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
 import { filter } from "lodash";
 import { sentenceCase } from "change-case";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 // @mui
 import {
   Card,
@@ -31,7 +31,9 @@ import Scrollbar from "../components/scrollbar";
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
 // mock
 import USERLIST from "../_mock/user";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
+
+import {fetchUserCrew} from '../state/redux/actions/crew/fetchUserCrew'
 
 // ----------------------------------------------------------------------
 
@@ -81,6 +83,10 @@ function applySortFilter(array, comparator, query) {
 export default function UserPage() {
   //budgets from state
   const users = useSelector((state) => state.users.users);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const members = useSelector((state) => state.crew.members);
+  console.log(members);
 
   console.log(users);
   const [open, setOpen] = useState(null);
@@ -120,6 +126,29 @@ export default function UserPage() {
     setSelected([]);
   };
 
+  useEffect(() => {
+    // Check if the user is not logged in
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      // Redirect to the login page
+      navigate('/login');
+    } else {
+      // Retrieve user data from local storage
+      const storedUser = localStorage.getItem('user');
+      const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
+      const id = parsedUser.userId; // Access the userId property
+      dispatch(fetchUserCrew(id));
+      console.log(members);
+
+      // if (storedUser) {
+      //   const parsedUser = JSON.parse(storedUser);
+
+      //   // Dispatch the updateUser action to update the user state in Redux store
+      //   dispatch(updateUser(parsedUser));
+      // }
+    }
+  }, [dispatch,navigate]);
+
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
@@ -156,7 +185,7 @@ export default function UserPage() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
 
   const filteredUsers = applySortFilter(
-    users,
+    members,
     getComparator(order, orderBy),
     filterName
   );
@@ -183,6 +212,14 @@ export default function UserPage() {
             variant="contained"
             component={Link}
             to="/dashboard/addcrew"
+            sx={{
+              backgroundColor: "#E05858FF",
+              transition: "opacity 0.3s ease-in-out", // Adding a transition for smooth effect
+              "&:hover": {
+                opacity: 0.8, // Adjust the opacity value as needed
+                backgroundColor: "#E05858FF",
+              },
+            }}
             startIcon={<Iconify icon="eva:plus-fill" />}
           >
             + Add Crew
@@ -214,14 +251,14 @@ export default function UserPage() {
                   .map((row) => {
                     const {
                       id,
-                      fullName,
-                      state,
-                      address,
-                      phone,
+                      name,
+                      role,
+                      email,
+                      phone_number,
                       // avatarUrl,
                       zip,
                     } = row;
-                    const selectedUser = selected.indexOf(fullName) !== -1;
+                    const selectedUser = selected.indexOf(name) !== -1;
 
                     return (
                       <TableRow
@@ -243,17 +280,17 @@ export default function UserPage() {
                           >
                             {/* <Avatar alt={fullName} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
-                              {fullName}
+                              {name}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{state}</TableCell>
+                        <TableCell align="left">{role}</TableCell>
 
-                        <TableCell align="left">{address}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
 
                         <TableCell align="left">
-                        <TableCell align="left">{phone}</TableCell>
+                        <TableCell align="left">{phone_number}</TableCell>
                         </TableCell>
 
                         {/* <TableCell align="left"> */}
@@ -315,7 +352,7 @@ export default function UserPage() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={USERLIST.length}
+            count={filteredUsers.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
