@@ -25,6 +25,7 @@ import ServiceDropDown from "../components/service-dropdown/Dropdown";
 import RatingContainer from "../components/rating/Rating";
 import CreateNewLineItem from "./CreateNewLineItem";
 import CustomDropdown from "../components/item-price-dropdown/DropDown";
+import {fetchUserBudgets} from '../state/redux/actions/budget/updateUserBudgetsAction'
 
 import { useDispatch,useSelector } from "react-redux";
 import { addBudget } from "../state/redux/actions/budget/budgetActions";
@@ -104,6 +105,7 @@ const AddBudget = () => {
 
     // Dispatch the new budget tothe Redux store
     dispatch(addBudget(newBudget));
+    dispatch(fetchUserBudgets(user_id));
 
     //Navigate to Home Page
     navigate("/");
