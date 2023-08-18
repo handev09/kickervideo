@@ -12,7 +12,8 @@ import axios from 'axios';
 export const addBudget = (budget) => {
   return async (dispatch) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/budget/create', budget);
+      // const response = await axios.post('http://localhost:3001/api/v1/budget/create', budget);
+      const response = await axios.post('https://kickervideoapi.app/api/v1/budget/create', budget);
       const newBudget = response.data;
       
       dispatch({
