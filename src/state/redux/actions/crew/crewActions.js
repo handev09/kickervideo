@@ -13,7 +13,7 @@ export const addUser = (member) => {
   return async (dispatch) => {
     try {
       // const response = await axios.post('http://localhost:3001/api/v1/crew/create', member);
-      const response = await axios.post('https://kickervideoapi.app/api/v1/crew/create', member);
+      const response = await axios.post('https://kickervideoapi.vercel.app/api/v1/crew/create', member);
       const newMember = response.data;
       
       dispatch({
