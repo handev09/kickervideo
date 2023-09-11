@@ -1,12 +1,3 @@
-// // budgetActions.js
-// export const addBudget = (budget) => {
-//     return {
-//       type: 'ADD_BUDGET',
-//       payload: budget,
-//     };
-//   };
-  
-
 import axios from 'axios';
 
 export const addBudget = (budget) => {

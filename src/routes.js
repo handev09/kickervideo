@@ -14,7 +14,7 @@ import AddCrewForm from './pages/AddCrewForm';
 import CreateNewLineItem from './pages/CreateNewLineItem';
 import MyDropdown from './pages/DropDown';
 import AddBudget from './pages/AddBudget';
-import MainComponent from './pages/test/dialog-page-data/MainComponent';
+// import MainComponent from './pages/test/dialog-page-data/MainComponent';
 import CustomDropdown from './components/item-price-dropdown/DropDown';
 
 // ----------------------------------------------------------------------
@@ -34,7 +34,7 @@ export default function Router() {
         { path: 'create-item', element: <CreateNewLineItem /> },
         { path: 'drop-down', element: <MyDropdown /> },
         { path: 'add-budget', element: <AddBudget /> },
-        { path: 'dialog', element: <MainComponent /> },
+        // { path: 'dialog', element: <MainComponent /> },
         { path: 'dropdown', element: <CustomDropdown /> }
 
       ],

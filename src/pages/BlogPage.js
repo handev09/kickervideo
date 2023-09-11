@@ -1,34 +1,178 @@
+import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-// @mui
-import { Grid, Button, Container, Stack, Typography } from "@mui/material";
-// components
-import Iconify from "../components/iconify";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import {
-  BlogPostCard,
+  Grid,
+  Button,
+  Container,
+  Stack,
+  Box,
+  Typography,
+  Badge,
+  IconButton,
+  Menu,
+  MenuItem,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Iconify from "../components/iconify";
+import { useSelector } from "react-redux";
+import {
   BlogPostsSort,
   BlogPostsSearch,
 } from "../sections/@dashboard/blog";
-// mock
 import POSTS from "../_mock/blog";
-
-// ----------------------------------------------------------------------
+import CreateNewExpense from "./createExpense";
+import EditExpense from "./EditExpense";
+import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 
 const SORT_OPTIONS = [
-  { value: "latest", label: "Latest" },
-  { value: "popular", label: "Popular" },
-  { value: "oldest", label: "Oldest" },
+  { value: "Active", label: "Active" },
+  { value: "Draft", label: "Draft" },
 ];
 
-// ----------------------------------------------------------------------
-
 export default function BlogPage() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditExpense, setIsEditExpense] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [editedExpenseData, setEditedExpenseData] = useState(null);
+  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [expenses, setExpenses] = useState([]);
+  const [sortedExpenses, setSortedExpenses] = useState([]);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      navigate("/login");
+    } else {
+      const storedUser = localStorage.getItem("user");
+      const parsedUser = JSON.parse(storedUser);
+      const id = parsedUser.userId;
+      dispatch(fetchExpense(id));
+    }
+  }, [dispatch, navigate]);
+
+  const expensez = useSelector((state) => state.expenses.expenses);
+  console.log(expensez);
+
+  useEffect(() => {
+    setExpenses(expensez);
+    setSortedExpenses(expensez);
+  }, [expensez]);
+
+  const handleMenuOpen = (event, expenseId) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedExpenseId(expenseId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedExpenseId(null);
+  };
+
+  const handleEditExpense = (expenseId) => {
+    const expenseToEdit = expensez.find((expense) => expense.id === expenseId);
+    setEditedExpenseData(expenseToEdit);
+    setIsEditExpense(true);
+  };
+
+  const uniqueStatusValues = [...new Set(expensez.map((expense) => expense.status))];
+
+  const statusSortOptions = uniqueStatusValues.map((status) => ({
+    value: status,
+    label: status,
+  }));
+
+  const uniqueEnteredByVlaues = [...new Set(expensez.map((expense) => expense.createdBy))];
+
+  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
+    value: enteredBy,
+    label: enteredBy,
+  }));
+
+  
+
+  const handleStatusSortChange = (selectedVal) => {
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.status === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
+  };
+
+
+  const handleEnteredBySortChange = (selectedVal) => {
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.createdBy === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
+  };
+
+  const handleDialogData = (data) => {
+    if (data.name && data.description && data.reimburse) {
+      if (editedExpenseData) {
+        const updatedExpenses = expenses.map((expense) =>
+          expense.id === editedExpenseData.id
+            ? { ...editedExpenseData, ...data }
+            : expense
+        );
+        setExpenses(updatedExpenses);
+        setIsEditExpense(false);
+      } else {
+        setExpenses((prevExpenses) => [
+          ...prevExpenses,
+          {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            optionValue: data.optionValue,
+            createdAt: new Date().toLocaleDateString(),
+            total: data.cost,
+          },
+        ]);
+      }
+    }
+    setIsDialogOpen(false);
+    setIsEditExpense(false);
+    setEditedExpenseData(null);
+  };
+
+  const handleDialogOpen = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteExpense = (expenseId) => {
+    const updatedExpenses = expenses.filter(
+      (expense) => expense.id !== expenseId
+    );
+    setExpenses(updatedExpenses);
+  };
+
   return (
     <>
       <Helmet>
         <title> Dashboard: Expenses | VBudget </title>
       </Helmet>
 
-      <Container>
+      <Box>
         <Stack
           direction="row"
           alignItems="center"
@@ -38,38 +182,163 @@ export default function BlogPage() {
           <Typography variant="h4" gutterBottom>
             Expenses
           </Typography>
+          <CreateNewExpense
+            openDialog={isDialogOpen}
+            onClose={handleDialogData}
+          />
           <Button
             variant="contained"
             sx={{
               backgroundColor: "#E05858FF",
-              transition: "opacity 0.3s ease-in-out", // Adding a transition for smooth effect
+              transition: "opacity 0.3s ease-in-out",
               "&:hover": {
-                opacity: 0.8, // Adjust the opacity value as needed
+                opacity: 0.8,
                 backgroundColor: "#E05858FF",
               },
             }}
             startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={handleDialogOpen}
           >
             New Expense
           </Button>
         </Stack>
 
-        <Stack
-          mb={5}
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <BlogPostsSearch posts={POSTS} />
-          <BlogPostsSort options={SORT_OPTIONS} />
-        </Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Stack direction="column" sx={{ width: "75%" }}>
+            <Stack
+              direction="column"
+              sx={{ width: "100%" }}
+            >
+              <Stack
+                direction="row"
+                alignItems="center"
+                justifyContent="flex-end"
+              >
+                <Badge
+                  sx={{
+                    border: "1px solid",
+                    borderRadius: "5px",
+                    padding: "5px 5px",
+                    backgroundColor: "#ccc",
+                    color: "#fff",
+                  }}
+                >
+                  {sortedExpenses.length} Expenses
+                </Badge>
+              </Stack>
+              <Stack
+                mb={5}
+                direction="row"
+                alignItems="center"
+                justifyContent="space-between"
+              >
+                <BlogPostsSearch posts={POSTS} />
+                <Box sx={{ width: "30%" }}>
+                  <Typography>Status</Typography>
+                  <BlogPostsSort
+                    options={enteredByOptions}
+                    onSort={handleEnteredBySortChange}
+                  />
+                </Box>
+                <Box sx={{ width: "30%" }}>
+                  <Typography>Entered By</Typography>
+                  <BlogPostsSort
+                    options={statusSortOptions}
+                    onSort={handleStatusSortChange}
+                  />
+                </Box>
+              </Stack>
+              <Stack
+                sx={{
+                  border: "1px solid #ccc",
+                  height: "600px",
+                  width: "100%",
+                  padding: "10px",
+                }}
+              >
+                {sortedExpenses.map((expense) => (
+                  <div
+                    key={expense.id}
+                    style={{
+                      borderBottom: "1px solid #ccc",
+                      padding: "10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <Typography variant="subtitle1">
+                        {expense.expense_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {expense.description}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="subtitle1">
+                        {expense.created_at}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="subtitle1">
+                        {expense.cost}
+                      </Typography>
+                    </div>
+                    <div>
+                      <IconButton
+                        onClick={(event) =>
+                          handleMenuOpen(event, expense.id)
+                        }
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
 
-        {/* <Grid container spacing={3}>
-          {POSTS.map((post, index) => (
-            <BlogPostCard key={post.id} post={post} index={index} />
-          ))}
-        </Grid> */}
-      </Container>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            handleEditExpense(selectedExpenseId);
+                          }}
+                        >
+                          Edit
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() =>
+                            handleDeleteExpense(selectedExpenseId)
+                          }
+                        >
+                          Delete
+                        </MenuItem>
+                      </Menu>
+                    </div>
+                  </div>
+                ))}
+              </Stack>
+            </Stack>
+          </Stack>
+
+          <Stack
+            direction="column"
+            sx={{ width: "25%", height: "600px", backgroundColor: "#fff" }}
+          >
+            <Typography variant="h3">Help and documentation</Typography>
+            <Typography>
+              You can quickly and easily generate highly customizable reports
+              from the
+            </Typography>
+            <Typography>Expenses Report</Typography>
+          </Stack>
+        </Stack>
+      </Box>
+      <EditExpense
+        openDialog={isEditExpense}
+        onClose={handleDialogData}
+        initialData={editedExpenseData}
+      />
     </>
   );
 }
