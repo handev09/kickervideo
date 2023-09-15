@@ -16,6 +16,7 @@ import MyDropdown from './pages/DropDown';
 import AddBudget from './pages/AddBudget';
 // import MainComponent from './pages/test/dialog-page-data/MainComponent';
 import CustomDropdown from './components/item-price-dropdown/DropDown';
+import Reports from './pages/Report';
 
 // ----------------------------------------------------------------------
 
@@ -35,7 +36,8 @@ export default function Router() {
         { path: 'drop-down', element: <MyDropdown /> },
         { path: 'add-budget', element: <AddBudget /> },
         // { path: 'dialog', element: <MainComponent /> },
-        { path: 'dropdown', element: <CustomDropdown /> }
+        { path: 'dropdown', element: <CustomDropdown /> },
+        { path: 'report', element: <Reports /> }
 
       ],
     },

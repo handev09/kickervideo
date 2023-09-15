@@ -111,6 +111,7 @@ export default function BlogPage() {
     setSortedExpenses(sortedExpenses);
   };
 
+  
 
   const handleEnteredBySortChange = (selectedVal) => {
     const selectedOption = selectedVal;
