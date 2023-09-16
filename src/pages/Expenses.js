@@ -22,7 +22,7 @@ import { useSelector } from "react-redux";
 import {
   BlogPostsSort,
   BlogPostsSearch,
-} from "../sections/@dashboard/blog";
+} from "../sections/@dashboard/expenses";
 import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
@@ -33,7 +33,7 @@ const SORT_OPTIONS = [
   { value: "Draft", label: "Draft" },
 ];
 
-export default function BlogPage() {
+export default function ExpensesPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -268,7 +268,9 @@ export default function BlogPage() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <div>
+                    <div style={{
+                      width: '20%'
+                    }}>
                       <Typography variant="subtitle1">
                         {expense.expense_name}
                       </Typography>
@@ -276,12 +278,16 @@ export default function BlogPage() {
                         {expense.description}
                       </Typography>
                     </div>
-                    <div>
+                    <div style={{
+                      width: '20%'
+                    }}>
                       <Typography variant="subtitle1">
                         {expense.created_at}
                       </Typography>
                     </div>
-                    <div>
+                    <div style={{
+                      // width: '20%'
+                    }}>
                       <Typography variant="subtitle1">
                         {expense.cost}
                       </Typography>

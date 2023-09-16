@@ -75,7 +75,7 @@ const AddBudget = () => {
     createdAt: "",
     userId: "",
     budgetId: uuidv4(),
-    status: "draft",
+    status: "awaitingresponse",
   });
   const handleAddBudget = () => {
 

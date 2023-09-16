@@ -10,7 +10,7 @@ const navConfigBottom = [
   {
     title: 'my profile',
     path: '/dashboard/me',
-    icon: icon('ic_analytics'),
+    icon: icon('ic_profile'),
   },
   
 ];

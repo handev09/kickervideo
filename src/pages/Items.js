@@ -3,13 +3,13 @@ import { useState } from 'react';
 // @mui
 import { Container, Stack, Typography } from '@mui/material';
 // components
-import { ProductSort, ProductList, ProductCartWidget, ProductFilterSidebar } from '../sections/@dashboard/products';
+import { ProductSort, ProductList, ProductCartWidget, ProductFilterSidebar } from '../sections/@dashboard/items';
 // mock
 import PRODUCTS from '../_mock/products';
 
 // ----------------------------------------------------------------------
 
-export default function ProductsPage() {
+export default function ItemsPage() {
   const [openFilter, setOpenFilter] = useState(false);
 
   const handleOpenFilter = () => {

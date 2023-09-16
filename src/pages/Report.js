@@ -14,13 +14,12 @@ import {
   Button,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { BlogPostsSort } from "../sections/@dashboard/blog";
+import { BlogPostsSort } from "../sections/@dashboard/expenses";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
 import TableHead from "@mui/material/TableHead";
-import TableSortLabel from "@mui/material/TableSortLabel";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import TableBody from "@mui/material/TableBody";
@@ -28,12 +27,12 @@ import Pagination from "@mui/material/Pagination";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Popover from "@mui/material/Popover";
-import GetAppIcon from '@mui/icons-material/GetApp';
 
 import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
+import { number } from "prop-types";
 
 const STATUS_COLORS = {
-  Draft: "#E8EBEDFF", // Red
+  draft: "#E8EBEDFF", // Red
   awaitingresponse: "#FDEFDEFF", // Yellow
   changesrequested: "#F7E3DFFF", // Yellow
   approved: "#ECF3DCFF", // Green
@@ -42,50 +41,6 @@ const STATUS_COLORS = {
   total: "#EDEAF7FF", // Green
   // Add more statuses and colors as needed
 };
-
-const dataForListGrowth = [
-  {
-    id: 1,
-    jobNumber: "J123",
-    clientName: "Client A",
-    drafted: "2023-01-15",
-    number: 42,
-    status: "In Progress",
-    open: "Yes",
-  },
-  {
-    id: 2,
-    jobNumber: "J124",
-    clientName: "Client B",
-    drafted: "2023-02-20",
-    number: 17,
-    status: "Completed",
-    open: "No",
-  },
-  // Add more data as needed
-];
-
-const dataForCumulative = [
-  {
-    id: 1,
-    jobNumber: "J125",
-    clientName: "Client C",
-    drafted: "2023-03-10",
-    number: 88,
-    status: "In Progress",
-    open: "Yes",
-  },
-  {
-    id: 2,
-    jobNumber: "J126",
-    clientName: "Client D",
-    drafted: "2023-04-05",
-    number: 33,
-    status: "Completed",
-    open: "No",
-  },
-  // Add more data as needed
-];
 
 const columns = [
   { id: "jobNumber", label: "Job#", sortable: true },
@@ -97,14 +52,12 @@ const columns = [
 ];
 
 export default function Reports() {
+  let statusTot = {};
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const budgets = useSelector((state) => state.budgets.budgets);
-
+  console.log(budgets);
   const [selectedTab, setSelectedTab] = useState(0);
-
-  const [orderBy, setOrderBy] = useState("");
-  const [order, setOrder] = useState("asc");
 
   const [sorting, setSorting] = useState({ column: "", direction: "asc" });
   const [anchorEl, setAnchorEl] = useState(null);
@@ -125,7 +78,7 @@ export default function Reports() {
     setIsButtonClicked(false);
     setAnchorEl(null);
   };
-  
+
   const handlePopoverClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -135,29 +88,59 @@ export default function Reports() {
     setSelectedTab(newValue);
   };
 
+  // Replace dataForListGrowth with all budgets data
+const dataForListGrowth = budgets;
+
+// Replace dataForCumulative with data that has any status other than "draft"
+const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
+
   const data = selectedTab === 0 ? dataForListGrowth : dataForCumulative;
 
-  const handleSort = (columnId) => {
-    if (sorting.column === columnId) {
-      setSorting({
-        ...sorting,
-        direction: sorting.direction === "asc" ? "desc" : "asc",
-      });
-    } else {
-      setSorting({ column: columnId, direction: "asc" });
-    }
+  const sortData = (data, column, direction) => {
+    return data.slice().sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+
+      if (direction === "asc") {
+        return aValue < bValue ? -1 : 1;
+      } else {
+        return aValue > bValue ? -1 : 1;
+      }
+    });
   };
 
-  const sortedData = data.slice().sort((a, b) => {
-    const aValue = a[sorting.column];
-    const bValue = b[sorting.column];
+  // const handleSort = (columnId) => {
+  //   if (sorting.column === columnId) {
+  //     setSorting({
+  //       ...sorting,
+  //       direction: sorting.direction === "asc" ? "desc" : "asc",
+  //     });
+  //   } else {
+  //     setSorting({ column: columnId, direction: "asc" });
+  //   }
+  // };
 
-    if (sorting.direction === "asc") {
-      return aValue < bValue ? -1 : 1;
-    } else {
-      return aValue > bValue ? -1 : 1;
+  const handleSort = (columnId) => {
+    let direction = "asc";
+    if (sorting.column === columnId && sorting.direction === "asc") {
+      direction = "desc";
     }
-  });
+    setSorting({ column: columnId, direction });
+  };
+
+  // const sortedData = data.slice().sort((a, b) => {
+  //   const aValue = a[sorting.column];
+  //   const bValue = b[sorting.column];
+
+  //   if (sorting.direction === "asc") {
+  //     return aValue < bValue ? -1 : 1;
+  //   } else {
+  //     return aValue > bValue ? -1 : 1;
+  //   }
+  // });
+
+ // Apply sorting to the data
+ const sortedData = sortData(data, sorting.column, sorting.direction);
 
   useEffect(() => {
     // Check if the user is not logged in
@@ -178,9 +161,9 @@ export default function Reports() {
   const statusTotals = {};
   budgets.forEach((budget) => {
     if (statusTotals[budget.status]) {
-      statusTotals[budget.status] += budget.amount;
+      statusTotals[budget.status] += budget.total;
     } else {
-      statusTotals[budget.status] = budget.amount;
+      statusTotals[budget.status] = budget.total;
     }
   });
 
@@ -205,7 +188,103 @@ export default function Reports() {
       border: "2px solid #000",
     },
   };
-  
+
+  // Code for calculating budget totals based on status and render the UI
+
+  const [statusCounts, setStatusCounts] = useState({}); // To store status counts
+  const [statusTotal, setStatusTotal] = useState({}); // To store status totals
+  const [totalBudgets, setTotalBudgets] = useState(0); // Total number of budgets
+  const [totalSum, setTotalSum] = useState(0); // Total sum of budgets
+  // Initialize two state variables for status totals and budget totals
+  const [statusTotalsSum, setStatusTotalsSum] = useState(0);
+  const [budgetTotalsSum, setBudgetTotalsSum] = useState(0);
+
+  useEffect(() => {
+    // Calculate counts and totals when budgets change
+    const calculateCountsAndTotals = () => {
+      const counts = {};
+      const totals = {};
+      let statusTotalsSum = 0; // Initialize status totals sum
+      let budgetTotalsSum = 0; // Initialize budget totals sum
+
+      budgets.forEach((budget) => {
+        // Include the statuses you want to count
+        if (
+          [
+            "draft",
+            "awaitingresponse",
+            "changesrequested",
+            "approved",
+            "converted",
+            "archived",
+          ].includes(budget.status.toLowerCase())
+        ) {
+          // Update status counts
+          if (counts[budget.status]) {
+            counts[budget.status]++;
+          } else {
+            counts[budget.status] = 1;
+          }
+
+          // Update status totals
+          if (totals[budget.status]) {
+            totals[budget.status] = parseFloat(totals[budget.status])+parseFloat(budget.total);
+
+            console.log(totals[budget.status]);
+          } else {
+            totals[budget.status] = budget.total;
+          }
+
+          // Update total sum
+          totals["total"] = parseFloat((totals["total"] || 0)) + parseFloat(budget.total);
+        }
+      });
+
+      // Calculate total number of budgets
+      const totalBudgets = Object.values(counts).reduce(
+        (total, count) => total + count,
+        0
+      );
+
+      setStatusCounts(counts);
+      setStatusTotal(totals);
+      setTotalBudgets(totalBudgets);
+      setTotalSum(totals["total"] || 0);
+    };
+
+    calculateCountsAndTotals();
+  }, [budgets]);
+
+  // Update the UI with status counts and totals
+  const renderStatusCounts = () => {
+    return (
+      <Stack direction="column">
+        {Object.entries(statusCounts).map(([status, count]) => (
+          <Stack
+            key={status}
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            sx={{ marginBottom: "20px" }}
+          >
+            <Box sx={{ width: "40%" }}>
+              <Badge
+                sx={{
+                  backgroundColor: STATUS_COLORS[status.toLowerCase()],
+                  padding: "10px",
+                  width: "50%",
+                }}
+              >
+                {count}
+              </Badge>
+              <Typography variant="p">{status.toLowerCase()}</Typography>
+            </Box>
+            <Typography variant="p">${statusTotal[status] || 0}.00</Typography>
+          </Stack>
+        ))}
+      </Stack>
+    );
+  };
 
   return (
     <>
@@ -225,187 +304,71 @@ export default function Reports() {
           </Typography>
         </Stack>
 
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          sx={{ width: "100%" }}
+        >
           <Stack
             direction="column"
-            sx={{ width: "65%", height: "550px", border: "1px solid #000" }}
+            sx={{ width: "63%", height: "550px", border: "1px solid #f0f0f0" }}
           >
             <Paper
-              elevation={3}
               sx={{
                 padding: "15px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
+                backgroundColor: "#F4F4F4FF",
               }}
             >
               <Typography variant="h6">Overview</Typography>
             </Paper>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#E8EBEDFF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">draft</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#FDEFDEFF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">awaiting response</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#F7E3DFFF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">chenages requested</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#ECF3DCFF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">approved</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#E2F3EFFF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">converted</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
+            {/* Group Container for all status */}
+            <Stack sx={{ width: "100%", height: "550px", padding: "20px" }}>
+              {/* place the dynamic ui */}
 
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#D9DFE1FF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">archived</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
-            </Stack>
+              {renderStatusCounts()}
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ marginBottom: "20px" }}
+              >
+                {/* compose the boxes dynamically */}
+                <Box sx={{ width: "40%" }}>
+                  <Badge
+                    sx={{
+                      backgroundColor: STATUS_COLORS["total"],
+                      padding: "10px",
+                      width: "50%",
+                    }}
+                  >
+                    {totalBudgets}
+                  </Badge>
+                  <Typography variant="p">total</Typography>
+                </Box>
+                <Typography variant="p">${totalSum}.00</Typography>
+              </Stack>
 
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              sx={{ marginBottom: "20px" }}
-            >
-              {/* compose the boxes dynamically */}
-              <Box sx={{ width: "40%" }}>
-                <Badge
-                  sx={{
-                    backgroundColor: "#EDEAF7FF",
-                    padding: "10px",
-                    width: "50%",
-                  }}
-                >
-                  0
-                </Badge>
-                <Typography variant="p">total</Typography>
-              </Box>
-              <Typography variant="p">$0.00</Typography>
+              {/* Maunal UI */}
             </Stack>
           </Stack>
           <Stack
             direction="column"
-            sx={{ width: "35%", height: "384px", border: "1px solid #000" }}
+            sx={{ width: "35%", height: "550px", border: "1px solid #f0f0f0" }}
           >
             <Paper
-              elevation={3}
               sx={{
                 padding: "15px",
                 border: "1px solid #ccc",
                 borderRadius: "5px",
+                backgroundColor: "#F4F4F4FF",
               }}
             >
               <Typography variant="h6">Sorting Options</Typography>
             </Paper>
 
-            <Box sx={{ width: "100%" }}>
+            <Box sx={{ width: "100%", padding: "20px" }}>
               <Typography>Created within</Typography>
               <BlogPostsSort
                 options={SORT_OPTIONS}
@@ -425,9 +388,10 @@ export default function Reports() {
             borderRadius: "5px",
             display: "flex",
             flexDirection: "row",
-            justifyContent: 'space-between',
-            backgroundColor: '#F4F4F4FF',
-            marginTop: '50px'
+            justifyContent: "space-between",
+            backgroundColor: "#F4F4F4FF",
+            marginTop: "50px",
+            marginBottom: "30px",
           }}
         >
           <Typography variant="h6">Showing 50 vEntries</Typography>
@@ -443,8 +407,8 @@ export default function Reports() {
             }}
             onClick={handlePopoverClick}
           >
-        Export Excel Copy
-             {isButtonClicked ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
+            Export Excel Copy
+            {isButtonClicked ? <ArrowDropUpIcon /> : <ArrowDropDownIcon />}
           </Button>
           <Popover
             open={openPopover}
@@ -477,20 +441,20 @@ export default function Reports() {
         </Paper>
 
         <div>
-        <Tabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          aria-label="Tab navigation"
-          sx={tabStyles} // Apply custom tab styles
-          TabIndicatorProps={{
-            style: {
-              display: "none", // Hide the default indicator
-            },
-          }}
-        >
-          <Tab label="List Growth" />
-          <Tab label="Cumulative" />
-        </Tabs>
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            aria-label="Tab navigation"
+            sx={tabStyles} // Apply custom tab styles
+            TabIndicatorProps={{
+              style: {
+                display: "none", // Hide the default indicator
+              },
+            }}
+          >
+            <Tab label="List Growth" />
+            <Tab label="Cumulative" />
+          </Tabs>
 
           <TableContainer>
             <Table>
@@ -520,13 +484,14 @@ export default function Reports() {
               </TableHead>
               <TableBody>
                 {sortedData.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>{row.jobNumber}</TableCell>
-                    <TableCell>{row.clientName}</TableCell>
-                    <TableCell>{row.drafted}</TableCell>
-                    <TableCell>{row.number}</TableCell>
+                  <TableRow key={row.budget_num}>
+                    <TableCell>{`Job#${row.budget_num}`}</TableCell>
+                    <TableCell>{row.client_name}</TableCell>
+                    <TableCell>{row.created_at}</TableCell>
+                    <TableCell>{row.budget_num}</TableCell>
                     <TableCell>{row.status}</TableCell>
-                    <TableCell>{row.open}</TableCell>
+                    {/* <TableCell>{row.open}</TableCell> */}
+                    <TableCell>Yes</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

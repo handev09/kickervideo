@@ -28,7 +28,7 @@ import Label from "../components/label";
 import Iconify from "../components/iconify";
 import Scrollbar from "../components/scrollbar";
 // sections
-import { UserListHead, UserListToolbar } from "../sections/@dashboard/user";
+import { UserListHead, UserListToolbar } from "../sections/@dashboard/crew";
 // mock
 import USERLIST from "../_mock/user";
 import { useSelector,useDispatch } from "react-redux";
@@ -80,7 +80,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function UserPage() {
+export default function CrewPage() {
   //budgets from state
   const users = useSelector((state) => state.users.users);
   const dispatch = useDispatch();

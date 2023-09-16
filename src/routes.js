@@ -3,11 +3,11 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 //
-import BlogPage from './pages/BlogPage';
-import UserPage from './pages/UserPage';
+import ExpensesPage from './pages/Expenses';
+import CrewPage from './pages/Crew';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
-import ProductsPage from './pages/ProductsPage';
+import ItemsPage from './pages/Items';
 import DashboardAppPage from './pages/DashboardAppPage';
 import SignupPage from './pages/SignupPage';
 import AddCrewForm from './pages/AddCrewForm';
@@ -28,9 +28,9 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
-        { path: 'blog', element: <BlogPage /> },
+        { path: 'user', element: <CrewPage /> },
+        { path: 'products', element: <ItemsPage /> },
+        { path: 'blog', element: <ExpensesPage /> },
         { path: 'addcrew', element: <AddCrewForm /> },
         { path: 'create-item', element: <CreateNewLineItem /> },
         { path: 'drop-down', element: <MyDropdown /> },
