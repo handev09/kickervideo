@@ -21,17 +21,13 @@ import Iconify from "../components/iconify";
 import { useSelector } from "react-redux";
 import {
   BlogPostsSort,
-  BlogPostsSearch,
+  ExpensesSearch,
 } from "../sections/@dashboard/expenses";
 import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 
-const SORT_OPTIONS = [
-  { value: "Active", label: "Active" },
-  { value: "Draft", label: "Draft" },
-];
 
 export default function ExpensesPage() {
   const navigate = useNavigate();
@@ -204,8 +200,8 @@ export default function ExpensesPage() {
           </Button>
         </Stack>
 
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="column" sx={{ width: "75%" }}>
+        <Stack direction="row" justifyContent="space-between" gap='40px'>
+          <Stack direction="column" sx={{ width: "78%", height: '100%' }}>
             <Stack
               direction="column"
               sx={{ width: "100%" }}
@@ -233,7 +229,7 @@ export default function ExpensesPage() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <BlogPostsSearch posts={POSTS} />
+                <ExpensesSearch expenses={expensez} />
                 <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort
@@ -281,15 +277,15 @@ export default function ExpensesPage() {
                     <div style={{
                       width: '20%'
                     }}>
-                      <Typography variant="subtitle1">
+                      <Typography variant="subtitle3">
                         {expense.created_at}
                       </Typography>
                     </div>
                     <div style={{
                       // width: '20%'
                     }}>
-                      <Typography variant="subtitle1">
-                        {expense.cost}
+                      <Typography variant="subtitle3">
+                        ${expense.cost}
                       </Typography>
                     </div>
                     <div>
@@ -330,10 +326,10 @@ export default function ExpensesPage() {
 
           <Stack
             direction="column"
-            sx={{ width: "25%", height: "600px", backgroundColor: "#fff" }}
+            sx={{ width: "20%", height: "100%"}}
           >
-            <Typography variant="h3">Help and documentation</Typography>
-            <Typography>
+            <Typography variant="h4">Help and documentation</Typography>
+            <Typography variant="p">
               You can quickly and easily generate highly customizable reports
               from the
             </Typography>

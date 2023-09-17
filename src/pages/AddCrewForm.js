@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef  } from "react";
 
 import {
   Typography,
@@ -18,12 +18,15 @@ import {
 } from "@mui/material";
 
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import firebase from "firebase/app";
+import "firebase/storage"; // Import the storage module
 
 import MyDropdown from "../components/dropdown/DropDown";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../state/redux/actions/crew/crewActions";
 import { useNavigate } from "react-router-dom";
 import Iconify from "../components/iconify/Iconify";
+import { storage } from "../components/firebase/firebase-config";
 
 const AddCrewForm = () => {
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
@@ -177,32 +180,98 @@ const AddCrewForm = () => {
     }));
   };
 
+  // const handleAddUser = () => {
+  //   // Create the budget object
+  //   // console.log(budgetData.client);
+  //   console.log(selectedImage)
+  //   const newUser = {
+  //     fullName: userData.fullName,
+  //     phone: userData.phone,
+  //     email: userData.email,
+  //     address: userData.address,
+  //     street: userData.street,
+  //     state: userData.state,
+  //     city: userData.city,
+  //     zip: userData.zip,
+  //     role: userData.role,
+  //     contractType: userData.contractType,
+  //     cost: userData.cost,
+  //     markup: userData.markup,
+  //     unitPrice: userData.unitPrice,
+  //     userId: userData.userId,
+  //     // image: selectedImage,
+  //   };
+
+  //   // Dispatch the new user tothe Redux store
+  //   dispatch(addUser(newUser));
+
+  //   //Navigate to Home Page
+  //   navigate("/dashboard/user");
+  // };
+
   const handleAddUser = () => {
-    // Create the budget object
-    // console.log(budgetData.client);
-    const newUser = {
-      fullName: userData.fullName,
-      phone: userData.phone,
-      email: userData.email,
-      address: userData.address,
-      street: userData.street,
-      state: userData.state,
-      city: userData.city,
-      zip: userData.zip,
-      role: userData.role,
-      contractType: userData.contractType,
-      cost: userData.cost,
-      markup: userData.markup,
-      unitPrice: userData.unitPrice,
-      userId: userData.userId,
-    };
-
-    // Dispatch the new user tothe Redux store
-    dispatch(addUser(newUser));
-
-    //Navigate to Home Page
-    navigate("/dashboard/user");
+    console.log('Image Selected True')
+    if (selectedImage) {
+      const storageRef = storage.ref(`images/${selectedImage.name}`);
+      console.log(storageRef)
+      storageRef.put(selectedImage).then((snapshot) => {
+        snapshot.ref.getDownloadURL().then((downloadURL) => {
+          console.log(downloadURL)
+          console.log('Image Uploaed step')
+          // Create the user object with the download URL
+          const newUser = {
+            fullName: userData.fullName,
+            phone: userData.phone,
+            email: userData.email,
+            address: userData.address,
+            street: userData.street,
+            state: userData.state,
+            city: userData.city,
+            zip: userData.zip,
+            role: userData.role,
+            contractType: userData.contractType,
+            cost: userData.cost,
+            markup: userData.markup,
+            unitPrice: userData.unitPrice,
+            userId: userData.userId,
+            image: downloadURL, // Add the image URL
+          };
+  
+          // Dispatch the new user to the Redux store
+          // dispatch(addUser(newUser));
+  
+          // Navigate to Home Page
+          // navigate("/dashboard/user");
+        });
+      });
+    } else {
+      // Handle the case where no image is selected
+      console.log('No Image Selected')
+      const newUser = {
+        fullName: userData.fullName,
+        phone: userData.phone,
+        email: userData.email,
+        address: userData.address,
+        street: userData.street,
+        state: userData.state,
+        city: userData.city,
+        zip: userData.zip,
+        role: userData.role,
+        contractType: userData.contractType,
+        cost: userData.cost,
+        markup: userData.markup,
+        unitPrice: userData.unitPrice,
+        userId: userData.userId,
+      };
+  
+      // Dispatch the new user to the Redux store
+      // dispatch(addUser(newUser));
+  
+      // Navigate to Home Page
+      // navigate("/dashboard/user");
+    }
   };
+  
 
   const handleEmploymentTypeChange = (event) => {
     setEmploymentType(event.target.value);
@@ -214,6 +283,17 @@ const AddCrewForm = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+
+  // Image Upload related function
+
+  const [selectedImage, setSelectedImage] = useState(null);
+const imageInputRef = useRef(null);
+
+const handleImageChange = (event) => {
+  const file = event.target.files[0];
+  setSelectedImage(file);
+};
+
 
   const handleDropdownOpen = () => {
     setIsDropdownOpen(true);
@@ -542,6 +622,40 @@ const AddCrewForm = () => {
           />
         </Box>
       </Container>
+
+      <input
+  type="file"
+  accept="image/*"
+  onChange={handleImageChange}
+  style={{
+    display: "none",
+  }}
+  ref={imageInputRef}
+/>
+<Button
+  variant="contained"
+  component="label"
+  sx={{ backgroundColor: "#E05858FF", color: "#fff", borderRadius: "3px" }}
+>
+  Upload Image
+  <input
+    type="file"
+    accept="image/*"
+    onChange={handleImageChange}
+    style={{
+      display: "none",
+    }}
+    ref={imageInputRef}
+  />
+</Button>
+{selectedImage && (
+  <img
+    src={URL.createObjectURL(selectedImage)}
+    alt="Selected"
+    style={{ maxWidth: "100px", maxHeight: "100px" }}
+  />
+)}
+
 
       <Divider sx={{ mb: "25px", mt: "31px" }} />
 

@@ -292,7 +292,7 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
         <title> Reports | VBudget </title>
       </Helmet>
 
-      <Container>
+      <Stack>
         <Stack
           direction="row"
           alignItems="center"
@@ -505,7 +505,7 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
             <Pagination count={Math.ceil(sortedData.length / 10)} />
           </div>
         </div>
-      </Container>
+      </Stack>
     </>
   );
 }

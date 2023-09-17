@@ -14,20 +14,21 @@ const StyledPopper = styled((props) => <Popper placement="bottom-start" {...prop
 
 // ----------------------------------------------------------------------
 
-BlogPostsSearch.propTypes = {
+ExpensesSearch.propTypes = {
   posts: PropTypes.array.isRequired,
 };
 
-export default function BlogPostsSearch({ posts }) {
+export default function ExpensesSearch({ expenses }) {
+  console.log(expenses)
   return (
     <Autocomplete
       sx={{ width: 280 }}
       autoHighlight
       popupIcon={null}
       PopperComponent={StyledPopper}
-      options={posts}
-      getOptionLabel={(post) => post.title}
-      isOptionEqualToValue={(option, value) => option.id === value.id}
+      options={expenses}
+      getOptionLabel={(expense) => expense.expense_name}
+      isOptionEqualToValue={(option, value) => option.expense_num === value.expense_num}
       renderInput={(params) => (
         <TextField
           {...params}

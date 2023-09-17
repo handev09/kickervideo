@@ -198,7 +198,7 @@ export default function CrewPage() {
         <title> Crew List | VBudget </title>
       </Helmet>
 
-      <Container>
+      <Stack>
         <Stack
           direction="row"
           alignItems="center"
@@ -278,7 +278,7 @@ export default function CrewPage() {
                             alignItems="center"
                             spacing={2}
                           >
-                            {/* <Avatar alt={fullName} src={avatarUrl} /> */}
+                            {/* <Avatar alt={name} src={avatarUrl} /> */}
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>
@@ -359,7 +359,7 @@ export default function CrewPage() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
-      </Container>
+      </Stack>
 
       <Popover
         open={Boolean(open)}
