@@ -19,15 +19,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Iconify from "../components/iconify";
 import { useSelector } from "react-redux";
-import {
-  BlogPostsSort,
-  ExpensesSearch,
-} from "../sections/@dashboard/expenses";
+import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
 // import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
-
 
 export default function ExpensesPage() {
   const navigate = useNavigate();
@@ -77,21 +73,23 @@ export default function ExpensesPage() {
     setIsEditExpense(true);
   };
 
-  const uniqueStatusValues = [...new Set(expensez.map((expense) => expense.status))];
+  const uniqueStatusValues = [
+    ...new Set(expensez.map((expense) => expense.status)),
+  ];
 
   const statusSortOptions = uniqueStatusValues.map((status) => ({
     value: status,
     label: status,
   }));
 
-  const uniqueEnteredByVlaues = [...new Set(expensez.map((expense) => expense.createdBy))];
+  const uniqueEnteredByVlaues = [
+    ...new Set(expensez.map((expense) => expense.createdBy)),
+  ];
 
   const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
     value: enteredBy,
     label: enteredBy,
   }));
-
-  
 
   const handleStatusSortChange = (selectedVal) => {
     const selectedOption = selectedVal;
@@ -106,8 +104,6 @@ export default function ExpensesPage() {
 
     setSortedExpenses(sortedExpenses);
   };
-
-  
 
   const handleEnteredBySortChange = (selectedVal) => {
     const selectedOption = selectedVal;
@@ -200,12 +196,9 @@ export default function ExpensesPage() {
           </Button>
         </Stack>
 
-        <Stack direction="row" justifyContent="space-between" gap='40px'>
-          <Stack direction="column" sx={{ width: "78%", height: '100%' }}>
-            <Stack
-              direction="column"
-              sx={{ width: "100%" }}
-            >
+        <Stack direction="row" justifyContent="space-between" gap="40px">
+          <Stack direction="column" sx={{ width: "78%", height: "100%" }}>
+            <Stack direction="column" sx={{ width: "100%" }}>
               <Stack
                 direction="row"
                 alignItems="center"
@@ -233,15 +226,16 @@ export default function ExpensesPage() {
                 <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort
-                    options={enteredByOptions}
-                    onSort={handleEnteredBySortChange}
+                    options={statusSortOptions}
+                    onSort={handleStatusSortChange}
                   />
                 </Box>
                 <Box sx={{ width: "30%" }}>
                   <Typography>Entered By</Typography>
+
                   <BlogPostsSort
-                    options={statusSortOptions}
-                    onSort={handleStatusSortChange}
+                    options={enteredByOptions}
+                    onSort={handleEnteredBySortChange}
                   />
                 </Box>
               </Stack>
@@ -264,9 +258,11 @@ export default function ExpensesPage() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <div style={{
-                      width: '20%'
-                    }}>
+                    <div
+                      style={{
+                        width: "20%",
+                      }}
+                    >
                       <Typography variant="subtitle1">
                         {expense.expense_name}
                       </Typography>
@@ -274,25 +270,29 @@ export default function ExpensesPage() {
                         {expense.description}
                       </Typography>
                     </div>
-                    <div style={{
-                      width: '20%'
-                    }}>
+                    <div
+                      style={{
+                        width: "20%",
+                      }}
+                    >
                       <Typography variant="subtitle3">
                         {expense.created_at}
                       </Typography>
                     </div>
-                    <div style={{
-                      // width: '20%'
-                    }}>
+                    <div
+                      style={
+                        {
+                          // width: '20%'
+                        }
+                      }
+                    >
                       <Typography variant="subtitle3">
                         ${expense.cost}
                       </Typography>
                     </div>
                     <div>
                       <IconButton
-                        onClick={(event) =>
-                          handleMenuOpen(event, expense.id)
-                        }
+                        onClick={(event) => handleMenuOpen(event, expense.id)}
                       >
                         <MoreVertIcon />
                       </IconButton>
@@ -310,9 +310,7 @@ export default function ExpensesPage() {
                           Edit
                         </MenuItem>
                         <MenuItem
-                          onClick={() =>
-                            handleDeleteExpense(selectedExpenseId)
-                          }
+                          onClick={() => handleDeleteExpense(selectedExpenseId)}
                         >
                           Delete
                         </MenuItem>
@@ -324,10 +322,7 @@ export default function ExpensesPage() {
             </Stack>
           </Stack>
 
-          <Stack
-            direction="column"
-            sx={{ width: "20%", height: "100%"}}
-          >
+          <Stack direction="column" sx={{ width: "20%", height: "100%" }}>
             <Typography variant="h4">Help and documentation</Typography>
             <Typography variant="p">
               You can quickly and easily generate highly customizable reports
