@@ -15,6 +15,7 @@ import {
   Box,
   Divider,
   Icon,
+  Stack,
 } from "@mui/material";
 
 import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
@@ -27,6 +28,11 @@ import { addUser } from "../state/redux/actions/crew/crewActions";
 import { useNavigate } from "react-router-dom";
 import Iconify from "../components/iconify/Iconify";
 import { storage } from "../components/firebase/firebase-config";
+import {
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 
 const AddCrewForm = () => {
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
@@ -210,43 +216,56 @@ const AddCrewForm = () => {
   // };
 
   const handleAddUser = () => {
-    console.log('Image Selected True')
+    console.log('Image Selected True');
+    
     if (selectedImage) {
-      const storageRef = storage.ref(`images/${selectedImage.name}`);
-      console.log(storageRef)
-      storageRef.put(selectedImage).then((snapshot) => {
-        snapshot.ref.getDownloadURL().then((downloadURL) => {
-          console.log(downloadURL)
-          console.log('Image Uploaed step')
-          // Create the user object with the download URL
-          const newUser = {
-            fullName: userData.fullName,
-            phone: userData.phone,
-            email: userData.email,
-            address: userData.address,
-            street: userData.street,
-            state: userData.state,
-            city: userData.city,
-            zip: userData.zip,
-            role: userData.role,
-            contractType: userData.contractType,
-            cost: userData.cost,
-            markup: userData.markup,
-            unitPrice: userData.unitPrice,
-            userId: userData.userId,
-            image: downloadURL, // Add the image URL
-          };
+      const imageRef = storageRef(storage, `images/${selectedImage.name}`);
+      
+      uploadBytes(imageRef, selectedImage)
+        .then((snapshot) => {
+          getDownloadURL(snapshot.ref)
+            .then((downloadURL) => {
+              console.log('Image Uploaded Successfully');
+              console.log(downloadURL)
+              
+              // Create the user object with the download URL
+              const newUser = {
+                fullName: userData.fullName,
+                phone: userData.phone,
+                email: userData.email,
+                address: userData.address,
+                street: userData.street,
+                state: userData.state,
+                city: userData.city,
+                zip: userData.zip,
+                role: userData.role,
+                contractType: userData.contractType,
+                cost: userData.cost,
+                markup: userData.markup,
+                unitPrice: userData.unitPrice,
+                userId: userData.userId,
+                profileUrl: downloadURL // Add the image URL
+              };
+              console.log(newUser)
   
-          // Dispatch the new user to the Redux store
-          // dispatch(addUser(newUser));
+              // Dispatch the new user to the Redux store
+              dispatch(addUser(newUser));
   
-          // Navigate to Home Page
-          // navigate("/dashboard/user");
+              // Navigate to Home Page
+              navigate("/dashboard/user");
+            })
+            .catch((error) => {
+              console.error('Error getting download URL:', error);
+              // Handle error, e.g., show an error message to the user
+            });
+        })
+        .catch((error) => {
+          console.error('Error uploading image:', error);
+          // Handle error, e.g., show an error message to the user
         });
-      });
     } else {
       // Handle the case where no image is selected
-      console.log('No Image Selected')
+      console.log('No Image Selected');
       const newUser = {
         fullName: userData.fullName,
         phone: userData.phone,
@@ -265,12 +284,14 @@ const AddCrewForm = () => {
       };
   
       // Dispatch the new user to the Redux store
-      // dispatch(addUser(newUser));
+      dispatch(addUser(newUser));
   
       // Navigate to Home Page
-      // navigate("/dashboard/user");
+      navigate("/dashboard/user");
     }
   };
+  
+          
   
 
   const handleEmploymentTypeChange = (event) => {
@@ -632,6 +653,9 @@ const handleImageChange = (event) => {
   }}
   ref={imageInputRef}
 />
+<Stack justifyContent='center' alignItems='center' flexDirection='column' sx={{marginTop: '20px', marginBottom: '50px'}}>
+  <Typography variant='h4' sx={{marginBottom: '30px'}}>Select Profile Image</Typography>
+
 <Button
   variant="contained"
   component="label"
@@ -655,6 +679,8 @@ const handleImageChange = (event) => {
     style={{ maxWidth: "100px", maxHeight: "100px" }}
   />
 )}
+</Stack>
+
 
 
       <Divider sx={{ mb: "25px", mt: "31px" }} />

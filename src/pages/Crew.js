@@ -255,8 +255,8 @@ export default function CrewPage() {
                       role,
                       email,
                       phone_number,
-                      // avatarUrl,
-                      zip,
+                      profileUrl,
+                      // zip,
                     } = row;
                     const selectedUser = selected.indexOf(name) !== -1;
 
@@ -278,7 +278,7 @@ export default function CrewPage() {
                             alignItems="center"
                             spacing={2}
                           >
-                            {/* <Avatar alt={name} src={avatarUrl} /> */}
+                            <Avatar alt={name} src={profileUrl} />
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>
@@ -292,6 +292,9 @@ export default function CrewPage() {
                         <TableCell align="left">
                         <TableCell align="left">{phone_number}</TableCell>
                         </TableCell>
+
+
+                        {/* To be removed */}
 
                         {/* <TableCell align="left"> */}
                           {/* <Label
@@ -312,6 +315,8 @@ export default function CrewPage() {
                             <Iconify icon={"eva:more-vertical-fill"} />
                           </IconButton>
                         </TableCell> */}
+
+                         {/* To be removed */}
                       </TableRow>
                     );
                   })}
