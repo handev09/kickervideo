@@ -23,7 +23,7 @@ import {
   BlogPostsSort,
   ExpensesSearch,
 } from "../sections/@dashboard/expenses";
-import POSTS from "../_mock/blog";
+// import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";

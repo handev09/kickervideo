@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef  } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import {
   Typography,
@@ -50,8 +50,8 @@ const AddCrewForm = () => {
   const [markup, setMarkup] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
 
-  const storedUser = localStorage.getItem('user');
-  const user = useSelector(state => state.login.user);
+  const storedUser = localStorage.getItem("user");
+  const user = useSelector((state) => state.login.user);
   console.log(user.userId);
   const user_id = user.userId;
 
@@ -186,48 +186,19 @@ const AddCrewForm = () => {
     }));
   };
 
-  // const handleAddUser = () => {
-  //   // Create the budget object
-  //   // console.log(budgetData.client);
-  //   console.log(selectedImage)
-  //   const newUser = {
-  //     fullName: userData.fullName,
-  //     phone: userData.phone,
-  //     email: userData.email,
-  //     address: userData.address,
-  //     street: userData.street,
-  //     state: userData.state,
-  //     city: userData.city,
-  //     zip: userData.zip,
-  //     role: userData.role,
-  //     contractType: userData.contractType,
-  //     cost: userData.cost,
-  //     markup: userData.markup,
-  //     unitPrice: userData.unitPrice,
-  //     userId: userData.userId,
-  //     // image: selectedImage,
-  //   };
-
-  //   // Dispatch the new user tothe Redux store
-  //   dispatch(addUser(newUser));
-
-  //   //Navigate to Home Page
-  //   navigate("/dashboard/user");
-  // };
-
   const handleAddUser = () => {
-    console.log('Image Selected True');
-    
+    console.log("Image Selected True");
+
     if (selectedImage) {
       const imageRef = storageRef(storage, `images/${selectedImage.name}`);
-      
+
       uploadBytes(imageRef, selectedImage)
         .then((snapshot) => {
           getDownloadURL(snapshot.ref)
             .then((downloadURL) => {
-              console.log('Image Uploaded Successfully');
-              console.log(downloadURL)
-              
+              console.log("Image Uploaded Successfully");
+              console.log(downloadURL);
+
               // Create the user object with the download URL
               const newUser = {
                 fullName: userData.fullName,
@@ -244,28 +215,28 @@ const AddCrewForm = () => {
                 markup: userData.markup,
                 unitPrice: userData.unitPrice,
                 userId: userData.userId,
-                profileUrl: downloadURL // Add the image URL
+                profileUrl: downloadURL, // Add the image URL
               };
-              console.log(newUser)
-  
+              console.log(newUser);
+
               // Dispatch the new user to the Redux store
               dispatch(addUser(newUser));
-  
+
               // Navigate to Home Page
               navigate("/dashboard/user");
             })
             .catch((error) => {
-              console.error('Error getting download URL:', error);
+              console.error("Error getting download URL:", error);
               // Handle error, e.g., show an error message to the user
             });
         })
         .catch((error) => {
-          console.error('Error uploading image:', error);
+          console.error("Error uploading image:", error);
           // Handle error, e.g., show an error message to the user
         });
     } else {
       // Handle the case where no image is selected
-      console.log('No Image Selected');
+      console.log("No Image Selected");
       const newUser = {
         fullName: userData.fullName,
         phone: userData.phone,
@@ -282,17 +253,14 @@ const AddCrewForm = () => {
         unitPrice: userData.unitPrice,
         userId: userData.userId,
       };
-  
+
       // Dispatch the new user to the Redux store
       dispatch(addUser(newUser));
-  
+
       // Navigate to Home Page
       navigate("/dashboard/user");
     }
   };
-  
-          
-  
 
   const handleEmploymentTypeChange = (event) => {
     setEmploymentType(event.target.value);
@@ -308,13 +276,12 @@ const AddCrewForm = () => {
   // Image Upload related function
 
   const [selectedImage, setSelectedImage] = useState(null);
-const imageInputRef = useRef(null);
+  const imageInputRef = useRef(null);
 
-const handleImageChange = (event) => {
-  const file = event.target.files[0];
-  setSelectedImage(file);
-};
-
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedImage(file);
+  };
 
   const handleDropdownOpen = () => {
     setIsDropdownOpen(true);
@@ -331,22 +298,27 @@ const handleImageChange = (event) => {
     <form>
       {/* Title */}
       <Container>
-      <Typography variant="h4" gutterBottom sx={{marginBottom: '30px'}}>
-        Add Crew
-      </Typography>
+        <Typography variant="h4" gutterBottom sx={{ marginBottom: "30px" }}>
+          Add Crew
+        </Typography>
       </Container>
-      
 
       {/* Subtitle */}
       <Container>
-        <Box sx={{borderBottom: 'solid 5px #E05858FF', maxWidth: '25%', marginBottom: '20px', display: 'flex', gap: '10px'}}>
-          <Iconify icon="ri:checkbox-circle-line" color="#E05858FF"/>
-        <Typography variant="h6" gutterBottom sx={{color: '#E05858FF'}}>
-        Profile Details
-      </Typography>
+        <Box
+          sx={{
+            borderBottom: "solid 5px #E05858FF",
+            maxWidth: "25%",
+            marginBottom: "20px",
+            display: "flex",
+            gap: "10px",
+          }}
+        >
+          <Iconify icon="ri:checkbox-circle-line" color="#E05858FF" />
+          <Typography variant="h6" gutterBottom sx={{ color: "#E05858FF" }}>
+            Profile Details
+          </Typography>
         </Box>
-
-      
       </Container>
 
       <FormControl
@@ -645,43 +617,52 @@ const handleImageChange = (event) => {
       </Container>
 
       <input
-  type="file"
-  accept="image/*"
-  onChange={handleImageChange}
-  style={{
-    display: "none",
-  }}
-  ref={imageInputRef}
-/>
-<Stack justifyContent='center' alignItems='center' flexDirection='column' sx={{marginTop: '20px', marginBottom: '50px'}}>
-  <Typography variant='h4' sx={{marginBottom: '30px'}}>Select Profile Image</Typography>
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        style={{
+          display: "none",
+        }}
+        ref={imageInputRef}
+      />
+      <Stack
+        justifyContent="center"
+        alignItems="center"
+        flexDirection="column"
+        sx={{ marginTop: "20px", marginBottom: "50px" }}
+      >
+        <Typography variant="h4" sx={{ marginBottom: "30px" }}>
+          Select Profile Image
+        </Typography>
 
-<Button
-  variant="contained"
-  component="label"
-  sx={{ backgroundColor: "#E05858FF", color: "#fff", borderRadius: "3px" }}
->
-  Upload Image
-  <input
-    type="file"
-    accept="image/*"
-    onChange={handleImageChange}
-    style={{
-      display: "none",
-    }}
-    ref={imageInputRef}
-  />
-</Button>
-{selectedImage && (
-  <img
-    src={URL.createObjectURL(selectedImage)}
-    alt="Selected"
-    style={{ maxWidth: "100px", maxHeight: "100px" }}
-  />
-)}
-</Stack>
-
-
+        <Button
+          variant="contained"
+          component="label"
+          sx={{
+            backgroundColor: "#E05858FF",
+            color: "#fff",
+            borderRadius: "3px",
+          }}
+        >
+          Upload Image
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            style={{
+              display: "none",
+            }}
+            ref={imageInputRef}
+          />
+        </Button>
+        {selectedImage && (
+          <img
+            src={URL.createObjectURL(selectedImage)}
+            alt="Selected"
+            style={{ maxWidth: "100px", maxHeight: "100px" }}
+          />
+        )}
+      </Stack>
 
       <Divider sx={{ mb: "25px", mt: "31px" }} />
 

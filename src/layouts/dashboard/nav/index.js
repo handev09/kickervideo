@@ -3,7 +3,7 @@
 import PropTypes from "prop-types";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Box,  Drawer } from "@mui/material";
+import { Box,  Drawer, Stack } from "@mui/material";
 
 // hooks
 import useResponsive from "../../../hooks/useResponsive";
@@ -49,21 +49,37 @@ export default function Nav({ openNav, onCloseNav }) {
   const renderContent = (
     <Scrollbar
       sx={{
-        height: 1,
+        // height: 1,
+        height: "100vh",
         display: "flex",
           flexDirection: "column",
+          // backgroundColor: '#000',
           justifyContent: "space-between",
         "& .simplebar-content": {
-          height: 1,
-          display: "flex",
+          // height: 1,
+          display: "flex",                                                                                                    
           flexDirection: "column",
           // justifyContent: "space-around",
           // gap: "50px"
         },
       }}
     >
-      <Box sx={{ px: 2.5, py: 3, display: "inline-flex"}}>
+      <Stack 
+      // display: "flex",
+      sx={{
+        display: 'flex',
+            flexDirection: "column",
+            backgroundColor: '#f3f3f3',
+            height: "100vh",
+
+            justifyContent: "space-between"
+          }}>
+      <Box sx={{py: 4, display: "flex", flexDirection: 'column'}}>
+        <Box sx={{px: 2.5, mb: 6}}>
+
         <Logo />
+        </Box>
+        <NavSection data={navConfig} />
       </Box>
 
       {/* <Box sx={{ mb: 5, mx: 2.5 }}>
@@ -90,16 +106,16 @@ export default function Nav({ openNav, onCloseNav }) {
 
       {/* <Box  /> */}
 
-      <Box sx={{ my: 1.8 }} />
+      
 
-      <NavSection data={navConfig} />
 
       
 
-      {/* <Box sx={{ flexGrow: 40 }} /> */}
-      <Box sx={{ my: 20}} />
+ 
 
       <NavSection data={navConfigBottom} />
+      </Stack>
+      
     </Scrollbar>
   );
 
@@ -109,6 +125,7 @@ export default function Nav({ openNav, onCloseNav }) {
       sx={{
         flexShrink: { lg: 0 },
         width: { lg: NAV_WIDTH },
+        // backgroundColor: '#f3f3f3'
       }}
     >
       {isDesktop ? (

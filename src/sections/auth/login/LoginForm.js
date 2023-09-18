@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 // @mui
 import {
   Link,
@@ -13,38 +14,34 @@ import {
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
-import { useDispatch, useSelector } from "react-redux";
 import { loginRequest } from "../../../state/redux/actions/users/loginUser";
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
+  
+  
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
 
   const [showPassword, setShowPassword] = useState(false);
-  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const loginError = useSelector((state) => state.login.error);
-  const isAuthenticated = useSelector(state => state.login.isLoggedIn);
-  const user = useSelector(state => state.login.user);
+  const isAuthenticated = useSelector((state) => state.login.isLoggedIn);
+  const user = useSelector((state) => state.login.user);
 
-  
+  // const user = localStorage.getItem('user')
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await dispatch(loginRequest(email, password));
-  
-      if (isAuthenticated) {
-        // Navigate to the dashboard
-        localStorage.setItem("user", JSON.stringify(user));
-        navigate("/dashboard", { replace: true });
-      } else {
-        // Handle login failure, if needed
-      }
-    } catch (error) {
-      // Handle any errors that might occur during dispatch or API call
-      console.error("Error during login:", error);
+    dispatch(loginRequest(email, password));
+    if (isAuthenticated) {
+      // Navigate to the dashboard
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/dashboard", { replace: true });
+    } else {
+      // Handle login failure, if needed
     }
   };
 
