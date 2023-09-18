@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,13 +12,19 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
-  TextField,
+  TextField
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
 } from "@mui/icons-material";
 import MyDropdown from "../components/dropdown/DropDown";
 import { addExpense } from "../state/redux/actions/expense/expenseActions";
+import {
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "../components/firebase/firebase-config";
 
 const CreateNewExpense = ({ openDialog, onClose }) => {
   const [itemName, setItemName] = useState("");
@@ -33,6 +39,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
     total: 0,
     date: "",
   });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const imageInputRef = useRef(null);
 
   const dropdownOptions = [
     "Option 1",
@@ -42,12 +50,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
     "Option 5",
   ];
 
-  const statusOptions = [
-    "Draft",
-    "Active",
-    "Sent",
-    "Paid",
-  ];
+  const statusOptions = ["Draft", "Active", "Sent", "Paid"];
   const [reimburse, setReimburse] = useState("");
   const [job, setJob] = useState("");
   const [status, setStatus] = useState("");
@@ -57,32 +60,56 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const user_id = user.userId;
 
   const handleClos = () => {
-    const newItem = {
-      id: uuidv4(),
-      name: itemName,
-      description: description,
-      reimburse: reimburse,
-      job: job,
-      cost: parseFloat(cost),
-      userId: user_id,
-      createdAt: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-      status: status,
-      createdBy: createdBy
-    };
+    if (selectedImage) {
+      const imageRef = storageRef(storage, `expenses/${selectedImage.name}`);
 
-    dispatch(addExpense(newItem));
-    onClose(newItem);
-    setItemName(""); // Reset name state
-    setDescription(""); // Reset description state
-    setJob(""); // Reset optionValue state
-    // setUnitPrice(""); // Reset unitPrice state
-    setCost(""); // Reset cost state
-    setCreatedBy(""); // Reset cost state
-    // setMarkup("");
+      uploadBytes(imageRef, selectedImage)
+        .then((snapshot) => {
+          getDownloadURL(snapshot.ref)
+            .then((downloadURL) => {
+              console.log("Image Uploaded Successfully");
+              console.log(downloadURL);
+              const newItem = {
+                id: uuidv4(),
+                name: itemName,
+                description: description,
+                reimburse: reimburse,
+                job: job,
+                cost: parseFloat(cost),
+                userId: user_id,
+                createdAt: new Date().toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                }),
+                status: status,
+                createdBy: createdBy,
+                receipt: downloadURL
+              };
+
+              dispatch(addExpense(newItem));
+              onClose(newItem);
+              setItemName(""); // Reset name state
+              setDescription(""); // Reset description state
+              setJob(""); // Reset optionValue state
+              // setUnitPrice(""); // Reset unitPrice state
+              setCost(""); // Reset cost state
+              setCreatedBy(""); // Reset cost state
+              // setMarkup("");
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+        });
+    }
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedImage(file);
   };
 
   const handleNormalClose = () => {
@@ -208,7 +235,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
 
             <Container
               sx={{
-                marginBottom: 8,
+                marginBottom: 4,
                 width: "100%",
                 display: "flex",
                 flexDirection: "row",
@@ -258,6 +285,46 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 options={statusOptions}
                 onChange={(option) => setStatus(option)}
               />
+            </Container>
+
+            <Container
+              // justifyContent="center"
+              // alignItems="center"
+              // flexDirection="column"
+              sx={{ marginTop: "0", marginBottom: "50px" }}
+            >
+              <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
+                Receipt
+              </Typography>
+
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  backgroundColor: "#E05858FF",
+                  color: "#fff",
+                  borderRadius: "3px",
+                  maxWidth: '20%'
+                }}
+              >
+                Upload Receipt
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{
+                    display: "none",
+                  }}
+                  ref={imageInputRef}
+                />
+              </Button>
+              {selectedImage && (
+                <img
+                  src={URL.createObjectURL(selectedImage)}
+                  alt="Selected"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              )}
             </Container>
 
             <DialogActions sx={{ marginRight: "40px" }}>

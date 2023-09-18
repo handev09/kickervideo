@@ -29,9 +29,9 @@ export default function Router() {
       children: [
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
-        { path: 'user', element: <CrewPage /> },
-        { path: 'products', element: <ItemsPage /> },
-        { path: 'blog', element: <ExpensesPage /> },
+        { path: 'crew', element: <CrewPage /> },
+        { path: 'items', element: <ItemsPage /> },
+        { path: 'expenses', element: <ExpensesPage /> },
         { path: 'addcrew', element: <AddCrewForm /> },
         { path: 'create-item', element: <CreateNewLineItem /> },
         { path: 'drop-down', element: <MyDropdown /> },

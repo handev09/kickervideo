@@ -45,12 +45,12 @@ import Scrollbar from "../components/scrollbar";
 // sections
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/crew";
 // mock
-import USERLIST from "../_mock/user";
-import { useSelector,useDispatch } from "react-redux";
+// import USERLIST from "../_mock/user";
+import { useSelector, useDispatch } from "react-redux";
 // import { updateUser } from '../redux/actions/authActions';
 
-import {updateUser} from '../state/redux/actions/users/updateUserAction'
-import {fetchUserBudgets} from '../state/redux/actions/budget/updateUserBudgetsAction'
+import { updateUser } from "../state/redux/actions/users/updateUserAction";
+import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
 import StateIndicator from "../components/status-indicator/status";
 
 // ----------------------------------------------------------------------
@@ -93,7 +93,8 @@ function applySortFilter(array, comparator, query) {
   if (query) {
     return filter(
       array,
-      (_user) => _user.client_name.toLowerCase().indexOf(query.toLowerCase()) !== -1
+      (_user) =>
+        _user.client_name.toLowerCase().indexOf(query.toLowerCase()) !== -1
     );
   }
   return stabilizedThis.map((el) => el[0]);
@@ -166,14 +167,14 @@ export default function DashboardAppPage() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  // const handleSelectAllClick = (event) => {
+  //   if (event.target.checked) {
+  //     const newSelecteds = USERLIST.map((n) => n.name);
+  //     setSelected(newSelecteds);
+  //     return;
+  //   }
+  //   setSelected([]);
+  // };
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
@@ -208,7 +209,7 @@ export default function DashboardAppPage() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - budgets.length) : 0;
 
   const filteredUsers = applySortFilter(
     budgets,
@@ -227,16 +228,15 @@ export default function DashboardAppPage() {
   //   }
   // }, [user]);
 
-
   useEffect(() => {
     // Check if the user is not logged in
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       // Redirect to the login page
       // navigate('/login');
     } else {
       // Retrieve user data from local storage
-      const storedUser = localStorage.getItem('user');
+      const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
       const id = parsedUser.userId; // Access the userId property
       dispatch(fetchUserBudgets(id));
@@ -251,7 +251,6 @@ export default function DashboardAppPage() {
       }
     }
   }, [dispatch, isAuthenticated, navigate]);
-
 
   // useEffect(() => {
   //   if (user && user.id) {
@@ -447,7 +446,7 @@ export default function DashboardAppPage() {
                 rowCount={budgets.length}
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
+                // onSelectAllClick={handleSelectAllClick}
               />
               <TableBody>
                 {filteredUsers
@@ -461,7 +460,7 @@ export default function DashboardAppPage() {
                       subtotal,
                       internalNotes,
                       tax,
-                      status
+                      status,
                     } = row;
                     const selectedBudget = selected.indexOf(client_name) !== -1;
 
@@ -499,7 +498,23 @@ export default function DashboardAppPage() {
                         <TableCell align="left">{project_title}</TableCell>
 
                         <TableCell align="left">
-                        <StateIndicator status={status} />
+                          <StateIndicator
+                            status={
+                              status == "draft"
+                                ? "Draft"
+                                : status == "awaitingresponse"
+                                ? "Awaiting Response"
+                                : status == "approved"
+                                ? "Approved"
+                                : status == "changesrequested"
+                                ? "Changes Requested"
+                                : status == "converted"
+                                ? "Converted"
+                                : status == "archived"
+                                ? "Archived"
+                                : "Status"
+                            }
+                          />
                         </TableCell>
                         <TableCell align="left">{`$${subtotal}`}</TableCell>
 
@@ -560,10 +575,6 @@ export default function DashboardAppPage() {
             onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
-
-
-
-       
       </Container>
 
       <Popover

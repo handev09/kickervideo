@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
-import account from '../../../_mock/account';
+// import account from '../../../_mock/account';
 import { useNavigate } from "react-router-dom";
 
 import { useSelector } from 'react-redux';
@@ -55,8 +55,8 @@ export default function AccountPopover() {
         onClick={handleOpen}
         sx={{
           padding: 0,
-          width: 34,
-          height: 34,
+          width: 24,
+          height: 24,
           ...(open && {
             bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.focusOpacity),
           }),

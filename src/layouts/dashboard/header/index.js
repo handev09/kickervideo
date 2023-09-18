@@ -66,7 +66,7 @@ export default function Header({ onOpenNav }) {
           direction="row"
           alignItems="center"
           spacing={{
-            xs: 0.5,
+            xs: 0.8,
             sm: 1,
           }}
         >

@@ -89,10 +89,12 @@ export default function Reports() {
   };
 
   // Replace dataForListGrowth with all budgets data
-const dataForListGrowth = budgets;
+  const dataForListGrowth = budgets;
 
-// Replace dataForCumulative with data that has any status other than "draft"
-const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
+  // Replace dataForCumulative with data that has any status other than "draft"
+  const dataForCumulative = budgets.filter(
+    (budget) => budget.status !== "draft"
+  );
 
   const data = selectedTab === 0 ? dataForListGrowth : dataForCumulative;
 
@@ -139,8 +141,8 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
   //   }
   // });
 
- // Apply sorting to the data
- const sortedData = sortData(data, sorting.column, sorting.direction);
+  // Apply sorting to the data
+  const sortedData = sortData(data, sorting.column, sorting.direction);
 
   useEffect(() => {
     // Check if the user is not logged in
@@ -228,7 +230,8 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
 
           // Update status totals
           if (totals[budget.status]) {
-            totals[budget.status] = parseFloat(totals[budget.status])+parseFloat(budget.total);
+            totals[budget.status] =
+              parseFloat(totals[budget.status]) + parseFloat(budget.total);
 
             console.log(totals[budget.status]);
           } else {
@@ -236,7 +239,8 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
           }
 
           // Update total sum
-          totals["total"] = parseFloat((totals["total"] || 0)) + parseFloat(budget.total);
+          totals["total"] =
+            parseFloat(totals["total"] || 0) + parseFloat(budget.total);
         }
       });
 
@@ -272,12 +276,33 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
                 sx={{
                   backgroundColor: STATUS_COLORS[status.toLowerCase()],
                   padding: "10px",
-                  width: "50%",
+                  width: "40%",
+                  // textAlign: 'center',
+                  // alignItems: 'center',
+                  // display: 'flex',
+                  // flexDirection: 'row'
+                  // justifyContent: 'center'
                 }}
               >
-                {count}
+                <Typography variant="p" sx={{ marginLeft: "40px" }}>
+                  {count}
+                </Typography>
               </Badge>
-              <Typography variant="p">{status.toLowerCase()}</Typography>
+              <Typography variant="p" sx={{ marginLeft: "20px" }}>
+                {status == "draft"
+                  ? "Draft"
+                  : status == "awaitingresponse"
+                  ? "Awaiting Response"
+                  : status == "approved"
+                  ? "Approved"
+                  : status == "changesrequested"
+                  ? "Changes Requested"
+                  : status == "converted"
+                  ? "Converted"
+                  : status == "archived"
+                  ? "Archived"
+                  : "Status"}
+              </Typography>
             </Box>
             <Typography variant="p">${statusTotal[status] || 0}.00</Typography>
           </Stack>
@@ -340,12 +365,16 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
                     sx={{
                       backgroundColor: STATUS_COLORS["total"],
                       padding: "10px",
-                      width: "50%",
+                      width: "40%",
                     }}
                   >
-                    {totalBudgets}
+                    <Typography variant="p" sx={{ marginLeft: "40px" }}>
+                      {totalBudgets}
+                    </Typography>
                   </Badge>
-                  <Typography variant="p">total</Typography>
+                  <Typography variant="p" sx={{ marginLeft: "20px" }}>
+                    Total
+                  </Typography>
                 </Box>
                 <Typography variant="p">${totalSum}.00</Typography>
               </Stack>
@@ -489,7 +518,21 @@ const dataForCumulative = budgets.filter((budget) => budget.status !== "draft");
                     <TableCell>{row.client_name}</TableCell>
                     <TableCell>{row.created_at}</TableCell>
                     <TableCell>{row.budget_num}</TableCell>
-                    <TableCell>{row.status}</TableCell>
+                    <TableCell>
+                      {row.status == "draft"
+                        ? "Draft"
+                        : row.status == "awaitingresponse"
+                        ? "Awaiting Response"
+                        : row.status == "approved"
+                        ? "Approved"
+                        : row.status == "changesrequested"
+                        ? "Changes Requested"
+                        : row.status == "converted"
+                        ? "Converted"
+                        : row.status == "archived"
+                        ? "Archived"
+                        : "Status"}
+                    </TableCell>
                     {/* <TableCell>{row.open}</TableCell> */}
                     <TableCell>Yes</TableCell>
                   </TableRow>

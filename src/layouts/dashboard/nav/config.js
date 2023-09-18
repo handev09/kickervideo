@@ -13,17 +13,17 @@ const navConfig = [
   },
   {
     title: 'crew list',
-    path: '/dashboard/user',
+    path: '/dashboard/crew',
     icon: icon('ic_crew'),
   },
   {
     title: 'items',
-    path: '/dashboard/products',
+    path: '/dashboard/items',
     icon: icon('ic_items'),
   },
   {
     title: 'expenses',
-    path: '/dashboard/blog',
+    path: '/dashboard/expenses',
     icon: icon('ic_expenses'),
   },
   {

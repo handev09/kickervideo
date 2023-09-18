@@ -30,7 +30,7 @@ import Scrollbar from "../components/scrollbar";
 // sections
 import { UserListHead, UserListToolbar } from "../sections/@dashboard/crew";
 // mock
-import USERLIST from "../_mock/user";
+// import USERLIST from "../_mock/user";
 import { useSelector,useDispatch } from "react-redux";
 
 import {fetchUserCrew} from '../state/redux/actions/crew/fetchUserCrew'
@@ -117,14 +117,14 @@ export default function CrewPage() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
+  // const handleSelectAllClick = (event) => {
+  //   if (event.target.checked) {
+  //     const newSelecteds = USERLIST.map((n) => n.name);
+  //     setSelected(newSelecteds);
+  //     return;
+  //   }
+  //   setSelected([]);
+  // };
 
   useEffect(() => {
     // Check if the user is not logged in
@@ -140,12 +140,6 @@ export default function CrewPage() {
       dispatch(fetchUserCrew(id));
       console.log(members);
 
-      // if (storedUser) {
-      //   const parsedUser = JSON.parse(storedUser);
-
-      //   // Dispatch the updateUser action to update the user state in Redux store
-      //   dispatch(updateUser(parsedUser));
-      // }
     }
   }, [dispatch,navigate]);
 
@@ -182,7 +176,7 @@ export default function CrewPage() {
   };
 
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - USERLIST.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - members.length) : 0;
 
   const filteredUsers = applySortFilter(
     members,
@@ -243,7 +237,7 @@ export default function CrewPage() {
                 rowCount={users.length}
                 numSelected={selected.length}
                 onRequestSort={handleRequestSort}
-                onSelectAllClick={handleSelectAllClick}
+                // onSelectAllClick={handleSelectAllClick}
               />
               <TableBody>
                 {filteredUsers
