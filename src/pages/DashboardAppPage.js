@@ -279,7 +279,7 @@ export default function DashboardAppPage() {
   console.log(loggedInUser)
 
 
-  if(user){
+
     if (user.isPaid === false ) {
       // If user is not paid, display a message and a button
       return (
@@ -309,9 +309,7 @@ export default function DashboardAppPage() {
         </>
       );
     } 
-  } else {
-    navigate('/login')
-  }
+  
 
   
 

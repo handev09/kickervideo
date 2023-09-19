@@ -205,11 +205,11 @@ const AddBudget = () => {
 
   //follow up for case where service options reset to default values when the selected option is changed
 
-  useEffect(() => {
-    const subtotal = dialogData.reduce((sum, item) => sum + item.unitPrice, 0);
-    setBudgetSubTotal(subtotal);
-    setCustomDropdownUnitPrice(customDropdownUnitPrice);
-  }, [dialogData]);
+  // useEffect(() => {
+  //   const subtotal = dialogData.reduce((sum, item) => sum + item.unitPrice, 0);
+  //   setBudgetSubTotal(subtotal);
+  //   setCustomDropdownUnitPrice(customDropdownUnitPrice);
+  // }, [dialogData]);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const handleDropdownOpen = () => {
