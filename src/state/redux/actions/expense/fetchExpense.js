@@ -3,8 +3,8 @@ import axios from "axios";
 export const fetchExpense = (id) => async (dispatch) => {
   try {
     console.log("Fetching expenses...");
-    const response = await axios.get(`http://localhost:3001/api/v1/expense/fetch?userId=${id}`);
-    // const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/expense/fetch?userId=${userId}`);
+    // const response = await axios.get(`http://localhost:3001/api/v1/expense/fetch?userId=${id}`);
+    const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/expense/fetch?userId=${id}`);
     const expenses = response.data;
     
     console.log("Fetched expenses:", expenses); // Log the fetched expenses

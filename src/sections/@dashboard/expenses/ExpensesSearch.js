@@ -1,34 +1,29 @@
 import PropTypes from 'prop-types';
-
-// @mui
 import { styled } from '@mui/material/styles';
-import { Autocomplete, InputAdornment, Popper, TextField } from '@mui/material';
-// components
+import { Autocomplete, InputAdornment, TextField,Popper } from '@mui/material';
 import Iconify from '../../../components/iconify';
-
-// ----------------------------------------------------------------------
 
 const StyledPopper = styled((props) => <Popper placement="bottom-start" {...props} />)({
   width: '280px !important',
 });
 
-// ----------------------------------------------------------------------
-
 ExpensesSearch.propTypes = {
-  posts: PropTypes.array.isRequired,
+  expenses: PropTypes.array.isRequired,
 };
 
-export default function ExpensesSearch({ expenses }) {
-  console.log(expenses)
+export default function ExpensesSearch({ expenses, onSearch }) {
   return (
     <Autocomplete
       sx={{ width: 280 }}
       autoHighlight
       popupIcon={null}
-      PopperComponent={StyledPopper}
       options={expenses}
       getOptionLabel={(expense) => expense.expense_name}
       isOptionEqualToValue={(option, value) => option.expense_num === value.expense_num}
+      onInputChange={(event, value) => {
+        // Call the onSearch callback with the current search value
+        onSearch(value);
+      }}
       renderInput={(params) => (
         <TextField
           {...params}

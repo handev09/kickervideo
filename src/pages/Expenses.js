@@ -20,7 +20,6 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Iconify from "../components/iconify";
 import { useSelector } from "react-redux";
 import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
-// import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
@@ -35,7 +34,9 @@ export default function ExpensesPage() {
   const [editedExpenseData, setEditedExpenseData] = useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
-  const [sortedExpenses, setSortedExpenses] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [enteredByFilter, setEnteredByFilter] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -44,7 +45,6 @@ export default function ExpensesPage() {
     } else {
       const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
-      console.log("ParsedUser", parsedUser)
       const id = parsedUser.userId;
       dispatch(fetchExpense(id));
     }
@@ -55,12 +55,40 @@ export default function ExpensesPage() {
 
   useEffect(() => {
     setExpenses(expensez);
-    setSortedExpenses(expensez);
   }, [expensez]);
 
   const handleMenuOpen = (event, expenseId) => {
     setAnchorEl(event.currentTarget);
     setSelectedExpenseId(expenseId);
+  };
+
+  const handleDialogData = (data) => {	
+    if (data.name && data.description && data.reimburse) {	
+      if (editedExpenseData) {	
+        const updatedExpenses = expenses.map((expense) =>	
+          expense.id === editedExpenseData.id	
+            ? { ...editedExpenseData, ...data }	
+            : expense	
+        );	
+        setExpenses(updatedExpenses);	
+        setIsEditExpense(false);	
+      } else {	
+        setExpenses((prevExpenses) => [	
+          ...prevExpenses,	
+          {	
+            id: data.id,	
+            name: data.name,	
+            description: data.description,	
+            optionValue: data.optionValue,	
+            createdAt: new Date().toLocaleDateString(),	
+            total: data.cost,	
+          },	
+        ]);	
+      }	
+    }	
+    setIsDialogOpen(false);	
+    setIsEditExpense(false);	
+    setEditedExpenseData(null);	
   };
 
   const handleMenuClose = () => {
@@ -83,81 +111,51 @@ export default function ExpensesPage() {
     label: status,
   }));
 
-  const uniqueEnteredByVlaues = [
+  const uniqueEnteredByValues = [
     ...new Set(expensez.map((expense) => expense.createdBy)),
   ];
 
-  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
+  const enteredByOptions = uniqueEnteredByValues.map((enteredBy) => ({
     value: enteredBy,
     label: enteredBy,
   }));
 
   const handleStatusSortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.status === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
+    setStatusFilter(selectedVal);
   };
 
   const handleEnteredBySortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.createdBy === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
+    setEnteredByFilter(selectedVal);
   };
 
-  const handleDialogData = (data) => {
-    if (data.name && data.description && data.reimburse) {
-      if (editedExpenseData) {
-        const updatedExpenses = expenses.map((expense) =>
-          expense.id === editedExpenseData.id
-            ? { ...editedExpenseData, ...data }
-            : expense
-        );
-        setExpenses(updatedExpenses);
-        setIsEditExpense(false);
-      } else {
-        setExpenses((prevExpenses) => [
-          ...prevExpenses,
-          {
-            id: data.id,
-            name: data.name,
-            description: data.description,
-            optionValue: data.optionValue,
-            createdAt: new Date().toLocaleDateString(),
-            total: data.cost,
-          },
-        ]);
-      }
-    }
-    setIsDialogOpen(false);
-    setIsEditExpense(false);
-    setEditedExpenseData(null);
-  };
+  // Filter expenses based on the search query
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.expense_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
+  // Apply sorting filters
+  let sortedExpenses = [...filteredExpenses];
 
-  const handleDeleteExpense = (expenseId) => {
-    const updatedExpenses = expenses.filter(
-      (expense) => expense.id !== expenseId
+  if (statusFilter) {
+    sortedExpenses = sortedExpenses.filter(
+      (expense) => expense.status === statusFilter
     );
-    setExpenses(updatedExpenses);
+  }
+
+  if (enteredByFilter) {
+    sortedExpenses = sortedExpenses.filter(
+      (expense) => expense.createdBy === enteredByFilter
+    );
+  }
+
+  const handleDialogOpen = () => {	
+    setIsDialogOpen(true);	
+  };	
+  const handleDeleteExpense = (expenseId) => {	
+    const updatedExpenses = expenses.filter(	
+      (expense) => expense.id !== expenseId	
+    );	
+    setExpenses(updatedExpenses);	
   };
 
   return (
@@ -223,7 +221,7 @@ export default function ExpensesPage() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <ExpensesSearch expenses={expensez} />
+                <ExpensesSearch expenses={expenses} onSearch={setSearchQuery} />
                 <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort
@@ -233,7 +231,6 @@ export default function ExpensesPage() {
                 </Box>
                 <Box sx={{ width: "30%" }}>
                   <Typography>Entered By</Typography>
-
                   <BlogPostsSort
                     options={enteredByOptions}
                     onSort={handleEnteredBySortChange}
