@@ -79,7 +79,7 @@ function PaymentForm() {
       };
 
       // Make an API call to your server to create or retrieve a Payment Intent
-      const response = await fetch("http://localhost:3002/pay", {
+      const response = await fetch("https://stripe-eight-flax.vercel.app/pay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

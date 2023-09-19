@@ -59,11 +59,12 @@ const storedUser = localStorage.getItem("user");
     }
   }, [dispatch, navigate]);
 
-  const expensez = useSelector((state) => state.expenses.expenses);
+  let expensez = useSelector((state) => state.expenses.expenses);
   console.log(expensez);
 
   useEffect(() => {
     setExpenses(expensez);
+    expensez=expenses
     setSortedExpenses(expensez);
   }, [expensez]);
 
