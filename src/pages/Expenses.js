@@ -20,10 +20,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Iconify from "../components/iconify";
 import { useSelector } from "react-redux";
 import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
+// import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import LoadingSpinner from './loadingSpinner'
+
 
 export default function ExpensesPage() {
   const navigate = useNavigate();
@@ -35,14 +37,14 @@ export default function ExpensesPage() {
   const [editedExpenseData, setEditedExpenseData] = useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
+  const [sortedExpenses, setSortedExpenses] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState(null);
-  const [enteredByFilter, setEnteredByFilter] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+ const [isLoading, setIsLoading] = useState(false);
 
 
-  const storedUser = localStorage.getItem("user");
+const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
+
 
 
   useEffect(() => {
@@ -57,63 +59,17 @@ export default function ExpensesPage() {
     }
   }, [dispatch, navigate]);
 
-  let expensez = useSelector((state) => state.expenses.expenses);
+  const expensez = useSelector((state) => state.expenses.expenses);
   console.log(expensez);
 
   useEffect(() => {
     setExpenses(expensez);
-    expensez=expenses
+    setSortedExpenses(expensez);
   }, [expensez]);
 
   const handleMenuOpen = (event, expenseId) => {
     setAnchorEl(event.currentTarget);
     setSelectedExpenseId(expenseId);
-  };
-
-
-  const handleDialogData = (data) => {	
-    setIsLoading(true); 
-
-    if (data.name && data.description && data.reimburse) {	
-      // console.log()
-      if (editedExpenseData) {	
-        const updatedExpenses = expenses.map((expense) =>	
-          expense.id === editedExpenseData.id	
-            ? { ...editedExpenseData, ...data }	
-            : expense	
-        );	
-        setExpenses(updatedExpenses);	
-        setIsEditExpense(false);	
-      } else {	
-        setExpenses((prevExpenses) => [	
-          ...prevExpenses,	
-          {	
-            id: data.id,	
-            name: data.name,	
-            description: data.description,	
-            optionValue: data.optionValue,	
-            createdAt: new Date().toLocaleDateString(),	
-            total: data.cost,	
-          },	
-        ]);	
-      }	
-    }	
-
-    dispatch(fetchExpense(parsedUser.userId))
-    .then(() => {
-      // Fetching is complete, set isLoading back to false
-      console.log('set expenses data here')
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      // Handle any errors here, and also set isLoading back to false
-      console.error("Error fetching expenses:", error);
-      setIsLoading(false);
-    });
-    setIsDialogOpen(false);	
-    setIsEditExpense(false);	
-    setEditedExpenseData(null);	
-    // navigate('/dashboard/expenses')
   };
 
   const handleMenuClose = () => {
@@ -136,59 +92,107 @@ export default function ExpensesPage() {
     label: status,
   }));
 
-  const uniqueEnteredByValues = [
+  const uniqueEnteredByVlaues = [
     ...new Set(expensez.map((expense) => expense.createdBy)),
   ];
 
-  const enteredByOptions = uniqueEnteredByValues.map((enteredBy) => ({
+  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
     value: enteredBy,
     label: enteredBy,
   }));
 
   const handleStatusSortChange = (selectedVal) => {
-    setStatusFilter(selectedVal);
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.status === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
   };
 
   const handleEnteredBySortChange = (selectedVal) => {
-    setEnteredByFilter(selectedVal);
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.createdBy === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
   };
 
+  const handleDialogData = (data) => {
+ setIsLoading(true); 
+
+    if (data.name && data.description && data.reimburse) {
+      if (editedExpenseData) {
+        const updatedExpenses = expenses.map((expense) =>
+          expense.id === editedExpenseData.id
+            ? { ...editedExpenseData, ...data }
+            : expense
+        );
+        setExpenses(updatedExpenses);
+        setIsEditExpense(false);
+      } else {
+        setExpenses((prevExpenses) => [
+          ...prevExpenses,
+          {
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            optionValue: data.optionValue,
+            createdAt: new Date().toLocaleDateString(),
+            total: data.cost,
+          },
+        ]);
+      }
+    }
+dispatch(fetchExpense(parsedUser.userId))
+    .then(() => {
+      // Fetching is complete, set isLoading back to false
+      console.log('set expenses data here')
+      setIsLoading(false);
+    })
+    .catch((error) => {
+      // Handle any errors here, and also set isLoading back to false
+      console.error("Error fetching expenses:", error);
+      setIsLoading(false);
+    });
+
+    setIsDialogOpen(false);
+    setIsEditExpense(false);
+    setEditedExpenseData(null);
+  };
+
+  const handleDialogOpen = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleDeleteExpense = (expenseId) => {
+    const updatedExpenses = expenses.filter(
+      (expense) => expense.id !== expenseId
+    );
+    setExpenses(updatedExpenses);
+  };
   // Filter expenses based on the search query
   const filteredExpenses = expenses.filter((expense) =>
   expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
-  // Apply sorting filters
-  let sortedExpenses = [...filteredExpenses];
-
-  if (statusFilter) {
-    sortedExpenses = sortedExpenses.filter(
-      (expense) => expense.status === statusFilter
-    );
-  }
-
-  if (enteredByFilter) {
-    sortedExpenses = sortedExpenses.filter(
-      (expense) => expense.createdBy === enteredByFilter
-    );
-  }
-
-  const handleDialogOpen = () => {	
-    setIsDialogOpen(true);	
-  };	
-  const handleDeleteExpense = (expenseId) => {	
-    const updatedExpenses = expenses.filter(	
-      (expense) => expense.id !== expenseId	
-    );	
-    setExpenses(updatedExpenses);	
-    setIsEditExpense(false)
-  };
-
-  if(isLoading){
+ if(isLoading){
     return (
       <LoadingSpinner />
     )
   }
+
 
   return (
     <>
@@ -253,7 +257,7 @@ export default function ExpensesPage() {
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <ExpensesSearch expenses={expenses} onSearch={setSearchQuery} />
+                <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
                 <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort
@@ -263,6 +267,7 @@ export default function ExpensesPage() {
                 </Box>
                 <Box sx={{ width: "30%" }}>
                   <Typography>Entered By</Typography>
+
                   <BlogPostsSort
                     options={enteredByOptions}
                     onSort={handleEnteredBySortChange}
@@ -367,8 +372,8 @@ export default function ExpensesPage() {
         onClose={handleDialogData}
         initialData={editedExpenseData}
       />
-
-
     </>
   );
 }
+
+
