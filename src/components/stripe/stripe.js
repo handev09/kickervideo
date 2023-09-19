@@ -73,7 +73,7 @@ function PaymentForm() {
       const paymentMethodId = paymentMethod.id;
 
       const reqBody = {
-        amount: "10000000",
+        amount: "2000",
         currency: "usd",
         paymentMethodId: paymentMethodId,
       };
