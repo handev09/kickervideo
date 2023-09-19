@@ -277,35 +277,42 @@ export default function DashboardAppPage() {
 
   // const loggedInUser = localStorage.getItem('user')
 
-  if (user.isPaid === false ) {
-    // If user is not paid, display a message and a button
-    return (
-      <>
-        <Helmet>
-          <title> Dashboard | Minimal UI </title>
-        </Helmet>
-        <Container>
-          <Typography variant="h4" gutterBottom>
-            {user && user.name ? `Welcome ${user.name}` : "Welcome"}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Your subscription has ended. Please renew your subscription to access all features.
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#E05858FF",
-              marginTop: 2,
-            }}
-            component={Link}
-            to="/dashboard/pay"
-          >
-            Renew Subscription
-          </Button>
-        </Container>
-      </>
-    );
-  } 
+
+  if(user){
+    if (user.isPaid === false ) {
+      // If user is not paid, display a message and a button
+      return (
+        <>
+          <Helmet>
+            <title> Dashboard | Minimal UI </title>
+          </Helmet>
+          <Container>
+            <Typography variant="h4" gutterBottom>
+              {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Your subscription has ended. Please renew your subscription to access all features.
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#E05858FF",
+                marginTop: 2,
+              }}
+              component={Link}
+              to="/dashboard/pay"
+            >
+              Renew Subscription
+            </Button>
+          </Container>
+        </>
+      );
+    } 
+  } else {
+    navigate('/login')
+  }
+
+  
 
   return (
     <>
