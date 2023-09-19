@@ -23,6 +23,7 @@ import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
+import LoadingSpinner from './loadingSpinner'
 
 export default function ExpensesPage() {
   const navigate = useNavigate();
@@ -37,6 +38,12 @@ export default function ExpensesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState(null);
   const [enteredByFilter, setEnteredByFilter] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const storedUser = localStorage.getItem("user");
+      const parsedUser = JSON.parse(storedUser);
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -50,11 +57,12 @@ export default function ExpensesPage() {
     }
   }, [dispatch, navigate]);
 
-  const expensez = useSelector((state) => state.expenses.expenses);
+  let expensez = useSelector((state) => state.expenses.expenses);
   console.log(expensez);
 
   useEffect(() => {
     setExpenses(expensez);
+    expensez=expenses
   }, [expensez]);
 
   const handleMenuOpen = (event, expenseId) => {
@@ -62,8 +70,12 @@ export default function ExpensesPage() {
     setSelectedExpenseId(expenseId);
   };
 
+
   const handleDialogData = (data) => {	
+    setIsLoading(true); 
+
     if (data.name && data.description && data.reimburse) {	
+      // console.log()
       if (editedExpenseData) {	
         const updatedExpenses = expenses.map((expense) =>	
           expense.id === editedExpenseData.id	
@@ -86,10 +98,22 @@ export default function ExpensesPage() {
         ]);	
       }	
     }	
+
+    dispatch(fetchExpense(parsedUser.userId))
+    .then(() => {
+      // Fetching is complete, set isLoading back to false
+      console.log('set expenses data here')
+      setIsLoading(false);
+    })
+    .catch((error) => {
+      // Handle any errors here, and also set isLoading back to false
+      console.error("Error fetching expenses:", error);
+      setIsLoading(false);
+    });
     setIsDialogOpen(false);	
-    // setIsEditExpense(false);	
+    setIsEditExpense(false);	
     setEditedExpenseData(null);	
-    navigate('/dashboard/expenses')
+    // navigate('/dashboard/expenses')
   };
 
   const handleMenuClose = () => {
@@ -131,7 +155,7 @@ export default function ExpensesPage() {
 
   // Filter expenses based on the search query
   const filteredExpenses = expenses.filter((expense) =>
-    expense.expense_name.toLowerCase().includes(searchQuery.toLowerCase())
+  expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
   // Apply sorting filters
@@ -159,6 +183,12 @@ export default function ExpensesPage() {
     setExpenses(updatedExpenses);	
     setIsEditExpense(false)
   };
+
+  if(isLoading){
+    return (
+      <LoadingSpinner />
+    )
+  }
 
   return (
     <>
@@ -337,6 +367,8 @@ export default function ExpensesPage() {
         onClose={handleDialogData}
         initialData={editedExpenseData}
       />
+
+
     </>
   );
 }

@@ -289,17 +289,17 @@ export default function Reports() {
                 </Typography>
               </Badge>
               <Typography variant="p" sx={{ marginLeft: "20px" }}>
-                {status == "draft"
+                {status == "Draft"
                   ? "Draft"
-                  : status == "awaitingresponse"
+                  : status == "Awaitingresponse"
                   ? "Awaiting Response"
-                  : status == "approved"
+                  : status == "Approved"
                   ? "Approved"
-                  : status == "changesrequested"
+                  : status == "Changesrequested"
                   ? "Changes Requested"
-                  : status == "converted"
+                  : status == "Converted"
                   ? "Converted"
-                  : status == "archived"
+                  : status == "Archived"
                   ? "Archived"
                   : "Status"}
               </Typography>

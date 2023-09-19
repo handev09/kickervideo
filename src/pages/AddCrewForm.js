@@ -223,7 +223,7 @@ const AddCrewForm = () => {
               dispatch(addUser(newUser));
 
               // Navigate to Home Page
-              navigate("/dashboard/user");
+              navigate("/dashboard/crew");
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);

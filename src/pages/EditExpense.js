@@ -74,7 +74,18 @@ console.log(budgets)
     //   (expense) => expense.id !== expenseId
     // );
     dispatch(deleteExpense(expenseId));
-    // setExpenses(updatedExpenses);
+    const newItem = {
+      id: "",
+      name: "",
+      description: "",
+      optionValue: "",
+    //   unitPrice: "",
+      cost: "",
+    //   markup: "",
+      // Convert unitPrice to a float number
+      // You can add other properties as needed
+    };
+    onClose(newItem)
   };
 
   const handleNormalClose = () => {

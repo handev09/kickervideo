@@ -12,13 +12,14 @@ import {
   IconButton,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
 } from "@mui/icons-material";
 import MyDropdown from "../components/dropdown/DropDown";
 import { addExpense } from "../state/redux/actions/expense/expenseActions";
+import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import {
   getDownloadURL,
   ref as storageRef,
@@ -27,6 +28,7 @@ import {
 import { storage } from "../components/firebase/firebase-config";
 
 const CreateNewExpense = ({ openDialog, onClose }) => {
+  console.log(openDialog);
   const [itemName, setItemName] = useState("");
   const [createdBy, setCreatedBy] = useState("");
   const [description, setDescription] = useState("");
@@ -62,6 +64,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const handleClos = () => {
     if (selectedImage) {
       const imageRef = storageRef(storage, `expenses/${selectedImage.name}`);
+      console.log("Image selected");
 
       uploadBytes(imageRef, selectedImage)
         .then((snapshot) => {
@@ -84,10 +87,12 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 }),
                 status: status,
                 createdBy: createdBy,
-                receipt: downloadURL
+                receipt: downloadURL,
               };
 
               dispatch(addExpense(newItem));
+              dispatch(fetchExpense(user_id))
+              console.log(newItem);
               onClose(newItem);
               setItemName(""); // Reset name state
               setDescription(""); // Reset description state
@@ -104,7 +109,37 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
         .catch((error) => {
           console.error("Error uploading image:", error);
         });
+    } else{
+      const newItem = {
+        id: uuidv4(),
+        name: itemName,
+        description: description,
+        reimburse: reimburse,
+        job: job,
+        cost: parseFloat(cost),
+        userId: user_id,
+        createdAt: new Date().toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        status: status,
+        createdBy: createdBy,
+        receipt: "",
+      };
+
+      dispatch(addExpense(newItem));
+      console.log(newItem);
+      onClose(newItem);
+      setItemName(""); // Reset name state
+      setDescription(""); // Reset description state
+      setJob(""); // Reset optionValue state
+      // setUnitPrice(""); // Reset unitPrice state
+      setCost(""); // Reset cost state
+      setCreatedBy(""); // Reset cost state
+      // setMarkup("");
     }
+    
   };
 
   const handleImageChange = (event) => {
@@ -293,7 +328,10 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               // flexDirection="column"
               sx={{ marginTop: "0", marginBottom: "50px" }}
             >
-              <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
+              <Typography
+                variant="p"
+                sx={{ marginBottom: "30px", marginRight: "20px" }}
+              >
                 Receipt
               </Typography>
 
@@ -304,7 +342,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                   backgroundColor: "#E05858FF",
                   color: "#fff",
                   borderRadius: "3px",
-                  maxWidth: '20%'
+                  maxWidth: "20%",
                 }}
               >
                 Upload Receipt
@@ -341,7 +379,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 Cancel
               </Button>
               <Button
-                onClick={handleClos}
+                onClick={
+                  handleClos}
                 color="primary"
                 sx={{
                   backgroundColor: "#E05858FF",
