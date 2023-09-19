@@ -42,6 +42,11 @@ function PaymentForm() {
     });
   };
 
+  // useEffect(()=>{
+  //   localStorage.clear()
+  //   localStorage.setItem('user', subscribedUser)
+  // }, [subscribedUser])
+
   const handlePaymentConfirmation = async () => {
     if (!stripe || !elements || loading) {
       return;
@@ -109,7 +114,16 @@ function PaymentForm() {
       };
       console.log(paidUser)
       dispatch(subscribeUser(paidUser));
-      dispatch(getUser(user.userId));
+      dispatch(getUser(user.userId))
+      .then(() => {
+        
+        dispatch(updateUser(subscribedUser));
+      })
+      .catch((error) => {
+        // Handle any errors here, and also set isLoading back to false
+        console.error("Error fetching expenses:", error);
+        
+      });
       
 
       // Continue with payment confirmation logic

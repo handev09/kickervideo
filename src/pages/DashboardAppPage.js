@@ -249,7 +249,13 @@ export default function DashboardAppPage() {
         dispatch(updateUser(parsedUser));
       }
     }
-  }, [dispatch, isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate]);
+
+
+  // useEffect(() => {
+  //   setBudgets(budgets);
+  //   budgets=budget
+  // }, [budgets]);
 
 
   useEffect(() => {
@@ -274,48 +280,49 @@ export default function DashboardAppPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  // if
-   // Add a check for the existence of the user object
-   if (!user) {
-    // User is not logged in, redirect to the login page
-    navigate('/login');
-    return null; // Add this to prevent further rendering
-  }
-
   const loggedInUser = localStorage.getItem('user')
   console.log(loggedInUser)
 
 
+ if(user){
+  // dispatch(getUser(user.userId))
+  console.log('Current User is LoggedIn')
+  console.log(user.isPaid)
+  if (user.isPaid === false ) {
+    // If user is not paid, display a message and a button
+    return (
+      <>
+        <Helmet>
+          <title> Dashboard | Minimal UI </title>
+        </Helmet>
+        <Container>
+          <Typography variant="h4" gutterBottom>
+            {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Your subscription has ended. Please renew your subscription to access all features.
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#E05858FF",
+              marginTop: 2,
+            }}
+            component={Link}
+            to="/dashboard/pay"
+          >
+            Renew Subscription
+          </Button>
+        </Container>
+      </>
+    );
+  } 
+ } else{
+  console.log('User not Logged in')
+ }
 
-    // if (user.isPaid === false ) {
-    //   // If user is not paid, display a message and a button
-    //   return (
-    //     <>
-    //       <Helmet>
-    //         <title> Dashboard | Minimal UI </title>
-    //       </Helmet>
-    //       <Container>
-    //         <Typography variant="h4" gutterBottom>
-    //           {user && user.name ? `Welcome ${user.name}` : "Welcome"}
-    //         </Typography>
-    //         <Typography variant="body1" gutterBottom>
-    //           Your subscription has ended. Please renew your subscription to access all features.
-    //         </Typography>
-    //         <Button
-    //           variant="contained"
-    //           sx={{
-    //             backgroundColor: "#E05858FF",
-    //             marginTop: 2,
-    //           }}
-    //           component={Link}
-    //           to="/dashboard/pay"
-    //         >
-    //           Renew Subscription
-    //         </Button>
-    //       </Container>
-    //     </>
-    //   );
-    // } 
+
+    
   
 
   
