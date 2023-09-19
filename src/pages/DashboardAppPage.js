@@ -104,9 +104,10 @@ function applySortFilter(array, comparator, query) {
 export default function DashboardAppPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [budget, setBudgets] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isLoggedIn);
   //budgets from state
-  const budgets = useSelector((state) => state.budgets.budgets);
+  let budgets = useSelector((state) => state.budgets.budgets);
   const loading = useSelector((state) => state.budgets.loading);
   const error = useSelector((state) => state.budgets.error);
   const subscribedUser = useSelector((state) => state.user.user);
@@ -249,6 +250,12 @@ export default function DashboardAppPage() {
       }
     }
   }, [dispatch, isAuthenticated, navigate]);
+
+
+  useEffect(() => {
+    setBudgets(budgets);
+    budgets=budget
+  }, [budgets]);
 
   // useEffect(() => {
   //   if (user && user.id) {
@@ -554,7 +561,7 @@ export default function DashboardAppPage() {
                                 ? "Changes Requested"
                                 : status == "Converted"
                                 ? "Converted"
-                                : status == "archived"
+                                : status == "Archived"
                                 ? "Archived"
                                 : "Status"
                             }
