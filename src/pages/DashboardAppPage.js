@@ -275,7 +275,8 @@ export default function DashboardAppPage() {
     return null; // Add this to prevent further rendering
   }
 
-  // const loggedInUser = localStorage.getItem('user')
+  const loggedInUser = localStorage.getItem('user')
+  console.log(loggedInUser)
 
 
   if(user){
