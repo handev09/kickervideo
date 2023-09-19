@@ -4,7 +4,7 @@ import './MyDropDown.css'; // Import the CSS file
 const MyDropdown = ({options, onChange, value}) => {
   // const { options } = props; // Extract options from props
 
-  const [selectedOption, setSelectedOption] = useState('Crew (Option)');
+  const [selectedOption, setSelectedOption] = useState('Options');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 

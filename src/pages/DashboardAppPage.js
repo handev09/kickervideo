@@ -124,9 +124,9 @@ export default function DashboardAppPage() {
   console.log(user);
  
 
-  if(user.isPaid===false){
-    console.log('Subscription Ended')
-  }
+  // if(user.isPaid===false){
+  //   console.log('Subscription Ended')
+  // }
 
   console.log(registrationStatus);
   // const history = useHistory();
@@ -280,35 +280,35 @@ export default function DashboardAppPage() {
 
 
 
-    if (user.isPaid === false ) {
-      // If user is not paid, display a message and a button
-      return (
-        <>
-          <Helmet>
-            <title> Dashboard | Minimal UI </title>
-          </Helmet>
-          <Container>
-            <Typography variant="h4" gutterBottom>
-              {user && user.name ? `Welcome ${user.name}` : "Welcome"}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Your subscription has ended. Please renew your subscription to access all features.
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "#E05858FF",
-                marginTop: 2,
-              }}
-              component={Link}
-              to="/dashboard/pay"
-            >
-              Renew Subscription
-            </Button>
-          </Container>
-        </>
-      );
-    } 
+    // if (user.isPaid === false ) {
+    //   // If user is not paid, display a message and a button
+    //   return (
+    //     <>
+    //       <Helmet>
+    //         <title> Dashboard | Minimal UI </title>
+    //       </Helmet>
+    //       <Container>
+    //         <Typography variant="h4" gutterBottom>
+    //           {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+    //         </Typography>
+    //         <Typography variant="body1" gutterBottom>
+    //           Your subscription has ended. Please renew your subscription to access all features.
+    //         </Typography>
+    //         <Button
+    //           variant="contained"
+    //           sx={{
+    //             backgroundColor: "#E05858FF",
+    //             marginTop: 2,
+    //           }}
+    //           component={Link}
+    //           to="/dashboard/pay"
+    //         >
+    //           Renew Subscription
+    //         </Button>
+    //       </Container>
+    //     </>
+    //   );
+    // } 
   
 
   
@@ -544,15 +544,15 @@ export default function DashboardAppPage() {
                         <TableCell align="left">
                           <StateIndicator
                             status={
-                              status == "draft"
+                              status == "Draft"
                                 ? "Draft"
-                                : status == "awaitingresponse"
+                                : status == "Awaitingresponse"
                                 ? "Awaiting Response"
-                                : status == "approved"
+                                : status == "Approved"
                                 ? "Approved"
-                                : status == "changesrequested"
+                                : status == "Changesrequested"
                                 ? "Changes Requested"
-                                : status == "converted"
+                                : status == "Converted"
                                 ? "Converted"
                                 : status == "archived"
                                 ? "Archived"

@@ -87,8 +87,9 @@ export default function ExpensesPage() {
       }	
     }	
     setIsDialogOpen(false);	
-    setIsEditExpense(false);	
+    // setIsEditExpense(false);	
     setEditedExpenseData(null);	
+    navigate('/dashboard/expenses')
   };
 
   const handleMenuClose = () => {
@@ -156,6 +157,7 @@ export default function ExpensesPage() {
       (expense) => expense.id !== expenseId	
     );	
     setExpenses(updatedExpenses);	
+    setIsEditExpense(false)
   };
 
   return (

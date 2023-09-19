@@ -33,6 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../components/firebase/firebase-config";
+import MyDropdown from "../components/dropdown/DropDown";
 
 const AddBudget = () => {
   const storedUser = localStorage.getItem('user');
@@ -50,6 +51,7 @@ const AddBudget = () => {
   const [notes, setNotes] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const imageInputRef = useRef(null);
+  const [status, setStatus] = useState("");
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -79,7 +81,7 @@ const AddBudget = () => {
     createdAt: "",
     userId: "",
     budgetId: uuidv4(),
-    status: "awaitingresponse",
+    status: "",
   });
   const handleAddBudget = () => {
 
@@ -118,7 +120,7 @@ const AddBudget = () => {
                 }),
                 userId: user_id,
                 budgetId: budgetData.budgetId,
-                status: budgetData.status,
+                status: status,
                 attachmentsUrl: downloadURL
           
               };
@@ -175,6 +177,7 @@ const AddBudget = () => {
     }
     
   };
+  
 
   const handleDialogData = (data) => {
     // setDialogData(data)
@@ -304,6 +307,8 @@ const AddBudget = () => {
       markup: newMarkup,
     }));
   };
+
+   const statusOptions = ["Draft", "Awaitingresponse", "Approved", "Changesrequested", "Converted", "Archived"];
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -611,7 +616,14 @@ const AddBudget = () => {
       </Container>
 
       <Container sx={{ padding: "20px", mt: 20 }}>
-        <Typography variant="h3" sx={{ marginBottom: "10px" }}>
+      <Typography variant="h5" sx={{ marginBottom: "10px" }}>
+          Budget Status
+        </Typography>
+      <MyDropdown
+                options={statusOptions}
+                onChange={(option) => setStatus(option)}
+              />
+        <Typography variant="h3" sx={{ marginBottom: "10px", marginTop: "30px" }}>
           Internal notes & attachments @
         </Typography>
 
