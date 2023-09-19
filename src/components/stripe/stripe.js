@@ -90,7 +90,7 @@ function PaymentForm() {
       if (!response.ok) {
         setError("Failed to create a Payment Intent on the server.");
         setLoading(false); // Reset loading state
-        return;
+        return; 
       }
 
       // Parse the server's response to get the Payment Intent client secret
