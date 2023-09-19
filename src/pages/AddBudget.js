@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Typography,
   Container,
@@ -31,6 +31,8 @@ import { useDispatch,useSelector } from "react-redux";
 import { addBudget } from "../state/redux/actions/budget/budgetActions";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from 'uuid';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../components/firebase/firebase-config";
 
 const AddBudget = () => {
   const storedUser = localStorage.getItem('user');
@@ -46,6 +48,8 @@ const AddBudget = () => {
   const [budgetSubTotal, setBudgetSubTotal] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [notes, setNotes] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const imageInputRef = useRef(null);
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -81,34 +85,95 @@ const AddBudget = () => {
 
     // Create the budget object
     console.log(budgetData.client);
-    const newBudget = {
-      client: budgetData.client,
-      projectTitle: budgetData.projectTitle,
-      services: budgetData.services,
-      subtotal: budgetData.subtotal,
-      discount: budgetData.discount,
-      tax: budgetData.tax,
-      total: budgetData.total,
-      internalNotes: budgetData.internalNotes,
-      // attachments: budgetData.attachments,
-      createdAt: new Date().toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-      userId: user_id,
-      budgetId: budgetData.budgetId,
-      status: budgetData.status,
-
-    };
-    console.log(newBudget)
-
-    // Dispatch the new budget tothe Redux store
-    dispatch(addBudget(newBudget));
-    dispatch(fetchUserBudgets(user_id));
-
-    //Navigate to Home Page
-    navigate("/");
+    // Logic for budget & image Upload
+    if (selectedImage) {
+      console.log('Image Selected')
+      const storageRef = ref(storage, `budgets/${selectedImage.name}`);
+    
+      // Upload the selected image
+      uploadBytes(storageRef, selectedImage)
+        .then((snapshot) => {
+          // File uploaded successfully, get the download URL
+          getDownloadURL(snapshot.ref)
+            .then((downloadURL) => {
+              // Use the downloadURL as needed, for example, you can save it to your database
+              console.log("Download URL:", downloadURL);
+    
+              // Your code to use the downloadURL
+              // ...
+              const newBudget = {
+                client: budgetData.client,
+                projectTitle: budgetData.projectTitle,
+                services: budgetData.services,
+                subtotal: budgetData.subtotal,
+                discount: budgetData.discount,
+                tax: budgetData.tax,
+                total: budgetData.total,
+                internalNotes: budgetData.internalNotes,
+                // attachments: budgetData.attachments,
+                createdAt: new Date().toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                }),
+                userId: user_id,
+                budgetId: budgetData.budgetId,
+                status: budgetData.status,
+                attachmentsUrl: downloadURL
+          
+              };
+              console.log(newBudget)
+          
+              // Dispatch the new budget tothe Redux store
+              dispatch(addBudget(newBudget));
+              dispatch(fetchUserBudgets(user_id));
+          
+              //Navigate to Home Page
+              // navigate("/");
+    
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+              // Handle the error appropriately
+            });
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+          // Handle the error appropriately
+        });
+    } else {
+      console.error("No selected image to upload.");
+      // Handle the case where no image is selected
+      const newBudget = {
+        client: budgetData.client,
+        projectTitle: budgetData.projectTitle,
+        services: budgetData.services,
+        subtotal: budgetData.subtotal,
+        discount: budgetData.discount,
+        tax: budgetData.tax,
+        total: budgetData.total,
+        internalNotes: budgetData.internalNotes,
+        // attachments: budgetData.attachments,
+        createdAt: new Date().toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        userId: user_id,
+        budgetId: budgetData.budgetId,
+        status: budgetData.status,
+  
+      };
+      console.log(newBudget)
+  
+      // Dispatch the new budget tothe Redux store
+      dispatch(addBudget(newBudget));
+      dispatch(fetchUserBudgets(user_id));
+  
+      //Navigate to Home Page
+      navigate("/");
+    }
+    
   };
 
   const handleDialogData = (data) => {
@@ -206,6 +271,11 @@ const AddBudget = () => {
     cost: 0,
     markup: "",
   });
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedImage(file);
+  };
 
   //have to handle option showing error screen at first select***
 
@@ -569,6 +639,18 @@ const AddBudget = () => {
             alignItems: "center",
           }}
         >
+           <Container
+              // justifyContent="center"
+              // alignItems="center"
+              // flexDirection="column"
+              sx={{ marginTop: "0", marginBottom: "50px" }}
+            >
+              {/* <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
+                Receipt
+              </Typography> */}
+
+              
+            </Container>
           <Box
             sx={{
               marginBottom: "10px",
@@ -576,28 +658,45 @@ const AddBudget = () => {
               display: "flex",
               flexDirection: "row",
               // eslint-disable-next-line no-dupe-keys
-              textAlign: "center",
-              justifyContent: "center",
+              // textAlign: "center",
+              // justifyContent: "center",
             }}
           >
-            <div>
+            <div style={{width: '100%'}}>
               <Paper
                 // className={classes.dropArea}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
+                <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  backgroundColor: "#E05858FF",
+                  color: "#fff",
+                  borderRadius: "3px",
+                  width: '80%'
+                }}
+              >
+                Upload Files
                 <input
                   type="file"
-                  id="file-input"
-                  multiple
-                  style={{ display: "none" }}
-                  onChange={handleSelect}
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{
+                    display: "none",
+                  }}
+                  ref={imageInputRef}
                 />
-                <label htmlFor="file-input">
-                  <Button variant="contained" component="span">
-                    Select Files
-                  </Button>
-                </label>
+              </Button>
+              {selectedImage && (
+                <img
+                  src={URL.createObjectURL(selectedImage)}
+                  alt="Selected"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              )}
+                {/* </label> */}
                 <p>or</p>
                 <p>Drag and drop files here</p>
               </Paper>

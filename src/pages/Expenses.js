@@ -44,6 +44,7 @@ export default function ExpensesPage() {
     } else {
       const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
+      console.log("ParsedUser", parsedUser)
       const id = parsedUser.userId;
       dispatch(fetchExpense(id));
     }

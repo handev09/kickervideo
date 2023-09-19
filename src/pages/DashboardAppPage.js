@@ -51,6 +51,7 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { updateUser } from "../state/redux/actions/users/updateUserAction";
 import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
+import { getUser } from "../state/redux/actions/users/getUser";
 import StateIndicator from "../components/status-indicator/status";
 
 // ----------------------------------------------------------------------
@@ -108,6 +109,7 @@ export default function DashboardAppPage() {
   const budgets = useSelector((state) => state.budgets.budgets);
   const loading = useSelector((state) => state.budgets.loading);
   const error = useSelector((state) => state.budgets.error);
+  const subscribedUser = useSelector((state) => state.user.user);
 
   console.log(budgets);
 
@@ -120,6 +122,11 @@ export default function DashboardAppPage() {
 
   const user = useSelector((state) => state.login.user);
   console.log(user);
+ 
+
+  if(user.isPaid===false){
+    console.log('Subscription Ended')
+  }
 
   console.log(registrationStatus);
   // const history = useHistory();
@@ -169,7 +176,7 @@ export default function DashboardAppPage() {
 
   // const handleSelectAllClick = (event) => {
   //   if (event.target.checked) {
-  //     const newSelecteds = USERLIST.map((n) => n.name);
+  //     const newSelecteds = USERLIST`.map((n) => n.name);
   //     setSelected(newSelecteds);
   //     return;
   //   }
@@ -217,23 +224,14 @@ export default function DashboardAppPage() {
     filterName
   );
 
-  // useEffect(() => {
-  //   // Check if the user is not logged in
-  //   if (!user) {
-  //     // Redirect to the login page
-  //     navigate("/login");
-  //   } else {
-  //     const storedUser = localStorage.getItem("user");
-  //     console.log(storedUser)
-  //   }
-  // }, [user]);
+
 
   useEffect(() => {
     // Check if the user is not logged in
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       // Redirect to the login page
-      // navigate('/login');
+      navigate('/login');
     } else {
       // Retrieve user data from local storage
       const storedUser = localStorage.getItem("user");
@@ -268,6 +266,46 @@ export default function DashboardAppPage() {
   }
 
   const isNotFound = !filteredUsers.length && !!filterName;
+
+  // if
+   // Add a check for the existence of the user object
+   if (!user) {
+    // User is not logged in, redirect to the login page
+    navigate('/login');
+    return null; // Add this to prevent further rendering
+  }
+
+  // const loggedInUser = localStorage.getItem('user')
+
+  if (user.isPaid === false ) {
+    // If user is not paid, display a message and a button
+    return (
+      <>
+        <Helmet>
+          <title> Dashboard | Minimal UI </title>
+        </Helmet>
+        <Container>
+          <Typography variant="h4" gutterBottom>
+            {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Your subscription has ended. Please renew your subscription to access all features.
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#E05858FF",
+              marginTop: 2,
+            }}
+            component={Link}
+            to="/dashboard/pay"
+          >
+            Renew Subscription
+          </Button>
+        </Container>
+      </>
+    );
+  } 
 
   return (
     <>

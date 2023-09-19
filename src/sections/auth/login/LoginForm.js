@@ -15,6 +15,7 @@ import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
 import { loginRequest } from "../../../state/redux/actions/users/loginUser";
+import CircularProgress from "@mui/material/CircularProgress"; 
 
 // ----------------------------------------------------------------------
 
@@ -27,6 +28,7 @@ export default function LoginForm() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
   const [password, setPassword] = useState("");
   const loginError = useSelector((state) => state.login.error);
   const isAuthenticated = useSelector((state) => state.login.isLoggedIn);
@@ -34,10 +36,12 @@ export default function LoginForm() {
 
   // const user = localStorage.getItem('user')
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     dispatch(loginRequest(email, password));
     if (isAuthenticated) {
       // Navigate to the dashboard
+      setLoading(false)
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard", { replace: true });
     } else {
@@ -113,7 +117,11 @@ export default function LoginForm() {
           },
         }}
       >
-        Sign In
+        {loading ? (
+          <CircularProgress size={24} /> // Show loading spinner
+        ) : (
+          "Sign In"
+        )}
       </LoadingButton>
     </form>
   );

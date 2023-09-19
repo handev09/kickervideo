@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // sections
 // import SignupFormSection from "../sections/auth/signup/SignupForm"; // Rename the import statement to avoid naming conflict
 // import { registerUser } from "../state/redux/actions/users/registerUser";
@@ -8,6 +8,8 @@ import { useDispatch } from "react-redux";
 import { registerUser } from "../../../state/redux/actions/users/registerUser";
 // @mui
 import { Stack, IconButton, InputAdornment, TextField } from "@mui/material";
+import { loginRequest } from "../../../state/redux/actions/users/loginUser";
+  // const isAuthenticated = useSelector((state) => state.login.isLoggedIn);
 import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
@@ -17,17 +19,59 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function SignupForm() {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.login.isLoggedIn);
+  const user = useSelector((state) => state.login.user);
+   // Calculate subEnd date by adding seven days to subStart
+   const currentDate = new Date();
+   const subStartDate = currentDate.toLocaleDateString("en-US", {
+     month: "long",
+     day: "numeric",
+     year: "numeric",
+   });
+ 
+   const subEndDate = new Date(currentDate);
+   subEndDate.setDate(subEndDate.getDate() + 7);
+   const subEndDateFormatted = subEndDate.toLocaleDateString("en-US", {
+     month: "long",
+     day: "numeric",
+     year: "numeric",
+   });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    userId: uuidv4()
+    userId: uuidv4(),
+    createdAt: subStartDate,
+    subStart: subStartDate,
+    subEnd: subEndDateFormatted,
+    subDays: 7,
+    paid: true
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(registerUser(formData));
-    navigate("/dashboard", { replace: true });
+
+    try {
+      // Dispatch the registerUser action to register the user
+      await dispatch(registerUser(formData));
+
+      // After successful registration, log the user in
+      await dispatch(loginRequest(formData.email, formData.password));
+
+      if (isAuthenticated) {
+        // Navigate to the dashboard
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Handle login failure, if needed
+      }
+
+      // Redirect the user to the dashboard
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      // Handle any errors that occur during registration or login
+      console.error("Error during registration or login:", error);
+    }
   };
 
   const handleChange = (e) => {
