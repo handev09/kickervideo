@@ -129,7 +129,7 @@ const AddBudget = () => {
               dispatch(fetchUserBudgets(user_id));
           
               //Navigate to Home Page
-              // navigate("/");
+              navigate("/");
     
             })
             .catch((error) => {
