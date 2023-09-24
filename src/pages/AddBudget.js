@@ -53,6 +53,8 @@ const AddBudget = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const imageInputRef = useRef(null);
   const [status, setStatus] = useState("");
+   // Add state for text field visibility
+   const [isTextFieldVisible, setTextFieldVisible] = useState(false); 
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -180,12 +182,17 @@ const AddBudget = () => {
     }
     
   };
+
+   // Function to toggle text field visibility
+   const toggleTextFieldVisibility = () => {
+    setTextFieldVisible(!isTextFieldVisible);
+  };
   
 
   const handleDialogData = (data) => {
     // setDialogData(data)
 
-    if (data.name && data.description && data.optionValue) {
+    if (data.name && data.description) {
       setDialogData((prevData) => [...prevData, data]);
       console.log(data.name); // Full Name
       console.log(data.description); // Description
@@ -452,9 +459,9 @@ const AddBudget = () => {
               #2
             </Typography>
 
-            <Typography variant="p" gutterBottom sx={{ color: "#E05858FF" }}>
+            <Button variant="text" >
               Change
-            </Typography>
+          </Button>
           </Container>
 
           {/* ... Rating container ... */}
@@ -477,14 +484,14 @@ const AddBudget = () => {
 
           {/* ... Button for the add custom field ... */}
 
-          <Container sx={{ mt: 2 }}>
+          {/* <Container sx={{ mt: 2 }}>
             <Button
               variant="outlined"
               sx={{ borderColor: "#E05858FF", color: "#E05858FF" }}
             >
               Add Custom Field
             </Button>
-          </Container>
+          </Container> */}
         </Container>
       </Container>
 

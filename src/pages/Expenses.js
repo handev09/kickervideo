@@ -68,6 +68,7 @@ const storedUser = localStorage.getItem("user");
   }, [expensez]);
 
   const handleMenuOpen = (event, expenseId) => {
+    console.log(expenseId)
     setAnchorEl(event.currentTarget);
     setSelectedExpenseId(expenseId);
   };
@@ -78,7 +79,7 @@ const storedUser = localStorage.getItem("user");
   };
 
   const handleEditExpense = (expenseId) => {
-    const expenseToEdit = expensez.find((expense) => expense.id === expenseId);
+    const expenseToEdit = expensez.find((expense) => expense.expense_id === expenseId);
     setEditedExpenseData(expenseToEdit);
     setIsEditExpense(true);
   };
@@ -170,6 +171,8 @@ dispatch(fetchExpense(parsedUser.userId))
     setIsDialogOpen(false);
     setIsEditExpense(false);
     setEditedExpenseData(null);
+    setAnchorEl(null);
+    setSelectedExpenseId(null);
   };
 
   const handleDialogOpen = () => {
@@ -327,7 +330,7 @@ dispatch(fetchExpense(parsedUser.userId))
                     </div>
                     <div>
                       <IconButton
-                        onClick={(event) => handleMenuOpen(event, expense.id)}
+                        onClick={(event) => handleMenuOpen(event, expense.expense_id)}
                       >
                         <MoreVertIcon />
                       </IconButton>
@@ -344,11 +347,11 @@ dispatch(fetchExpense(parsedUser.userId))
                         >
                           Edit
                         </MenuItem>
-                        <MenuItem
+                        {/* <MenuItem
                           onClick={() => handleDeleteExpense(selectedExpenseId)}
                         >
                           Delete
-                        </MenuItem>
+                        </MenuItem> */}
                       </Menu>
                     </div>
                   </div>

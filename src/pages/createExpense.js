@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
 import {
   Typography,
@@ -13,6 +14,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Box
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
@@ -32,6 +34,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const [itemName, setItemName] = useState("");
   const [createdBy, setCreatedBy] = useState("");
   const [description, setDescription] = useState("");
+  const [employmentType, setEmploymentType] = useState("");
   const [cost, setCost] = useState("");
   const [expenseData, setExpenseData] = useState({
     name: "",
@@ -44,14 +47,6 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const imageInputRef = useRef(null);
 
-  const dropdownOptions = [
-    "Option 1",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 5",
-  ];
-
   const statusOptions = ["Draft", "Active", "Sent", "Paid"];
   const [reimburse, setReimburse] = useState("");
   const [job, setJob] = useState("");
@@ -60,6 +55,11 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.login.user);
   const user_id = user.userId;
+  const budgets = useSelector((state) => state.budgets.budgets);
+
+
+  const dropdownJobs = budgets.map((budget) => budget.budget_name);
+  const dropdownOptionNames = budgets.map((budget) => budget.client_name);
 
   const handleClos = () => {
     if (selectedImage) {
@@ -257,17 +257,6 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               />
             </Container>
 
-            <Container sx={{ marginBottom: 5 }}>
-              <MyDropdown
-                options={dropdownOptions}
-                onChange={(option) => setReimburse(option)}
-              />
-              <MyDropdown
-                options={dropdownOptions}
-                onChange={(option) => setJob(option)}
-              />
-            </Container>
-
             <Container
               sx={{
                 marginBottom: 4,
@@ -278,23 +267,57 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
             >
               <TextField
                 id="filled-textarea"
-                label="Cost ($)"
+                label="Total ($)"
                 placeholder="0.00"
                 type="number" // Set the input type to "number"
                 inputProps={{ step: "0.01", min: "0" }}
                 multiline
                 sx={{
-                  width: "30%",
+                  width: "100%",
                   "& .MuiFilledInput-root": {
                     marginBottom: 0,
                   },
                 }}
                 value={cost}
                 onChange={handleCostChange}
-                variant="filled"
+                variant="outlined"
                 InputProps={{ disableUnderline: true }}
               />
+              </Container>
 
+            <Container sx={{ marginBottom: 5, position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between' }}>
+              
+              <Box>
+              <Typography>Job</Typography>
+              <MyDropdown
+                options={dropdownJobs}
+                onChange={(option) => setEmploymentType(option)}
+              />
+              </Box>
+              <Box>
+              <Typography>Reimburse to</Typography>
+              <MyDropdown
+                options={dropdownOptionNames}
+                onChange={(option) => setEmploymentType(option)}
+              />
+              </Box>
+              
+              
+              {/* <MyDropdown
+                options={dropdownOptionNames}
+                onChange={(option) => setEmploymentType(option)}
+              /> */}
+            </Container>
+
+            
+            <Container
+              sx={{
+                marginBottom: 4,
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
               <TextField
                 id="filled-textarea"
                 label="Created By"
@@ -312,15 +335,16 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 onChange={(e) => {
                   setCreatedBy(e.target.value);
                 }}
-                variant="filled"
+                variant="outlined"
                 InputProps={{ disableUnderline: true }}
               />
 
-              <MyDropdown
-                options={statusOptions}
-                onChange={(option) => setStatus(option)}
-              />
+              
             </Container>
+
+               
+            
+            
 
             <Container
               // justifyContent="center"
@@ -364,6 +388,15 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 />
               )}
             </Container>
+            <Container>
+                <Box>
+              <Typography>Expense Status</Typography>
+              <MyDropdown
+                options={statusOptions}
+                onChange={(option) => setStatus(option)}
+              />
+              </Box>
+                </Container>
 
             <DialogActions sx={{ marginRight: "40px" }}>
               <Button
@@ -378,6 +411,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               >
                 Cancel
               </Button>
+
+             
               <Button
                 onClick={
                   handleClos}
@@ -387,6 +422,10 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                   color: "#fff",
                   borderRadius: "3px",
                   padding: "8px 25px",
+                  "&:hover": {
+                    opacity: 0.8,
+                    backgroundColor: "#E05858FF", // Adjust the opacity value as needed
+                  },
                 }}
               >
                 Create
