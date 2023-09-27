@@ -113,8 +113,8 @@ function PaymentForm() {
         daysLeft: daysLeft,
       };
       console.log(paidUser)
-      dispatch(subscribeUser(paidUser));
-      dispatch(getUser(user.userId))
+      dispatch(subscribeUser(paidUser)).then(()=>{
+        dispatch(getUser(user.userId))
       .then(() => {
         
         dispatch(updateUser(subscribedUser));
@@ -124,6 +124,12 @@ function PaymentForm() {
         console.error("Error fetching expenses:", error);
         
       });
+      }).catch((error) => {
+        // Handle any errors here, and also set isLoading back to false
+        console.error("Error fetching expenses:", error);
+        
+      });
+      
       
 
       // Continue with payment confirmation logic

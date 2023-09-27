@@ -8,8 +8,8 @@ export const GET_USER_FAILURE = 'GET_USER_FAILURE';
 export const getUser = (userId) => async (dispatch) => {
   try {
     // Make an API request to fetch user data by userId
-    const response = await axios.get(`http://localhost:3001/api/v1/user/me/${userId}`);
-    // const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/user/me/${userId}`);
+    // const response = await axios.get(`http://localhost:3001/api/v1/user/me/${userId}`);
+    const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/user/me/${userId}`);
     // Replace 'http://localhost:3001/api/v1/users/' with your actual API endpoint
 
     if (response.status === 200) {
