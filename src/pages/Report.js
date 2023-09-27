@@ -289,7 +289,7 @@ export default function Reports() {
                 </Typography>
               </Badge>
               <Typography variant="p" sx={{ marginLeft: "20px" }}>
-                {status == "Draft"
+                {status == "draft"
                   ? "Draft"
                   : status == "Awaitingresponse"
                   ? "Awaiting Response"
@@ -304,7 +304,7 @@ export default function Reports() {
                   : "Status"}
               </Typography>
             </Box>
-            <Typography variant="p">${statusTotal[status] || 0}.00</Typography>
+            <Typography variant="p">${statusTotal[status] || 0}</Typography>
           </Stack>
         ))}
       </Stack>
@@ -376,7 +376,7 @@ export default function Reports() {
                     Total
                   </Typography>
                 </Box>
-                <Typography variant="p">${totalSum}.00</Typography>
+                <Typography variant="p">${totalSum}</Typography>
               </Stack>
 
               {/* Maunal UI */}
@@ -514,7 +514,7 @@ export default function Reports() {
               <TableBody>
                 {sortedData.map((row) => (
                   <TableRow key={row.budget_num}>
-                    <TableCell>{`Job#${row.budget_num}`}</TableCell>
+                    <TableCell>{`Job#${row.budget_numb?row.budget_numb:row.budget_num}`}</TableCell>
                     <TableCell>{row.client_name}</TableCell>
                     <TableCell>{row.created_at}</TableCell>
                     <TableCell>{row.budget_num}</TableCell>

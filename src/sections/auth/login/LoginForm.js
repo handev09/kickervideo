@@ -38,18 +38,21 @@ export default function LoginForm() {
   const handleSubmit = async (e) => {
     setLoading(true)
     e.preventDefault();
-    dispatch(loginRequest(email, password));
-    if (isAuthenticated) {
-      // Navigate to the dashboard
-      setLoading(false)
-      localStorage.setItem("user", JSON.stringify(user));
-      navigate("/dashboard", { replace: true });
-    } else {
-      // Handle login failure, if needed
-    }
-  };
+    dispatch(loginRequest(email, password)).then(()=>{
+      if (isAuthenticated) {
+        setLoading(false)
+        // Navigate to the dashboard
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/dashboard", { replace: true });
+      } else {
+        // Handle login failure, if needed
+      }
 
-  const handleClick = () => {};
+    }).catch((error)=>{
+    console.error(error)
+  })
+    
+  };
 
   return (
     <form onSubmit={handleSubmit}>

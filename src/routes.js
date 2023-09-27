@@ -18,6 +18,7 @@ import AddBudget from './pages/AddBudget';
 import CustomDropdown from './components/item-price-dropdown/DropDown';
 import Reports from './pages/Report';
 import PaymentForm from './components/stripe/stripe';
+import Services from './pages/Service';
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,7 @@ export default function Router() {
         { path: 'dropdown', element: <CustomDropdown /> },
         { path: 'report', element: <Reports /> },
         { path: 'pay', element: <PaymentForm /> },
+        { path: 'service', element: <Services /> },
 
 
       ],

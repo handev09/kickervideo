@@ -48,6 +48,7 @@ const CustomDropdown = ({
   useEffect(() => {
     if (!isNaN(localCost) && !isNaN(parseFloat(markup))) {
       const calculatedUnitPrice = localCost + localCost * (parseFloat(markup) / 100);
+      console.log(calculatedUnitPrice)
       onUnitPriceChange(selectServiceId,calculatedUnitPrice);
     }
   }, [localCost, markup, onUnitPriceChange]);

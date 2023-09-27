@@ -50,6 +50,7 @@ import { useSelector, useDispatch } from "react-redux";
 // import { updateUser } from '../redux/actions/authActions';
 
 import { updateUser } from "../state/redux/actions/users/updateUserAction";
+import { fetchItems } from "../state/redux/actions/items/fetch";
 import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
 import { getUser } from "../state/redux/actions/users/getUser";
 import StateIndicator from "../components/status-indicator/status";
@@ -123,7 +124,6 @@ export default function DashboardAppPage() {
 
   const user = useSelector((state) => state.login.user);
   console.log(user);
- 
 
   // if(user.isPaid===false){
   //   console.log('Subscription Ended')
@@ -225,20 +225,19 @@ export default function DashboardAppPage() {
     filterName
   );
 
-
-
   useEffect(() => {
     // Check if the user is not logged in
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       // Redirect to the login page
-      navigate('/login');
+      navigate("/login");
     } else {
       // Retrieve user data from local storage
       const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
       const id = parsedUser.userId; // Access the userId property
       dispatch(fetchUserBudgets(id));
+      dispatch(fetchItems(id));
       setBudgetsTotal(budgets.length);
       console.log(budgetsTotal);
 
@@ -251,16 +250,14 @@ export default function DashboardAppPage() {
     }
   }, [isAuthenticated, navigate]);
 
-
   // useEffect(() => {
   //   setBudgets(budgets);
   //   budgets=budget
   // }, [budgets]);
 
-
   useEffect(() => {
     setBudgets(budgets);
-    budgets=budget
+    budgets = budget;
   }, [budgets]);
 
   // useEffect(() => {
@@ -280,52 +277,46 @@ export default function DashboardAppPage() {
 
   const isNotFound = !filteredUsers.length && !!filterName;
 
-  const loggedInUser = localStorage.getItem('user')
-  console.log(loggedInUser)
+  const loggedInUser = localStorage.getItem("user");
+  console.log(loggedInUser);
 
-
- if(user){
-  // dispatch(getUser(user.userId))
-  console.log('Current User is LoggedIn')
-  console.log(user.isPaid)
-  if (user.isPaid === false ) {
-    // If user is not paid, display a message and a button
-    return (
-      <>
-        <Helmet>
-          <title> Dashboard | Minimal UI </title>
-        </Helmet>
-        <Container>
-          <Typography variant="h4" gutterBottom>
-            {user && user.name ? `Welcome ${user.name}` : "Welcome"}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            Your subscription has ended. Please renew your subscription to access all features.
-          </Typography>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "#E05858FF",
-              marginTop: 2,
-            }}
-            component={Link}
-            to="/dashboard/pay"
-          >
-            Renew Subscription
-          </Button>
-        </Container>
-      </>
-    );
-  } 
- } else{
-  console.log('User not Logged in')
- }
-
-
-    
-  
-
-  
+  if (user) {
+    // dispatch(getUser(user.userId))
+    console.log("Current User is LoggedIn");
+    console.log(user.isPaid);
+    if (user.isPaid === false) {
+      // If user is not paid, display a message and a button
+      return (
+        <>
+          <Helmet>
+            <title> Dashboard | Minimal UI </title>
+          </Helmet>
+          <Container>
+            <Typography variant="h4" gutterBottom>
+              {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              Your subscription has ended. Please renew your subscription to
+              access all features.
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#E05858FF",
+                marginTop: 2,
+              }}
+              component={Link}
+              to="/dashboard/pay"
+            >
+              Renew Subscription
+            </Button>
+          </Container>
+        </>
+      );
+    }
+  } else {
+    console.log("User not Logged in");
+  }
 
   return (
     <>
@@ -515,7 +506,7 @@ export default function DashboardAppPage() {
                       client_name,
                       created_at,
                       project_title,
-                      subtotal,
+                      total,
                       internalNotes,
                       tax,
                       status,
@@ -558,7 +549,7 @@ export default function DashboardAppPage() {
                         <TableCell align="left">
                           <StateIndicator
                             status={
-                              status == "Draft"
+                              status == "draft"
                                 ? "Draft"
                                 : status == "Awaitingresponse"
                                 ? "Awaiting Response"
@@ -574,7 +565,7 @@ export default function DashboardAppPage() {
                             }
                           />
                         </TableCell>
-                        <TableCell align="left">{`$${subtotal}`}</TableCell>
+                        <TableCell align="left">{`$${total}`}</TableCell>
 
                         <TableCell align="right">
                           <IconButton

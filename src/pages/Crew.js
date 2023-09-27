@@ -81,12 +81,19 @@ function applySortFilter(array, comparator, query) {
 }
 
 export default function CrewPage() {
+  // const [memberz, setMemberz]= useState
   //budgets from state
   const users = useSelector((state) => state.users.users);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const members = useSelector((state) => state.crew.members);
+  let members = useSelector((state) => state.crew.members);
+
+
   console.log(members);
+
+  useEffect(()=>{
+    members=members
+  },[members])
 
   console.log(users);
   const [open, setOpen] = useState(null);

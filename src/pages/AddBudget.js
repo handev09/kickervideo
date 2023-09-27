@@ -12,8 +12,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Stack,
 } from "@mui/material";
-import { Close as CloseIcon, Label } from "@mui/icons-material";
 import {
   Save as SaveIcon,
   Description as PdfIcon,
@@ -21,26 +21,56 @@ import {
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 
-import ServiceDropDown from "../components/service-dropdown/Dropdown";
 import RatingContainer from "../components/rating/Rating";
 import CreateNewLineItem from "./CreateNewLineItem";
 import CustomDropdown from "../components/item-price-dropdown/DropDown";
-import {fetchUserBudgets} from '../state/redux/actions/budget/updateUserBudgetsAction'
+import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
 import { getUser } from "../state/redux/actions/users/getUser";
+import { fetchItems } from "../state/redux/actions/items/fetch";
 
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addBudget } from "../state/redux/actions/budget/budgetActions";
 import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../components/firebase/firebase-config";
 import MyDropdown from "../components/dropdown/DropDown";
+import Iconify from "../components/iconify";
+import ServiceComp from "./Service";
 
 const AddBudget = () => {
-  const storedUser = localStorage.getItem('user');
-  console.log(storedUser);
-  const user = useSelector(state => state.login.user);
-  console.log(user.userId);
+  const [servicesData, setServicesData] = useState([]);
+
+  // Update the servicedata on change
+
+  const handleServiceDataChange = (data, index) => {
+    console.log(data.index);
+
+    // Use the functional form of setServicesData to ensure you have the latest state
+    setServicesData((prevServicesData) => {
+      // Find the index of the service data if it exists in the state
+      const serviceIndex = prevServicesData.findIndex(
+        (service) => service.index === index
+      );
+      console.log(serviceIndex);
+
+      // If the service data exists, update it; otherwise, add it to the state
+      if (serviceIndex !== -1) {
+        const updatedServicesData = [...prevServicesData];
+        updatedServicesData[serviceIndex] = data;
+        return updatedServicesData;
+      } else {
+        return [...prevServicesData, data];
+      }
+    });
+  };
+
+  console.log(servicesData);
+  const storedUser = localStorage.getItem("user");
+  const parsedUser = JSON.parse(storedUser);
+  // console.log(parsedUser);
+  const user = useSelector((state) => state.login.user);
+  // console.log(user.userId);
   const user_id = user.userId;
   const [dialogData, setDialogData] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -52,9 +82,54 @@ const AddBudget = () => {
   const [notes, setNotes] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const imageInputRef = useRef(null);
-  const [status, setStatus] = useState("");
-   // Add state for text field visibility
-   const [isTextFieldVisible, setTextFieldVisible] = useState(false); 
+  const [total, setTotal] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [budgetNumber, setBudgetNumber] = useState(0);
+  const [tax, setTax] = useState(0);
+
+  // Service Comp
+  const [serviceCount, setServiceCount] = useState(0);
+
+  const [subtota, setSubtota] = useState(0);
+
+  // const [status, setStatus] = useState("");
+  // Add state for text field visibility
+  const [isTextFieldVisible, setTextFieldVisible] = useState(false);
+  const [isTaxEdit, setisTaxEdit] = useState(false);
+  const [isDiscountEdit, setisDiscountEdit] = useState(false);
+  const [serviceComps, setServiceComps] = useState([
+    <ServiceComp
+      key={0}
+      index={0}
+      onDelete={() => handleDeleteServiceComp(0)}
+      onChange={handleServiceDataChange}
+    />,
+  ]);
+
+  const budgets = useSelector((state) => state.budgets.budgets);
+  // console.log(budgets);
+  // setBudgetNumber(budgets.legth)
+
+  const items = useSelector((state) => state.items.items);
+  // console.log(items);
+
+  const handleDeleteServiceComp = (index) => {
+    // console.log(index)
+    const updatedServiceComps = [...serviceComps];
+    updatedServiceComps.splice(index, 1);
+    setServiceComps(updatedServiceComps);
+    // console.log(serviceComps);
+
+    const updatedServiceData = [...servicesData];
+    updatedServiceData.splice(index, 1);
+    setServicesData(updatedServiceData);
+    // console.log(servicesData)
+    if (serviceCount <= 0) {
+      setServiceCount(0);
+    } else {
+      setServiceCount(serviceCount - 1);
+    }
+  };
 
   // States for Dialog
   const [newService, setNewService] = useState({
@@ -67,6 +142,47 @@ const AddBudget = () => {
     },
     crew: "",
   });
+
+
+  useEffect(() => {
+    const newSubtota = servicesData.reduce((subtotal, serviceData) => {
+      const { quantity, unitPrice } = serviceData;
+      
+      // Check if quantity and unitPrice are valid numbers
+      if (!isNaN(quantity) && !isNaN(unitPrice)) {
+        return subtotal + quantity * unitPrice;
+      }
+  
+      // If either quantity or unitPrice is not a valid number, return subtotal unchanged
+      return subtotal;
+    }, 0);
+
+    setBudgetSubTotal(newSubtota)
+    // setTotal(new)
+  
+    console.log('new subtota:', newSubtota);
+  }, [servicesData]);
+
+
+  useEffect(()=>{
+    setTotal(budgetSubTotal)
+  }, [budgetSubTotal])
+  
+
+  const addServiceComp = () => {
+    const newIndex = serviceCount + 1;
+    setServiceCount(newIndex);
+
+    setServiceComps((prevServiceComps) => [
+      ...prevServiceComps,
+      <ServiceComp
+        key={newIndex}
+        index={newIndex}
+        onDelete={handleDeleteServiceComp}
+        onChange={handleServiceDataChange}
+      />,
+    ]);
+  };
 
   const navigate = useNavigate();
   // const [budget, setBudget] = useState('');
@@ -85,16 +201,16 @@ const AddBudget = () => {
     userId: "",
     budgetId: uuidv4(),
     status: "",
+    budgetNumber: 0
   });
   const handleAddBudget = () => {
-
     // Create the budget object
-    console.log(budgetData.client);
+    // console.log(budgetData.client);
     // Logic for budget & image Upload
     if (selectedImage) {
-      console.log('Image Selected')
+      // console.log("Image Selected");
       const storageRef = ref(storage, `budgets/${selectedImage.name}`);
-    
+
       // Upload the selected image
       uploadBytes(storageRef, selectedImage)
         .then((snapshot) => {
@@ -102,8 +218,8 @@ const AddBudget = () => {
           getDownloadURL(snapshot.ref)
             .then((downloadURL) => {
               // Use the downloadURL as needed, for example, you can save it to your database
-              console.log("Download URL:", downloadURL);
-    
+              // console.log("Download URL:", downloadURL);
+
               // Your code to use the downloadURL
               // ...
               const newBudget = {
@@ -123,21 +239,27 @@ const AddBudget = () => {
                 }),
                 userId: user_id,
                 budgetId: budgetData.budgetId,
-                status: status,
-                attachmentsUrl: downloadURL
-          
+                status: "draft",
+                attachmentsUrl: downloadURL,
+                budgetNumber: budgetNumber
               };
-              console.log(newBudget)
-          
-              // Dispatch the new budget tothe Redux store
-              dispatch(addBudget(newBudget));
-              dispatch(fetchUserBudgets(user_id));
-              dispatch(getUser(user_id))
+              console.log(newBudget);
 
-          
+              // Dispatch the new budget tothe Redux store
+              dispatch(addBudget(newBudget)).then((res)=>{
+                dispatch(fetchUserBudgets(user_id)).then(()=>{
+                  dispatch(getUser(user_id));
+                }).catch((error)=>{
+                console.log(error)
+              })
+              }).catch((error)=>{
+                console.log(error)
+              })
+             
+              
+
               //Navigate to Home Page
               navigate("/");
-    
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);
@@ -168,26 +290,39 @@ const AddBudget = () => {
         }),
         userId: user_id,
         budgetId: budgetData.budgetId,
-        status: budgetData.status,
-  
+        status: "draft",
+        budgetNumber: budgetNumber
       };
-      console.log(newBudget)
-  
+      console.log(newBudget);
+
       // Dispatch the new budget tothe Redux store
-      dispatch(addBudget(newBudget));
-      dispatch(fetchUserBudgets(user_id));
-  
+      dispatch(addBudget(newBudget)).then((res)=>{
+        dispatch(fetchUserBudgets(user_id)).then(()=>{
+          dispatch(getUser(user_id));
+        }).catch((error)=>{
+        console.log(error)
+      })
+      }).catch((error)=>{
+        console.log(error)
+      })
+
       //Navigate to Home Page
       navigate("/");
     }
-    
   };
 
-   // Function to toggle text field visibility
-   const toggleTextFieldVisibility = () => {
+  // Function to toggle text field visibility
+  const toggleTextFieldVisibility = () => {
     setTextFieldVisible(!isTextFieldVisible);
   };
-  
+  // Function to toggle text field visibility
+  const toggleTaxEdit = () => {
+    setisTaxEdit(!isTaxEdit);
+  };
+  // Function to toggle text field visibility
+  const toggleDiscountEdit = () => {
+    setisDiscountEdit(!isDiscountEdit);
+  };
 
   const handleDialogData = (data) => {
     // setDialogData(data)
@@ -232,30 +367,94 @@ const AddBudget = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleQuantityChange = (event) => {
-    const newQuantity = parseInt(event.target.value);
-    setQuantity(newQuantity);
-    const index = dialogData.findIndex((item) => item.id === selectedOption.id);
-    if (dialogData[index].id == selectedOption.id) {
-      dialogData[index].quantity = newQuantity;
-    } else {
-      console.log("error");
-    }
-    console.log(dialogData[index]);
+  
+
+  
+
+  const handleDiscountChange = (event) => {
+    const newDiscount = parseFloat(event.target.value);
+    setDiscount(newDiscount);
   };
 
-  useEffect(() => {
-    const subtotal = dialogData.reduce(
-      (sum, item) => sum + item.unitPrice * item.quantity,
-      0
-    );
-    setBudgetSubTotal(subtotal);
+  const handleBudgetNumberCahange = (event) => {
+    const newNumber = parseInt(event.target.value);
+    setBudgetNumber(event.target.value);
     setBudgetData((prevBudgetData) => ({
       ...prevBudgetData,
-      subtotal: subtotal,
-      total: subtotal,
+      budgetNumber: newNumber,
     }));
-  }, [dialogData]);
+  };
+
+  console.log('BugNum: '+budgetNumber);
+
+
+
+  const handleTaxChange = (event) => {
+    const newTax = parseFloat(event.target.value);
+    setTax(newTax);
+
+    // Recalculate the total based on the new tax
+    const subtotal = budgetSubTotal;
+    const taxAmount = (subtotal * newTax) / 100;
+    const discountAmount = (subtotal * discount) / 100;
+    const total = subtotal + taxAmount - discountAmount;
+
+    setTotal(total);
+  };
+
+ 
+
+  useEffect(() => {
+   
+
+    // Calculate the total with discount and tax percentage
+    const discountAmount = (budgetSubTotal * discount) / 100;
+    
+    let tota = budgetSubTotal - discountAmount;
+    console.log(tota)
+
+    // Ensure the total is never negative
+    if (tota < 0) {
+      tota = 0;
+    }
+    // setBudgetSubTotal(subtotal);
+    setTotal(tota);
+    setBudgetSubTotal(tota)
+
+    setBudgetData((prevBudgetData) => ({
+      ...prevBudgetData,
+      // subtotal: subtotal,
+      discount: discount,
+      // tax: tax,
+      total: tota,
+    }));
+  }, [discount]);
+
+
+  useEffect(() => {
+   
+console.log('Total '+total)
+    // Calculate the total with discount and tax percentage
+    const taxAmount = (total * tax) / 100;
+    console.log(taxAmount)
+    
+    let tota = total + taxAmount;
+
+    // Ensure the total is never negative
+    if (tota < 0) {
+      tota = 0;
+    }
+    // setBudgetSubTotal(subtotal);
+    setTotal(tota);
+
+    setBudgetData((prevBudgetData) => ({
+      ...prevBudgetData,
+      // subtotal: subtotal,
+      discount: discount,
+      tax: tax,
+      total: tota,
+    }));
+  }, [tax]);
 
   const handleCustomDropdownPriceChange = (id, newPrice) => {
     setCustomDropdownUnitPrice(newPrice);
@@ -318,7 +517,14 @@ const AddBudget = () => {
     }));
   };
 
-   const statusOptions = ["Draft", "Awaitingresponse", "Approved", "Changesrequested", "Converted", "Archived"];
+  const statusOptions = [
+    "Draft",
+    "Awaitingresponse",
+    "Approved",
+    "Changesrequested",
+    "Converted",
+    "Archived",
+  ];
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -348,16 +554,25 @@ const AddBudget = () => {
   const handleSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-    console.log(selectedFiles)
-  
+    console.log(selectedFiles);
+
     // Update the budgetData with the new attachments
     setBudgetData((prevBudgetData) => ({
       ...prevBudgetData,
       attachments: [...prevBudgetData.attachments, ...files],
     }));
   };
-  
-  
+
+  // const handleDeleteServiceComp = (indexToDelete) => {
+  //   console.log('index: '+indexToDelete)
+  //   setServiceComps((prevServiceComps) => {
+  //     // Create a copy of the serviceComps array and remove the component at the specified index
+  //     const updatedServiceComps = [...prevServiceComps];
+  //     updatedServiceComps.splice(indexToDelete, 1);
+  //     return updatedServiceComps;
+  //   });
+  // };
+
   return (
     <form>
       <Box>
@@ -448,6 +663,7 @@ const AddBudget = () => {
               display: "flex",
               flexDirection: "row",
               justifyContent: "space-between",
+              alignItems: "center",
               mt: 2,
             }}
           >
@@ -455,13 +671,24 @@ const AddBudget = () => {
               Budget number
             </Typography>
 
-            <Typography variant="p" gutterBottom>
-              #2
-            </Typography>
+            {isTextFieldVisible ? (
+              <TextField
+                placeholder="1"
+                size="small"
+                type="number"
+                value={budgetNumber}
+                onChange={handleBudgetNumberCahange}
+                // ... (other props)
+              />
+            ) : (
+              <Typography variant="p" gutterBottom>
+                #{budgets.length + 1}
+              </Typography>
+            )}
 
-            <Button variant="text" >
+            <Button variant="text" onClick={toggleTextFieldVisibility}>
               Change
-          </Button>
+            </Button>
           </Container>
 
           {/* ... Rating container ... */}
@@ -503,31 +730,34 @@ const AddBudget = () => {
           gap: "40px",
         }}
       >
-        <Box>
+        <Box sx={{ mt: 1, width:'100%' }}>
           <Typography variant="p" gutterBottom>
             PRODUCT/SERVICE
           </Typography>
           <Box sx={{ mt: 1 }}>
-            <ServiceDropDown
-              dialogData={dialogData}
-              // onAddNewOption={handleAddService}
-              //come back and tract ui chnages when the selected option is changed
-              //so that we update the values on the ui ***
-              onSelectServiceOption={(id, unitPrice, cost, markup) => {
-                handleServiceOptionSelect(id, unitPrice, cost, markup);
-                console.log(id, unitPrice, cost, markup);
-                setSelectedService({ id, unitPrice, cost, markup });
-              }}
-            />
+            
+          {serviceComps.map((service, index) => (
+              <div key={index}>
+                {service}
+               
+              </div>
+            ))}
           </Box>
-
           <Button
+            variant="filled"
+            sx={{ backgroundColor: "#E05858FF", color: "#fff", mt: 2 }}
+            onClick={addServiceComp}
+          >
+            + Add ServiceComp
+          </Button>
+
+          {/* <Button
             variant="filled"
             sx={{ backgroundColor: "#E05858FF", color: "#fff", mt: 2 }}
             onClick={handleDialogOpen}
           >
             + Add
-          </Button>
+          </Button> */}
 
           {/* ... Dialog stuff ... */}
 
@@ -537,50 +767,7 @@ const AddBudget = () => {
           />
         </Box>
 
-        <Container sx={{ display: "flex", gap: "40px" }}>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="p" gutterBottom>
-              QTY
-            </Typography>
-            <TextField
-              type="number"
-              value={quantity}
-              size="small"
-              onChange={handleQuantityChange}
-              variant="outlined"
-              style={{}}
-            />
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="p" gutterBottom>
-              ITEM PRICE
-            </Typography>
-            <CustomDropdown
-              selectedServiceCost={selectedOption.cost} // Pass the selected option's cost
-              selectedServiceMarkup={selectedOption.markup} // Pass the selected option's markup
-              onCostChange={handleCostChange} // Handle cost change
-              onMarkupChange={handleMarkupChange}
-              selectServiceId={selectedOption.id}
-              onUnitPriceChange={handleCustomDropdownPriceChange}
-            />
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "column" }}>
-            <Typography variant="p" gutterBottom>
-              TOTAL
-            </Typography>
-            <TextField
-              variant="outlined"
-              size="small"
-              sx={{ width: "100%", textAlign: "center" }}
-              value={
-                !isNaN(customDropdownUnitPrice) && !isNaN(quantity)
-                  ? (quantity * customDropdownUnitPrice).toFixed(2)
-                  : ""
-              }
-              readOnly
-            />
-          </Box>
-        </Container>
+        
       </Container>
 
       <Container
@@ -613,27 +800,76 @@ const AddBudget = () => {
         {/* Right Column */}
         <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <Typography variant="body1">{`$${budgetSubTotal}`}</Typography>
-          <Button variant="text" fullWidth>
-            Add Discount
-          </Button>
-          <Button variant="outlined" fullWidth>
-            Add Tax
-          </Button>
+          {isDiscountEdit ? (
+            <Stack display="flex" flexDirection="row">
+              <TextField
+                placeholder="1"
+                size="small"
+                type="number"
+                // type="number"
+                value={discount}
+                // size="small"
+                onChange={handleDiscountChange}
+                variant="outlined"
+                style={{}}
+                // ... (other props)
+              />
+              <IconButton onClick={toggleDiscountEdit}>
+                <Iconify icon="material-symbols:delete-outline" />
+              </IconButton>
+            </Stack>
+          ) : (
+            <Stack>
+              <Button variant="text" onClick={toggleDiscountEdit}>
+                Add Discount
+              </Button>
+            </Stack>
+          )}
+
+          {isTaxEdit ? (
+            <Stack display="flex" flexDirection="row">
+              <TextField
+                placeholder="1"
+                size="small"
+                type="number"
+                // type="number"
+                value={tax}
+                // size="small"
+                onChange={handleTaxChange}
+                variant="outlined"
+                style={{}}
+                // ... (other props)
+              />
+              <IconButton onClick={toggleTaxEdit}>
+                <Iconify icon="material-symbols:delete-outline" />
+              </IconButton>
+            </Stack>
+          ) : (
+            <Stack>
+              <Button variant="outlined" fullWidth onClick={toggleTaxEdit}>
+                Add Tax
+              </Button>
+            </Stack>
+          )}
+
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-            $0.00
+            ${total}
           </Typography>
         </Box>
       </Container>
 
       <Container sx={{ padding: "20px", mt: 20 }}>
-      <Typography variant="h5" sx={{ marginBottom: "10px" }}>
+        {/* <Typography variant="h5" sx={{ marginBottom: "10px" }}>
           Budget Status
         </Typography>
       <MyDropdown
                 options={statusOptions}
                 onChange={(option) => setStatus(option)}
-              />
-        <Typography variant="h3" sx={{ marginBottom: "10px", marginTop: "30px" }}>
+              /> */}
+        <Typography
+          variant="h3"
+          sx={{ marginBottom: "10px", marginTop: "30px" }}
+        >
           Internal notes & attachments @
         </Typography>
 
@@ -661,18 +897,16 @@ const AddBudget = () => {
             alignItems: "center",
           }}
         >
-           <Container
-              // justifyContent="center"
-              // alignItems="center"
-              // flexDirection="column"
-              sx={{ marginTop: "0", marginBottom: "50px" }}
-            >
-              {/* <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
+          <Container
+            // justifyContent="center"
+            // alignItems="center"
+            // flexDirection="column"
+            sx={{ marginTop: "0", marginBottom: "50px" }}
+          >
+            {/* <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
                 Receipt
               </Typography> */}
-
-              
-            </Container>
+          </Container>
           <Box
             sx={{
               marginBottom: "10px",
@@ -684,40 +918,40 @@ const AddBudget = () => {
               // justifyContent: "center",
             }}
           >
-            <div style={{width: '100%'}}>
+            <div style={{ width: "100%" }}>
               <Paper
                 // className={classes.dropArea}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
               >
                 <Button
-                variant="contained"
-                component="label"
-                sx={{
-                  backgroundColor: "#E05858FF",
-                  color: "#fff",
-                  borderRadius: "3px",
-                  width: '80%'
-                }}
-              >
-                Upload Files
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  style={{
-                    display: "none",
+                  variant="contained"
+                  component="label"
+                  sx={{
+                    backgroundColor: "#E05858FF",
+                    color: "#fff",
+                    borderRadius: "3px",
+                    width: "80%",
                   }}
-                  ref={imageInputRef}
-                />
-              </Button>
-              {selectedImage && (
-                <img
-                  src={URL.createObjectURL(selectedImage)}
-                  alt="Selected"
-                  style={{ maxWidth: "100px", maxHeight: "100px" }}
-                />
-              )}
+                >
+                  Upload Files
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{
+                      display: "none",
+                    }}
+                    ref={imageInputRef}
+                  />
+                </Button>
+                {selectedImage && (
+                  <img
+                    src={URL.createObjectURL(selectedImage)}
+                    alt="Selected"
+                    style={{ maxWidth: "100px", maxHeight: "100px" }}
+                  />
+                )}
                 {/* </label> */}
                 <p>or</p>
                 <p>Drag and drop files here</p>

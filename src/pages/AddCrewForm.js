@@ -25,6 +25,7 @@ import "firebase/storage"; // Import the storage module
 import MyDropdown from "../components/dropdown/DropDown";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../state/redux/actions/crew/crewActions";
+import { fetchUserCrew } from "../state/redux/actions/crew/fetchUserCrew";
 import { useNavigate } from "react-router-dom";
 import Iconify from "../components/iconify/Iconify";
 import { storage } from "../components/firebase/firebase-config";
@@ -255,10 +256,19 @@ const AddCrewForm = () => {
       };
 
       // Dispatch the new user to the Redux store
-      dispatch(addUser(newUser));
+      dispatch(addUser(newUser)).then(()=>{
+        dispatch(fetchUserCrew(user_id)).then(()=>{
+          navigate("/dashboard/user");
+        }).catch((error)=>{
+        console.error(error)
+      })
+
+      }).catch((error)=>{
+        console.error(error)
+      })
 
       // Navigate to Home Page
-      navigate("/dashboard/user");
+     
     }
   };
 

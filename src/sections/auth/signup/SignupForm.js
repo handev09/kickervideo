@@ -14,13 +14,17 @@ import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
 import { v4 as uuidv4 } from 'uuid';
+import CircularProgress from "@mui/material/CircularProgress"; 
+// import { LoadingButton } from "@mui/lab";
 
 // ----------------------------------------------------------------------
 
 export default function SignupForm() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false); 
   const isAuthenticated = useSelector((state) => state.login.isLoggedIn);
   const user = useSelector((state) => state.login.user);
+
    // Calculate subEnd date by adding seven days to subStart
    const currentDate = new Date();
    const subStartDate = currentDate.toLocaleDateString("en-US", {
@@ -49,29 +53,40 @@ export default function SignupForm() {
   });
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
 
-    try {
-      // Dispatch the registerUser action to register the user
-      await dispatch(registerUser(formData));
+    dispatch(registerUser(formData)).then(()=>{
+      dispatch(loginRequest(formData.email, formData.password)).then(()=>{
+        if (isAuthenticated) {
+          setLoading(false)
+          // Navigate to the dashboard
+          localStorage.setItem("user", JSON.stringify(user));
+          navigate("/dashboard", { replace: true });
+        } else {
+          // Handle login failure, if needed
+        }
 
-      // After successful registration, log the user in
-      await dispatch(loginRequest(formData.email, formData.password));
+      }).catch((error)=>{
+      console.error(error)
+    })
+    }).catch((error)=>{
+      console.error(error)
+    })
+    
+    // try {
+    //   // Dispatch the registerUser action to register the user
 
-      if (isAuthenticated) {
-        // Navigate to the dashboard
-        localStorage.setItem("user", JSON.stringify(user));
-        navigate("/dashboard", { replace: true });
-      } else {
-        // Handle login failure, if needed
-      }
+    //   // After successful registration, log the user in
 
-      // Redirect the user to the dashboard
-      navigate("/dashboard", { replace: true });
-    } catch (error) {
-      // Handle any errors that occur during registration or login
-      console.error("Error during registration or login:", error);
-    }
+      
+
+    //   // Redirect the user to the dashboard
+    //   navigate("/dashboard", { replace: true });
+    // } catch (error) {
+    //   // Handle any errors that occur during registration or login
+    //   console.error("Error during registration or login:", error);
+    // }
   };
 
   const handleChange = (e) => {
@@ -86,9 +101,9 @@ export default function SignupForm() {
 
   const navigate = useNavigate(); // Add the missing useNavigate hook
 
-  const handleClick = () => {
-    navigate("/dashboard", { replace: true });
-  };
+  // const handleClick = () => {
+  //   navigate("/dashboard", { replace: true });
+  // };
 
   return (
     <>
@@ -138,6 +153,8 @@ export default function SignupForm() {
         {/* <Checkbox name="remember" label="Remember me" /> */}
       </Stack>
 
+      {/* {loginError && <p>Error: {loginError}</p>} */}
+
       <LoadingButton
         fullWidth
         size="large"
@@ -151,7 +168,12 @@ export default function SignupForm() {
           },
         }}
       >
-        Sign Up
+         {loading ? (
+          <CircularProgress size={24} /> // Show loading spinner
+        ) : (
+          "Sign Up"
+        )}
+        
       </LoadingButton>
     </>
   );
