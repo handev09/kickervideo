@@ -175,7 +175,7 @@ const storedUser = localStorage.getItem("user");
             userId: parsedUser.userId
         }
         dispatch(addItem(newItem)).then((res) => {
-          console.log(res)
+          console.log('item added')
           // Fetching is complete, set isLoading back to false
           dispatch(fetchItems(parsedUser.userId)).then(()=>{
           }).catch((error)=>{
