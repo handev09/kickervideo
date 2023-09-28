@@ -378,13 +378,13 @@ dispatch(fetchExpense(parsedUser.userId))
                         open={Boolean(anchorEl)}
                         onClose={handleMenuClose}
                       >
-                        <MenuItem
+                        {/* <MenuItem
                           onClick={() => {
                             handleEditExpense(selectedExpenseId);
                           }}
                         >
                           Edit
-                        </MenuItem>
+                        </MenuItem> */}
                         {/* <MenuItem
                           onClick={() => handleDeleteExpense(selectedExpenseId)}
                         >
