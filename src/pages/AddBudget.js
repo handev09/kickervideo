@@ -9,11 +9,14 @@ import {
   IconButton,
   Popover,
   List,
-  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Stack,
+  Icon
 } from "@mui/material";
+
+// import Iconify from "../components/iconify";
 import {
   Save as SaveIcon,
   Description as PdfIcon,
@@ -143,31 +146,28 @@ const AddBudget = () => {
     crew: "",
   });
 
-
   useEffect(() => {
     const newSubtota = servicesData.reduce((subtotal, serviceData) => {
       const { quantity, unitPrice } = serviceData;
-      
+
       // Check if quantity and unitPrice are valid numbers
       if (!isNaN(quantity) && !isNaN(unitPrice)) {
         return subtotal + quantity * unitPrice;
       }
-  
+
       // If either quantity or unitPrice is not a valid number, return subtotal unchanged
       return subtotal;
     }, 0);
 
-    setBudgetSubTotal(newSubtota)
+    setBudgetSubTotal(newSubtota);
     // setTotal(new)
-  
-    console.log('new subtota:', newSubtota);
+
+    console.log("new subtota:", newSubtota);
   }, [servicesData]);
 
-
-  useEffect(()=>{
-    setTotal(budgetSubTotal)
-  }, [budgetSubTotal])
-  
+  useEffect(() => {
+    setTotal(budgetSubTotal);
+  }, [budgetSubTotal]);
 
   const addServiceComp = () => {
     const newIndex = serviceCount + 1;
@@ -201,7 +201,7 @@ const AddBudget = () => {
     userId: "",
     budgetId: uuidv4(),
     status: "",
-    budgetNumber: 0
+    budgetNumber: 0,
   });
   const handleAddBudget = () => {
     // Create the budget object
@@ -241,22 +241,24 @@ const AddBudget = () => {
                 budgetId: budgetData.budgetId,
                 status: "draft",
                 attachmentsUrl: downloadURL,
-                budgetNumber: budgetNumber
+                budgetNumber: budgetNumber,
               };
               console.log(newBudget);
 
               // Dispatch the new budget tothe Redux store
-              dispatch(addBudget(newBudget)).then((res)=>{
-                dispatch(fetchUserBudgets(user_id)).then(()=>{
-                  dispatch(getUser(user_id));
-                }).catch((error)=>{
-                console.log(error)
-              })
-              }).catch((error)=>{
-                console.log(error)
-              })
-             
-              
+              dispatch(addBudget(newBudget))
+                .then((res) => {
+                  dispatch(fetchUserBudgets(user_id))
+                    .then(() => {
+                      dispatch(getUser(user_id));
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
 
               //Navigate to Home Page
               navigate("/");
@@ -291,20 +293,138 @@ const AddBudget = () => {
         userId: user_id,
         budgetId: budgetData.budgetId,
         status: "draft",
-        budgetNumber: budgetNumber
+        budgetNumber: budgetNumber,
       };
       console.log(newBudget);
 
       // Dispatch the new budget tothe Redux store
-      dispatch(addBudget(newBudget)).then((res)=>{
-        dispatch(fetchUserBudgets(user_id)).then(()=>{
-          dispatch(getUser(user_id));
-        }).catch((error)=>{
-        console.log(error)
-      })
-      }).catch((error)=>{
-        console.log(error)
-      })
+      dispatch(addBudget(newBudget))
+        .then((res) => {
+          dispatch(fetchUserBudgets(user_id))
+            .then(() => {
+              dispatch(getUser(user_id));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+
+      //Navigate to Home Page
+      navigate("/");
+    }
+  };
+
+  const handleAddBudgetActive = () => {
+    // Create the budget object
+    // console.log(budgetData.client);
+    // Logic for budget & image Upload
+    if (selectedImage) {
+      // console.log("Image Selected");
+      const storageRef = ref(storage, `budgets/${selectedImage.name}`);
+
+      // Upload the selected image
+      uploadBytes(storageRef, selectedImage)
+        .then((snapshot) => {
+          // File uploaded successfully, get the download URL
+          getDownloadURL(snapshot.ref)
+            .then((downloadURL) => {
+              // Use the downloadURL as needed, for example, you can save it to your database
+              // console.log("Download URL:", downloadURL);
+
+              // Your code to use the downloadURL
+              // ...
+              const newBudget = {
+                client: budgetData.client,
+                projectTitle: budgetData.projectTitle,
+                services: budgetData.services,
+                subtotal: budgetData.subtotal,
+                discount: budgetData.discount,
+                tax: budgetData.tax,
+                total: budgetData.total,
+                internalNotes: budgetData.internalNotes,
+                // attachments: budgetData.attachments,
+                createdAt: new Date().toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                }),
+                userId: user_id,
+                budgetId: budgetData.budgetId,
+                status: "active",
+                attachmentsUrl: downloadURL,
+                budgetNumber: budgetNumber,
+              };
+              console.log(newBudget);
+
+              // Dispatch the new budget tothe Redux store
+              dispatch(addBudget(newBudget))
+                .then((res) => {
+                  dispatch(fetchUserBudgets(user_id))
+                    .then(() => {
+                      dispatch(getUser(user_id));
+                    })
+                    .catch((error) => {
+                      console.log(error);
+                    });
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+
+              //Navigate to Home Page
+              navigate("/");
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+              // Handle the error appropriately
+            });
+        })
+        .catch((error) => {
+          console.error("Error uploading image:", error);
+          // Handle the error appropriately
+        });
+    } else {
+      console.error("No selected image to upload.");
+      // Handle the case where no image is selected
+      const newBudget = {
+        client: budgetData.client,
+        projectTitle: budgetData.projectTitle,
+        services: budgetData.services,
+        subtotal: budgetData.subtotal,
+        discount: budgetData.discount,
+        tax: budgetData.tax,
+        total: budgetData.total,
+        internalNotes: budgetData.internalNotes,
+        // attachments: budgetData.attachments,
+        createdAt: new Date().toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        userId: user_id,
+        budgetId: budgetData.budgetId,
+        status: "active",
+        budgetNumber: budgetNumber,
+      };
+      console.log(newBudget);
+
+      // Dispatch the new budget tothe Redux store
+      dispatch(addBudget(newBudget))
+        .then((res) => {
+          dispatch(fetchUserBudgets(user_id))
+            .then(() => {
+              dispatch(getUser(user_id));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
       //Navigate to Home Page
       navigate("/");
@@ -367,13 +487,13 @@ const AddBudget = () => {
     setIsDropdownOpen(false);
   };
 
-  
-
-  
-
   const handleDiscountChange = (event) => {
     const newDiscount = parseFloat(event.target.value);
-    setDiscount(newDiscount);
+    if (!isNaN(newDiscount)) {
+      setDiscount(newDiscount);
+    } else {
+      setDiscount(0); // Set discount to 0 if the input is not a valid number
+    }
   };
 
   const handleBudgetNumberCahange = (event) => {
@@ -385,76 +505,110 @@ const AddBudget = () => {
     }));
   };
 
-  console.log('BugNum: '+budgetNumber);
-
-
+  console.log("BugNum: " + budgetNumber);
 
   const handleTaxChange = (event) => {
+    console.log("TaxValue: " + event.target.value);
     const newTax = parseFloat(event.target.value);
-    setTax(newTax);
+    if (!isNaN(newTax)) {
+      setTax(newTax);
+    } else {
+      setTax(0); // Set tax to 0 if the input is not a valid number
+    }
+    // setTax(newTax);
 
-    // Recalculate the total based on the new tax
-    const subtotal = budgetSubTotal;
-    const taxAmount = (subtotal * newTax) / 100;
-    const discountAmount = (subtotal * discount) / 100;
-    const total = subtotal + taxAmount - discountAmount;
+    // // Recalculate the total based on the new tax
+    // const subtotal = budgetSubTotal;
+    // const taxAmount = (subtotal * newTax) / 100;
+    // const discountAmount = (subtotal * discount) / 100;
+    // const total = subtotal + taxAmount - discountAmount;
 
-    setTotal(total);
+    // setTotal(total.toFixed(2));
   };
 
- 
+  //   useEffect(() => {
+
+  //     // Calculate the total with discount and tax percentage
+  //     const discountAmount = (budgetSubTotal * discount) / 100;
+  //     // console.log('DisAmount: '+discountAmount)
+
+  //     let tota = budgetSubTotal - discountAmount;
+  //     // console.log(discount)
+
+  //     // Ensure the total is never negative
+  //     if (tota < 0) {
+  //       tota = 0;
+  //     }
+  //     // Ensure the total is never negative
+  //   if (!isNaN(tota) && tota >= 0) {
+  //     setTotal(parseFloat(tota.toFixed(2)));
+  //   } else {
+  //     setTotal(0);
+  //   }
+
+  //     setBudgetData((prevBudgetData) => ({
+  //       ...prevBudgetData,
+  //       // subtotal: subtotal,
+  //       discount: discount,
+  //       // tax: tax,
+  //       total: total,
+  //     }));
+  //   }, [discount]);
+
+  //   useEffect(() => {
+
+  // console.log('Total '+total)
+  //     // Calculate the total with discount and tax percentage
+  //     const taxAmount = (total * tax) / 100;
+  //     console.log('TaxAmount: '+taxAmount)
+
+  //     let tota = total + taxAmount;
+
+  //     // Ensure the total is never negative
+  //     if (tota < 0) {
+  //       tota = 0;
+  //     }
+  //    // Ensure the total is never negative
+  //   if (!isNaN(tota) && tota >= 0) {
+  //     setTotal(parseFloat(tota.toFixed(2)));
+  //   } else {
+  //     setTotal(0);
+  //   }
+
+  //     setBudgetData((prevBudgetData) => ({
+  //       ...prevBudgetData,
+  //       // subtotal: subtotal,
+  //       // discount: discount,
+  //       tax: tax,
+  //       total: total,
+  //     }));
+  //   }, [tax]);
 
   useEffect(() => {
-   
-
     // Calculate the total with discount and tax percentage
     const discountAmount = (budgetSubTotal * discount) / 100;
-    
-    let tota = budgetSubTotal - discountAmount;
-    console.log(tota)
+    const taxAmount = (budgetSubTotal - discountAmount) * (tax / 100);
+    let newTotal = budgetSubTotal - discountAmount + taxAmount;
 
     // Ensure the total is never negative
-    if (tota < 0) {
-      tota = 0;
+    if (newTotal < 0) {
+      newTotal = 0;
     }
-    // setBudgetSubTotal(subtotal);
-    setTotal(tota);
-    setBudgetSubTotal(tota)
+
+    // Ensure the total is never negative
+    if (!isNaN(newTotal) && newTotal >= 0) {
+      setTotal(parseFloat(newTotal.toFixed(2)));
+    } else {
+      setTotal(0);
+    }
 
     setBudgetData((prevBudgetData) => ({
       ...prevBudgetData,
-      // subtotal: subtotal,
-      discount: discount,
-      // tax: tax,
-      total: tota,
-    }));
-  }, [discount]);
-
-
-  useEffect(() => {
-   
-console.log('Total '+total)
-    // Calculate the total with discount and tax percentage
-    const taxAmount = (total * tax) / 100;
-    console.log(taxAmount)
-    
-    let tota = total + taxAmount;
-
-    // Ensure the total is never negative
-    if (tota < 0) {
-      tota = 0;
-    }
-    // setBudgetSubTotal(subtotal);
-    setTotal(tota);
-
-    setBudgetData((prevBudgetData) => ({
-      ...prevBudgetData,
-      // subtotal: subtotal,
       discount: discount,
       tax: tax,
-      total: tota,
+      total: total,
     }));
-  }, [tax]);
+  }, [discount, tax]);
 
   const handleCustomDropdownPriceChange = (id, newPrice) => {
     setCustomDropdownUnitPrice(newPrice);
@@ -730,17 +884,13 @@ console.log('Total '+total)
           gap: "40px",
         }}
       >
-        <Box sx={{ mt: 1, width:'100%' }}>
+        <Box sx={{ mt: 1, width: "100%" }}>
           <Typography variant="p" gutterBottom>
             PRODUCT/SERVICE
           </Typography>
           <Box sx={{ mt: 1 }}>
-            
-          {serviceComps.map((service, index) => (
-              <div key={index}>
-                {service}
-               
-              </div>
+            {serviceComps.map((service, index) => (
+              <div key={index}>{service}</div>
             ))}
           </Box>
           <Button
@@ -766,40 +916,26 @@ console.log('Total '+total)
             onClose={handleDialogData}
           />
         </Box>
-
-        
       </Container>
 
       <Container
         sx={{
           display: "flex",
-          justifyContent: "flex-end",
-          gap: "150px",
+          // justifyContent: "center",
+          // gap: "150px",
           width: "100%",
           padding: "10px",
+          alignItems: "end",
+          flexDirection: "column",
         }}
       >
-        {/* Left Column */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px' }}>
           <Typography variant="body1">Subtotal</Typography>
-          <Typography variant="body1">Discount</Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              border: "1px solid #000",
-              textAlign: "center",
-              padding: "3px 2px",
-              borderRadius: "5px",
-            }}
-          >
-            Tax
-          </Typography>
-          <Typography variant="body1">Total</Typography>
+          <Typography variant="body1">{`$${budgetSubTotal}`}</Typography>
         </Box>
 
-        {/* Right Column */}
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <Typography variant="body1">{`$${budgetSubTotal}`}</Typography>
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px'  }}>
+          <Typography variant="body1">Discount(%)</Typography>
           {isDiscountEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
@@ -825,7 +961,10 @@ console.log('Total '+total)
               </Button>
             </Stack>
           )}
+        </Box>
 
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px'  }}>
+          <Typography variant="body1">Tax</Typography>
           {isTaxEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
@@ -851,6 +990,11 @@ console.log('Total '+total)
               </Button>
             </Stack>
           )}
+        </Box>
+
+        {/* Right Column */}
+        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center',paddingBottom: '10px' }}>
+          <Typography variant="body1">Total</Typography>
 
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
             ${total}
@@ -984,7 +1128,7 @@ console.log('Total '+total)
           }}
         >
           <Button variant="outlined">Cancel</Button>
-          <Button variant="outlined">Save Draft</Button>
+          <Button variant="outlined" onClick={handleAddBudget}>Save Draft</Button>
           <Button
             aria-describedby={id}
             sx={{
@@ -994,8 +1138,8 @@ console.log('Total '+total)
             }}
             variant="filled"
             endIcon={<ExpandMoreIcon />}
-            // onClick={handleClick}
-            onClick={handleAddBudget}
+            onClick={handleClick}
+            // onClick={handleAddBudget}
           >
             Save And...
           </Button>
@@ -1014,24 +1158,26 @@ console.log('Total '+total)
             }}
           >
             <List>
-              <ListItem button>
+              <ListItemButton>
                 <ListItemIcon>
-                  <PdfIcon />
+                <Iconify icon={"iwwa:file-pdf"} />
                 </ListItemIcon>
                 <ListItemText primary="Save PDF" />
-              </ListItem>
-              <ListItem button>
+              </ListItemButton>
+              <ListItemButton>
                 <ListItemIcon>
-                  <SendIcon />
+                <Iconify icon={"mdi-light:grid"} sx={{color: '#1DD75BFF'}} />
+                
+                
                 </ListItemIcon>
                 <ListItemText primary="Send to Google Sheets" />
-              </ListItem>
-              <ListItem button>
+              </ListItemButton>
+              <ListItemButton onClick={handleAddBudgetActive}>
                 <ListItemIcon>
-                  <div>{/* Custom icon or component */}</div>
+                <Iconify icon={"carbon:checkmark-outline"} sx={{color: '#00A805FF'}} />
                 </ListItemIcon>
                 <ListItemText primary="Convert to Active" />
-              </ListItem>
+              </ListItemButton>
             </List>
           </Popover>
         </Box>

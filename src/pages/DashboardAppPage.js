@@ -462,6 +462,9 @@ export default function DashboardAppPage() {
                     variant="contained"
                     color="primary"
                     sx={{ backgroundColor: "#E05858FF" }}
+                    startIcon={<Iconify icon="eva:plus-fill" />}
+            component={Link} // Use the Link component
+            to="/dashboard/add-budget"
                   >
                     Create a Budget
                   </Button>
@@ -551,8 +554,8 @@ export default function DashboardAppPage() {
                             status={
                               status == "draft"
                                 ? "Draft"
-                                : status == "Awaitingresponse"
-                                ? "Awaiting Response"
+                                : status == "active"
+                                ? "Active"
                                 : status == "Approved"
                                 ? "Approved"
                                 : status == "Changesrequested"
