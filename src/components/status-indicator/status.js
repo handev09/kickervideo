@@ -7,8 +7,8 @@ const StateIndicator = ({ status }) => {
         sx={{
           padding: '10px', // Adjust the padding as needed
           backgroundColor:
-            status === 'active' ? '#1DD75BFF' : // Green for Active state
-            status === 'draft' ? '#f44336' : // Red for Inactive state
+            status === 'Active' ? '#1DD75BFF' : // Green for Active state
+            status === 'Draft' ? '#f44336' : // Red for Inactive state
             status === 'Pending' ? '#ff9800' : // Orange for Pending state
             '#000', // Default color if the status doesn't match any of the above
           color: '#fff', // Text color

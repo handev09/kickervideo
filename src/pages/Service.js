@@ -192,15 +192,17 @@ console.log(items)
                   style={{ borderBottom: "1px solid #ccc", paddingBottom: "8px" }} // Add this style
                 >
                   {option.isCustom ? (
-                    <div>
-                      {option.item_name}
+                    <div style={{display:'flex', flexDirection:'row', gap:'90px', justifyContent:'space-between'}}>
+                       <Typography variant="subtitle1">This is a custom line item</Typography>
                       <button
                         onClick={() => {
-                          alert(`You clicked the button for: ${option.inputValue}`);
+
+                          const createNew = true
+                          
                           // Add your custom logic here for handling the button click
                         }}
                       >
-                        Click Me
+                        Add to Services
                       </button>
                     </div>
                   ) : (

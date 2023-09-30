@@ -13,7 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  Icon
+  Icon,
 } from "@mui/material";
 
 // import Iconify from "../components/iconify";
@@ -40,6 +40,8 @@ import { storage } from "../components/firebase/firebase-config";
 import MyDropdown from "../components/dropdown/DropDown";
 import Iconify from "../components/iconify";
 import ServiceComp from "./Service";
+import ClientDialog from "./ClientsDalog";
+import CreateClient from "./CreateClient";
 
 const AddBudget = () => {
   const [servicesData, setServicesData] = useState([]);
@@ -47,7 +49,13 @@ const AddBudget = () => {
   // Update the servicedata on change
 
   const handleServiceDataChange = (data, index) => {
-    console.log(data.index);
+
+
+    if (data.selectedItem && data.selectedItem.isCustom) {
+      // Access isCustom property safely
+      setIsDialogOpen(true);
+    }
+    
 
     // Use the functional form of setServicesData to ensure you have the latest state
     setServicesData((prevServicesData) => {
@@ -68,7 +76,7 @@ const AddBudget = () => {
     });
   };
 
-  console.log(servicesData);
+  // console.log(servicesData);
   const storedUser = localStorage.getItem("user");
   const parsedUser = JSON.parse(storedUser);
   // console.log(parsedUser);
@@ -449,9 +457,7 @@ const AddBudget = () => {
 
     if (data.name && data.description) {
       setDialogData((prevData) => [...prevData, data]);
-      console.log(data.name); // Full Name
-      console.log(data.description); // Description
-      console.log(data.optionValue);
+      
 
       // Update the services array in budgetData
       setBudgetData((prevBudgetData) => ({
@@ -460,7 +466,15 @@ const AddBudget = () => {
       }));
     }
 
+    if (data.createClient) {
+      setOpenClientsBox(false);
+      setcreateClientOpen(true);
+    } else {
+      setcreateClientOpen(false);
+    }
+
     setIsDialogOpen(false);
+    setOpenClientsBox(false);
   };
 
   const handleNotes = (e) => {
@@ -505,10 +519,10 @@ const AddBudget = () => {
     }));
   };
 
-  console.log("BugNum: " + budgetNumber);
+  // console.log("BugNum: " + budgetNumber);
 
   const handleTaxChange = (event) => {
-    console.log("TaxValue: " + event.target.value);
+    // console.log("TaxValue: " + event.target.value);
     const newTax = parseFloat(event.target.value);
     if (!isNaN(newTax)) {
       setTax(newTax);
@@ -649,7 +663,7 @@ const AddBudget = () => {
     setSelectedService({ id, unitPrice, cost, markup }); // Store the selected service's data
     // console.log(selectedService.unitPrice);
     setSelectedOption({ id, unitPrice, cost, markup });
-    console.log(selectedOption.id);
+    // console.log(selectedOption.id);
     // console.log(`Dropdown act: ${selectedOption.unitPrice}`);
     setQuantity(1);
   };
@@ -708,7 +722,7 @@ const AddBudget = () => {
   const handleSelect = (e) => {
     const files = Array.from(e.target.files);
     setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-    console.log(selectedFiles);
+    // console.log(selectedFiles);
 
     // Update the budgetData with the new attachments
     setBudgetData((prevBudgetData) => ({
@@ -727,6 +741,31 @@ const AddBudget = () => {
   //   });
   // };
 
+  const [openClientsBox, setOpenClientsBox] = useState(false);
+  const [createClientOpen, setcreateClientOpen] = useState(false);
+
+  const handleOpenBox = () => {
+    setOpenClientsBox(true);
+  };
+  // const handleOpenClient = () => {
+  //   setcreateClientOpen(true);
+  // };
+
+  const handleCloseBox = () => {
+    setOpenClientsBox(false);
+  };
+
+  const boxClientName = "";
+
+  const [selectedClient, setSelectedClient] = useState(null);
+
+  const handleClientSelect = (clientData) => {
+    // Handle the selected client data here
+    // console.log("Selected Client Data:", clientData);
+    setSelectedClient(clientData); // You can update the parent's state with the selected client data
+    setOpenClientsBox(false);
+  };
+
   return (
     <form>
       <Box>
@@ -736,7 +775,7 @@ const AddBudget = () => {
       </Box>
 
       {/* Input Boxes */}
-      <Container
+      <Stack
         sx={{
           display: "flex",
           flexDirection: "row",
@@ -754,6 +793,67 @@ const AddBudget = () => {
             marginLeft: 0,
           }}
         >
+          {/* <div style={{display:'flex', flexDirection:'row', alignItems: 'center'}}>
+            <Typography sx={{fontSize:'34px', fontWeight: 'Bold'}}>Budget for <span onClick={handleOpenBox} style={{ cursor: 'pointer', textDecoration: 'underline', fontSize:'34px', fontWeight: 'Bold' }}>
+        {boxClientName?boxClientName:'Client Name'}<Iconify icon={"icon-park-solid:add"} sx={{color: '#00A805FF', width: '64px', height: '64px'}} />
+      </span></Typography>
+          
+          </div> */}
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "nowrap",
+              alignItems: "center",
+              width: "100%",
+              // backgroundColor: "#000",
+            }}
+          >
+            <Typography sx={{ fontSize: "34px", fontWeight: "Bold" }}>
+              Budget for
+            </Typography>
+
+            <span
+              onClick={handleOpenBox}
+              style={{
+                display: "flex",
+                flexDirection: "row", // Allow for stacking text and icon vertically
+                alignItems: "center",
+                cursor: "pointer",
+                // textDecoration: "underline",
+                fontSize: "34px",
+                fontWeight: "Bold",
+                gap: "8px",
+                marginLeft: "10px",
+                position: "relative",
+                whiteSpace: "nowrap", // Add relative positioning to the span
+              }}
+            >
+              {/* <Typography>{boxClientName ? boxClientName : "Client Name"}</Typography> */}
+              {selectedClient ? (
+                selectedClient.company_name || "Client Name"
+              ) : (
+                <>
+                  Client Name
+                  <Iconify
+                    icon={"icon-park-solid:add"}
+                    sx={{ color: "#25252DFF", width: "64px", height: "64px" }}
+                  />
+                </>
+              )}
+              {/* Add a dotted line under the text and icon */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 0,
+                  width: "100%",
+                  border: "1px dotted #000", // Adjust the border style as needed
+                }}
+              ></div>
+            </span>
+          </div>
+
           <Typography variant="h5">Client</Typography>
           <TextField
             id="filled-textarea"
@@ -874,7 +974,7 @@ const AddBudget = () => {
             </Button>
           </Container> */}
         </Container>
-      </Container>
+      </Stack>
 
       <Container
         sx={{
@@ -885,10 +985,8 @@ const AddBudget = () => {
         }}
       >
         <Box sx={{ mt: 1, width: "100%" }}>
-          <Typography variant="p" gutterBottom>
-            PRODUCT/SERVICE
-          </Typography>
-          <Box sx={{ mt: 1 }}>
+          <Typography variant="p">PRODUCT/SERVICE</Typography>
+          <Box>
             {serviceComps.map((service, index) => (
               <div key={index}>{service}</div>
             ))}
@@ -929,13 +1027,35 @@ const AddBudget = () => {
           flexDirection: "column",
         }}
       >
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px' }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "30%",
+            marginBottom: "30px",
+            alignItems: "center",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "10px",
+          }}
+        >
           <Typography variant="body1">Subtotal</Typography>
           <Typography variant="body1">{`$${budgetSubTotal}`}</Typography>
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px'  }}>
-          <Typography variant="body1">Discount(%)</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "30%",
+            marginBottom: "30px",
+            alignItems: "center",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "10px",
+          }}
+        >
+          <Typography variant="body1">Discount%</Typography>
           {isDiscountEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
@@ -963,8 +1083,19 @@ const AddBudget = () => {
           )}
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center', borderBottom: '1px solid #ccc',paddingBottom: '10px'  }}>
-          <Typography variant="body1">Tax</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "30%",
+            marginBottom: "30px",
+            alignItems: "center",
+            borderBottom: "1px solid #ccc",
+            paddingBottom: "10px",
+          }}
+        >
+          <Typography variant="body1">Tax%</Typography>
           {isTaxEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
@@ -993,7 +1124,17 @@ const AddBudget = () => {
         </Box>
 
         {/* Right Column */}
-        <Box sx={{ display: "flex", flexDirection: "row", justifyContent: 'space-between', width: '30%', marginBottom: '30px', alignItems: 'center',paddingBottom: '10px' }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            width: "30%",
+            marginBottom: "30px",
+            alignItems: "center",
+            paddingBottom: "10px",
+          }}
+        >
           <Typography variant="body1">Total</Typography>
 
           <Typography variant="body1" sx={{ fontWeight: "bold" }}>
@@ -1128,7 +1269,9 @@ const AddBudget = () => {
           }}
         >
           <Button variant="outlined">Cancel</Button>
-          <Button variant="outlined" onClick={handleAddBudget}>Save Draft</Button>
+          <Button variant="outlined" onClick={handleAddBudget}>
+            Save Draft
+          </Button>
           <Button
             aria-describedby={id}
             sx={{
@@ -1160,21 +1303,25 @@ const AddBudget = () => {
             <List>
               <ListItemButton>
                 <ListItemIcon>
-                <Iconify icon={"iwwa:file-pdf"} />
+                  <Iconify icon={"iwwa:file-pdf"} />
                 </ListItemIcon>
                 <ListItemText primary="Save PDF" />
               </ListItemButton>
               <ListItemButton>
                 <ListItemIcon>
-                <Iconify icon={"mdi-light:grid"} sx={{color: '#1DD75BFF'}} />
-                
-                
+                  <Iconify
+                    icon={"mdi-light:grid"}
+                    sx={{ color: "#1DD75BFF" }}
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Send to Google Sheets" />
               </ListItemButton>
               <ListItemButton onClick={handleAddBudgetActive}>
                 <ListItemIcon>
-                <Iconify icon={"carbon:checkmark-outline"} sx={{color: '#00A805FF'}} />
+                  <Iconify
+                    icon={"carbon:checkmark-outline"}
+                    sx={{ color: "#00A805FF" }}
+                  />
                 </ListItemIcon>
                 <ListItemText primary="Convert to Active" />
               </ListItemButton>
@@ -1182,6 +1329,13 @@ const AddBudget = () => {
           </Popover>
         </Box>
       </Container>
+
+      <CreateClient openDialog={createClientOpen} onClose={handleDialogData} />
+      <ClientDialog
+        openDialog={openClientsBox}
+        onClose={handleDialogData}
+        onClientSelect={handleClientSelect}
+      />
     </form>
   );
 };
