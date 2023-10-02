@@ -13,6 +13,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  TextField
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -42,7 +43,6 @@ export default function ExpensesPage() {
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [items, setItems] = useState([]);
-  const [sortedExpenses, setSortedExpenses] = useState([]);
   const [sortedItems, setSortedItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
  const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +51,9 @@ export default function ExpensesPage() {
 const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
 
-
+      const itemz = useSelector((state) => state.items.items);
+      console.log(itemz);
+      const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -62,19 +64,28 @@ const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
       const id = parsedUser.userId;
       dispatch(fetchExpense(id));
+      setSortedItems(itemz);
+      
     }
   }, [dispatch, navigate]);
+   
 
-  const expensez = useSelector((state) => state.expenses.expenses);
-  console.log(expensez);
+  
 
-  const itemz = useSelector((state) => state.items.items);
-  console.log(itemz);
+ 
+  // setSortedItems(itemz)
 
   useEffect(() => {
     setItems(itemz);
-    setSortedItems(itemz);
-  }, [itemz]);
+  
+      // Filter items based on the search query
+      const searchedItems = items.filter((item) =>
+        item.item_name.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setSortedItems(searchedItems);
+    }, [searchValue, items]);
+   
+
 
   const handleMenuOpen = (event, expenseId) => {
     console.log(expenseId)
@@ -87,57 +98,12 @@ const storedUser = localStorage.getItem("user");
     setSelectedExpenseId(null);
   };
 
-  const handleEditExpense = (expenseId) => {
-    const expenseToEdit = expensez.find((expense) => expense.expense_id === expenseId);
-    setEditedExpenseData(expenseToEdit);
-    setIsEditExpense(true);
-  };
+  
 
-  const uniqueStatusValues = [
-    ...new Set(expensez.map((expense) => expense.status)),
-  ];
+  
+  
 
-  const statusSortOptions = uniqueStatusValues.map((status) => ({
-    value: status,
-    label: status,
-  }));
-
-  const uniqueEnteredByVlaues = [
-    ...new Set(expensez.map((expense) => expense.createdBy)),
-  ];
-
-  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
-    value: enteredBy,
-    label: enteredBy,
-  }));
-
-  const handleStatusSortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.status === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
-
-  const handleEnteredBySortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.createdBy === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
+  
 
   const handleDialogData = (data) => {
     console.log(data)
@@ -223,10 +189,22 @@ dispatch(fetchExpense(parsedUser.userId))
     );
     setExpenses(updatedExpenses);
   };
-  // Filter expenses based on the search query
-  const filteredExpenses = expenses.filter((expense) =>
-  expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
-  );
+  
+
+ 
+  // Define a state variable for filtered items
+const [filteredItems, setFilteredItems] = useState(sortedItems);
+  // useEffect(() => {
+  //   // Filter expenses based on the search query
+   
+  //   setSortedItems(searchedItems);
+  // }, [searchValue]);
+
+  const handleSearchChange = (event) => {
+    setSearchValue(event.target.value);
+  
+  };
+
 
  if(isLoading){
     return (
@@ -298,22 +276,17 @@ dispatch(fetchExpense(parsedUser.userId))
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
-                <Box sx={{ width: "30%" }}>
-                  <Typography>Status</Typography>
-                  <BlogPostsSort
-                    options={statusSortOptions}
-                    onSort={handleStatusSortChange}
-                  />
-                </Box>
-                <Box sx={{ width: "30%" }}>
-                  <Typography>Entered By</Typography>
-
-                  <BlogPostsSort
-                    options={enteredByOptions}
-                    onSort={handleEnteredBySortChange}
-                  />
-                </Box>
+                 <TextField
+                  label="Search Expenses..."
+                  variant="outlined"
+                  fullWidth
+                  value={searchValue}
+                  onChange={(e)=>{
+                    handleSearchChange(e)
+                  }}
+                  style={{ marginBottom: "16px", maxWidth: "30%" }}
+                />
+                
               </Stack>
               <Stack
                 sx={{

@@ -16,13 +16,24 @@ import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
 } from "@mui/icons-material";
 import MyDropdown from "../components/dropdown/DropDown";
+import { fetchItems } from "../state/redux/actions/items/fetch";
+import { addItem } from "../state/redux/actions/items/create";
+import { useDispatch, useSelector } from "react-redux";
 
-const CreateNewLineItem = ({ openDialog, onClose }) => {
+const CreateNewLineItem = ({ openDialog, onClose, index }) => {
+  console.log(index)
+  const itemNum = index
+
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.login.user);
+  const user_id = user.userId;
+  
   const [fullName, setFullName] = useState("");
   const [description, setDescription] = useState("");
   const [cost, setCost] = useState("");
   const [markup, setMarkup] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
+ 
 
   const dropdownOptions = [
     "Option 1",
@@ -34,25 +45,77 @@ const CreateNewLineItem = ({ openDialog, onClose }) => {
   const [employmentType, setEmploymentType] = useState("");
 
   const handleClos = () => {
-    const newItem = {
-      id: uuidv4(),
-      name: fullName,
-      description: description,
-      optionValue: employmentType,
-      unitPrice: parseFloat(unitPrice),
-      cost: parseFloat(cost),
-      markup: parseFloat(markup),
-      quantity: 1
-      // Convert unitPrice to a float number
-      // You can add other properties as needed
-    };
-    onClose(newItem);
-    setFullName(""); // Reset name state
-    setDescription(""); // Reset description state
-    setEmploymentType(""); // Reset optionValue state
-    setUnitPrice(""); // Reset unitPrice state
-    setCost(""); // Reset cost state
-    setMarkup("");
+    console.log('itNum :'+itemNum)
+    if(itemNum!==''){
+      const newItem = {
+        id: uuidv4(),
+        name: fullName,
+        description: description,
+        optionValue: employmentType,
+        unitPrice: parseFloat(unitPrice),
+        cost: parseFloat(cost),
+        markup: parseFloat(markup),
+        quantity: 1,
+        userId: user_id,
+          createdAt: new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          index:parseFloat(itemNum)
+      }
+      dispatch(addItem(newItem)).then(()=>{
+        dispatch(fetchItems(user_id)).then(()=>{
+          onClose(newItem);
+          setFullName(""); // Reset name state
+          setDescription(""); // Reset description state
+          setEmploymentType(""); // Reset optionValue state
+          setUnitPrice(""); // Reset unitPrice state
+          setCost(""); // Reset cost state
+          setMarkup("");
+        }).catch((error)=>{
+        console.error(error)
+      })
+      }).catch((error)=>{
+        console.error(error)
+      })
+    } else{
+      const newItem = {
+        id: uuidv4(),
+        name: fullName,
+        description: description,
+        optionValue: employmentType,
+        unitPrice: parseFloat(unitPrice),
+        cost: parseFloat(cost),
+        markup: parseFloat(markup),
+        quantity: 1,
+        userId: user_id,
+          createdAt: new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+      }
+      dispatch(addItem(newItem)).then(()=>{
+        dispatch(fetchItems(user_id)).then(()=>{
+          onClose(newItem);
+          setFullName(""); // Reset name state
+          setDescription(""); // Reset description state
+          setEmploymentType(""); // Reset optionValue state
+          setUnitPrice(""); // Reset unitPrice state
+          setCost(""); // Reset cost state
+          setMarkup("");
+        }).catch((error)=>{
+        console.error(error)
+      })
+      }).catch((error)=>{
+        console.error(error)
+      })
+    }
+    
+
+
+   
   };
 
   const handleNormalClose = () => {

@@ -54,6 +54,8 @@ import { fetchItems } from "../state/redux/actions/items/fetch";
 import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
 import { getUser } from "../state/redux/actions/users/getUser";
 import StateIndicator from "../components/status-indicator/status";
+import { fetchClients } from "../state/redux/actions/clients/fetch";
+import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 
 // ----------------------------------------------------------------------
 
@@ -238,6 +240,8 @@ export default function DashboardAppPage() {
       const id = parsedUser.userId; // Access the userId property
       dispatch(fetchUserBudgets(id));
       dispatch(fetchItems(id));
+      dispatch(fetchClients(id))
+      dispatch(fetchExpense(id))
       setBudgetsTotal(budgets.length);
       console.log(budgetsTotal);
 

@@ -13,6 +13,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  TextField
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -58,6 +59,7 @@ const storedUser = localStorage.getItem("user");
       dispatch(fetchExpense(id));
     }
   }, [dispatch, navigate]);
+  const [searchValue, setSearchValue] = useState("");
 
   const expensez = useSelector((state) => state.expenses.expenses);
   console.log(expensez);
@@ -190,11 +192,30 @@ dispatch(fetchExpense(parsedUser.userId))
   expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
   );
 
+ 
+
+  
+
+  useEffect(() => {
+    // Filter expenses based on the search query
+    const searchedExpenses = expenses.filter((expense) =>
+      expense.expense_name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setSortedExpenses(searchedExpenses);
+  }, [searchValue,expenses]);
+
+  const handleSearchChange = (event) => {
+    setSearchValue(event.target.value);
+    
+  };
+console.log(searchValue)
+
  if(isLoading){
     return (
       <LoadingSpinner />
     )
   }
+  
 
 
   return (
@@ -260,7 +281,16 @@ dispatch(fetchExpense(parsedUser.userId))
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
+                {/* <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
+                 */}
+                 <TextField
+                  label="Search Expenses..."
+                  variant="outlined"
+                  fullWidth
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                  style={{ marginTop: "20px", maxWidth: "30%" }}
+                />
                 <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort

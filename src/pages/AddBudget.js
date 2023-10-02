@@ -45,14 +45,16 @@ import CreateClient from "./CreateClient";
 
 const AddBudget = () => {
   const [servicesData, setServicesData] = useState([]);
+  const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0)
 
   // Update the servicedata on change
 
   const handleServiceDataChange = (data, index) => {
 
-
+console.log(data)
     if (data.selectedItem && data.selectedItem.isCustom) {
       // Access isCustom property safely
+      setCustomSelectedItemIndex(parseInt(index));
       setIsDialogOpen(true);
     }
     
@@ -231,13 +233,13 @@ const AddBudget = () => {
               // Your code to use the downloadURL
               // ...
               const newBudget = {
-                client: budgetData.client,
+                client: selectedClient.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
-                subtotal: budgetData.subtotal,
-                discount: budgetData.discount,
+                subtotal: budgetSubTotal,
+                discount: discount,
                 tax: budgetData.tax,
-                total: budgetData.total,
+                total: total,
                 internalNotes: budgetData.internalNotes,
                 // attachments: budgetData.attachments,
                 createdAt: new Date().toLocaleDateString("en-US", {
@@ -269,7 +271,7 @@ const AddBudget = () => {
                 });
 
               //Navigate to Home Page
-              navigate("/");
+              // navigate("/");
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);
@@ -284,13 +286,13 @@ const AddBudget = () => {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
       const newBudget = {
-        client: budgetData.client,
+        client: selectedClient.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
-        subtotal: budgetData.subtotal,
-        discount: budgetData.discount,
+        subtotal: budgetSubTotal,
+        discount: discount,
         tax: budgetData.tax,
-        total: budgetData.total,
+        total: total,
         internalNotes: budgetData.internalNotes,
         // attachments: budgetData.attachments,
         createdAt: new Date().toLocaleDateString("en-US", {
@@ -321,7 +323,7 @@ const AddBudget = () => {
         });
 
       //Navigate to Home Page
-      navigate("/");
+      // navigate("/");
     }
   };
 
@@ -345,13 +347,13 @@ const AddBudget = () => {
               // Your code to use the downloadURL
               // ...
               const newBudget = {
-                client: budgetData.client,
+                client: selectedClient.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
-                subtotal: budgetData.subtotal,
-                discount: budgetData.discount,
+                subtotal: budgetSubTotal,
+                discount: discount,
                 tax: budgetData.tax,
-                total: budgetData.total,
+                total: total,
                 internalNotes: budgetData.internalNotes,
                 // attachments: budgetData.attachments,
                 createdAt: new Date().toLocaleDateString("en-US", {
@@ -381,9 +383,10 @@ const AddBudget = () => {
                 .catch((error) => {
                   console.log(error);
                 });
+                console.log(budgetData)
 
               //Navigate to Home Page
-              navigate("/");
+              // navigate("/");
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);
@@ -398,13 +401,13 @@ const AddBudget = () => {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
       const newBudget = {
-        client: budgetData.client,
+        client: selectedClient.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
-        subtotal: budgetData.subtotal,
-        discount: budgetData.discount,
+        subtotal: budgetSubTotal,
+        discount: discount,
         tax: budgetData.tax,
-        total: budgetData.total,
+        total: total,
         internalNotes: budgetData.internalNotes,
         // attachments: budgetData.attachments,
         createdAt: new Date().toLocaleDateString("en-US", {
@@ -433,9 +436,10 @@ const AddBudget = () => {
         .catch((error) => {
           console.log(error);
         });
+        console.log(budgetData)
 
       //Navigate to Home Page
-      navigate("/");
+      // navigate("/");
     }
   };
 
@@ -453,7 +457,38 @@ const AddBudget = () => {
   };
 
   const handleDialogData = (data) => {
+
     // setDialogData(data)
+    console.log(data)
+
+    if (data.name && data.description&&data.index) {
+      setServicesData((prevServicesData) => {
+        // Find the index of the service data if it exists in the state
+        const serviceIndex = prevServicesData.findIndex(
+          (service) => service.index === data.index
+        );
+        console.log(serviceIndex);
+
+        const newData = {
+          index: data.index,
+          quantity:data.quantity,
+          selectedItem: {
+            item_name: data.name,
+            markup: data.markup,
+            item_desc: data.description
+          },
+          unitPrice:data.unitPrice
+        }
+  
+        // If the service data exists, update it; otherwise, add it to the state
+        if (serviceIndex !== -1) {
+          const updatedServicesData = [...prevServicesData];
+          updatedServicesData[serviceIndex] = newData;
+          console.log(updatedServicesData);
+          return updatedServicesData;
+        } 
+      });
+    }
 
     if (data.name && data.description) {
       setDialogData((prevData) => [...prevData, data]);
@@ -782,6 +817,7 @@ const AddBudget = () => {
           gap: "10px",
           marginBottom: "40px",
           mt: 7,
+          padding: '20px'
         }}
       >
         {/* ... Textfields Container ... */}
@@ -854,28 +890,8 @@ const AddBudget = () => {
             </span>
           </div>
 
-          <Typography variant="h5">Client</Typography>
-          <TextField
-            id="filled-textarea"
-            size="medium"
-            placeholder="Select +"
-            multiline
-            sx={{
-              width: "100%",
-              // py: 20,
-              "& .MuiFilledInput-root": {
-                border: "1px solid #000",
-                borderRadius: "4px",
-                marginBottom: 30,
-              },
-            }}
-            variant="outlined"
-            InputProps={{ disableUnderline: true }}
-            value={budgetData.client}
-            onChange={(e) =>
-              setBudgetData({ ...budgetData, client: e.target.value })
-            }
-          />
+         
+          
 
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
             <Typography variant="h5">Project Title</Typography>
@@ -976,16 +992,17 @@ const AddBudget = () => {
         </Container>
       </Stack>
 
-      <Container
+      <Stack
         sx={{
           display: "flex",
           justifyContent: "space-between",
           flexDirection: "row",
           gap: "40px",
+          padding:'20px'
         }}
       >
-        <Box sx={{ mt: 1, width: "100%" }}>
-          <Typography variant="p">PRODUCT/SERVICE</Typography>
+        <Box sx={{ mt: 1, width: "100%", }}>
+          <Typography variant="p"sx={{}}>PRODUCT/SERVICE</Typography>
           <Box>
             {serviceComps.map((service, index) => (
               <div key={index}>{service}</div>
@@ -1012,9 +1029,10 @@ const AddBudget = () => {
           <CreateNewLineItem
             openDialog={isDialogOpen}
             onClose={handleDialogData}
+            index={customSelectedItemIndex}
           />
         </Box>
-      </Container>
+      </Stack>
 
       <Container
         sx={{

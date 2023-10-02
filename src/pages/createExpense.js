@@ -19,6 +19,7 @@ import {
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
 } from "@mui/icons-material";
+import MyExpensesDropdown from "../components/dropdown-expenses/DropDown";
 import MyDropdown from "../components/dropdown/DropDown";
 import { addExpense } from "../state/redux/actions/expense/expenseActions";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
@@ -58,7 +59,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const budgets = useSelector((state) => state.budgets.budgets);
 
 
-  const dropdownJobs = budgets.map((budget) => budget.budget_name);
+  const dropdownJobs = budgets.map((budget) => budget);
   const dropdownOptionNames = budgets.map((budget) => budget.client_name);
 
   const handleClos = () => {
@@ -289,7 +290,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               
               <Box>
               <Typography>Job</Typography>
-              <MyDropdown
+              <MyExpensesDropdown
                 options={dropdownJobs}
                 onChange={(option) => setEmploymentType(option)}
               />
