@@ -45,7 +45,8 @@ export default function AccountPopover() {
 
   const handleLogOut = () => {
     localStorage.removeItem('user');
-    navigate('/login', { replace: true });
+    // navigate('/login', { replace: true });
+    window.location.href = '/login';
   }
 
 
