@@ -138,7 +138,8 @@ export default function CrewPage() {
     const storedUser = localStorage.getItem('user');
     if (!storedUser) {
       // Redirect to the login page
-      navigate('/login');
+      // navigate('/login');
+      window.location.href = '/login';
     } else {
       // Retrieve user data from local storage
       const storedUser = localStorage.getItem('user');
