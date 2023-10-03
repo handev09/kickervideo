@@ -575,63 +575,7 @@ console.log(data)
     // setTotal(total.toFixed(2));
   };
 
-  //   useEffect(() => {
-
-  //     // Calculate the total with discount and tax percentage
-  //     const discountAmount = (budgetSubTotal * discount) / 100;
-  //     // console.log('DisAmount: '+discountAmount)
-
-  //     let tota = budgetSubTotal - discountAmount;
-  //     // console.log(discount)
-
-  //     // Ensure the total is never negative
-  //     if (tota < 0) {
-  //       tota = 0;
-  //     }
-  //     // Ensure the total is never negative
-  //   if (!isNaN(tota) && tota >= 0) {
-  //     setTotal(parseFloat(tota.toFixed(2)));
-  //   } else {
-  //     setTotal(0);
-  //   }
-
-  //     setBudgetData((prevBudgetData) => ({
-  //       ...prevBudgetData,
-  //       // subtotal: subtotal,
-  //       discount: discount,
-  //       // tax: tax,
-  //       total: total,
-  //     }));
-  //   }, [discount]);
-
-  //   useEffect(() => {
-
-  // console.log('Total '+total)
-  //     // Calculate the total with discount and tax percentage
-  //     const taxAmount = (total * tax) / 100;
-  //     console.log('TaxAmount: '+taxAmount)
-
-  //     let tota = total + taxAmount;
-
-  //     // Ensure the total is never negative
-  //     if (tota < 0) {
-  //       tota = 0;
-  //     }
-  //    // Ensure the total is never negative
-  //   if (!isNaN(tota) && tota >= 0) {
-  //     setTotal(parseFloat(tota.toFixed(2)));
-  //   } else {
-  //     setTotal(0);
-  //   }
-
-  //     setBudgetData((prevBudgetData) => ({
-  //       ...prevBudgetData,
-  //       // subtotal: subtotal,
-  //       // discount: discount,
-  //       tax: tax,
-  //       total: total,
-  //     }));
-  //   }, [tax]);
+ 
 
   useEffect(() => {
     // Calculate the total with discount and tax percentage
