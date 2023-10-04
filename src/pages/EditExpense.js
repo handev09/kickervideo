@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Box
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
@@ -19,6 +20,8 @@ import MyDropdown from "../components/dropdown/DropDown";
 
 import { useSelector,useDispatch } from "react-redux";
 import { deleteExpense } from "../state/redux/actions/expense/deleteExpense"; // Update the import path to match your project structure
+import MyExpensesDropdown from "../components/dropdown-expenses/DropDown";
+import MyReimburseDropdown from "../components/dropdown-reimburse/DropDown";
 
 const EditExpense = ({ openDialog, onClose, initialData }) => {
   const dispatch = useDispatch();
@@ -34,6 +37,9 @@ console.log(budgets)
   const dropdownOptions = budgets.map((budget) => budget.budget_name);
   const dropdownOptionNames = budgets.map((budget) => budget.client_name);
   const [employmentType, setEmploymentType] = useState("");
+  const [reimburse, setReimburse]=useState("")
+  const [reimburseOptions, setReimburseOptions] = useState("");
+  const dropdownJobs = budgets.map((budget) => budget);
   console.log(initialData)
 
   useEffect(() => {
@@ -44,6 +50,12 @@ console.log(budgets)
       setEmploymentType(initialData.optionValue || "");
     }
   }, [initialData]);
+
+  
+  useEffect(()=>{
+    setReimburseOptions(employmentType.company_client)
+  }, [employmentType])
+  console.log(reimburseOptions)
 
   const handleCloz = () => {
     const newItem = {
@@ -63,27 +75,18 @@ console.log(budgets)
     setDescription(""); // Reset description state
     setEmploymentType(""); // Reset optionValue state
     // setUnitPrice(""); // Reset unitPrice state
-    setCost(""); // Reset cost state
-    // setMarkup("");
+    setCost("");
   };
 
   const handleDeleteExpense = (expenseId) => {
     console.log(expenseId)
-    // Filter out the expense with the specified expenseId
-    // const updatedExpenses = expenses.filter(
-    //   (expense) => expense.id !== expenseId
-    // );
     dispatch(deleteExpense(expenseId));
     const newItem = {
       id: "",
       name: "",
       description: "",
       optionValue: "",
-    //   unitPrice: "",
       cost: "",
-    //   markup: "",
-      // Convert unitPrice to a float number
-      // You can add other properties as needed
     };
     onClose(newItem)
   };
@@ -94,11 +97,7 @@ console.log(budgets)
       name: "",
       description: "",
       optionValue: "",
-    //   unitPrice: "",
       cost: "",
-    //   markup: "",
-      // Convert unitPrice to a float number
-      // You can add other properties as needed
     };
 
     onClose(newItem);
@@ -150,7 +149,7 @@ console.log(budgets)
             maxWidth="md"
             PaperProps={{
               style: {
-                minHeight: "90vh", // Set the maximum height of the content area
+                minHeight: "70vh", // Set the maximum height of the content area
               },
             }}
           >
@@ -215,16 +214,48 @@ console.log(budgets)
               />
             </Container>
 
-            <Container sx={{ marginBottom: 5, position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between' }}>
-              <MyDropdown
-                options={dropdownOptions}
-                onChange={(option) => setEmploymentType(option)}
-              />
+            <Container
+              sx={{
+                marginBottom: 5,
+                // position: "relative",
+                zIndex: 2,
+                display: "flex",
+                // width: '100%',
+                // backgroundColor:'#000',
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{
+                // position: "relative",
+                zIndex: 2,
+                width: '40%',
+                // justifyContent: "space-between",
+              }}>
+                <Typography>Job</Typography>
+                <MyExpensesDropdown
+                  options={dropdownJobs}
+                  onChange={(option) => {
+                    setEmploymentType(option);
+                    console.log(employmentType);
+                  }}
+                />
+              </Box>
+              <Box sx={{
+                // position: "relative",
+                zIndex: 2,
+                width: '40%',
+                // justifyContent: "space-between",
+              }}>
+                <Typography>Reimburse to</Typography>
+                <MyReimburseDropdown
+                  option={reimburseOptions}
+                  onChange={(option) => {
+                    setReimburse(option)
+                  }}
+                />
+              </Box>
+
               
-              <MyDropdown
-                options={dropdownOptionNames}
-                onChange={(option) => setEmploymentType(option)}
-              />
             </Container>
 
             <Container

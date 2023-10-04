@@ -14,7 +14,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Box
+  Box,
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
@@ -29,6 +29,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { storage } from "../components/firebase/firebase-config";
+import MyReimburseDropdown from "../components/dropdown-reimburse/DropDown";
 
 const CreateNewExpense = ({ openDialog, onClose }) => {
   console.log(openDialog);
@@ -45,6 +46,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
     total: 0,
     date: "",
   });
+  // const [rei]
   const [selectedImage, setSelectedImage] = useState(null);
   const imageInputRef = useRef(null);
 
@@ -58,9 +60,13 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const user_id = user.userId;
   const budgets = useSelector((state) => state.budgets.budgets);
 
-
   const dropdownJobs = budgets.map((budget) => budget);
-  const dropdownOptionNames = budgets.map((budget) => budget.client_name);
+  const [reimburseOptions, setReimburseOptions] = useState("");
+
+  useEffect(()=>{
+    setReimburseOptions(employmentType.company_client)
+  }, [employmentType])
+  console.log(reimburseOptions)
 
   const handleClos = () => {
     if (selectedImage) {
@@ -92,7 +98,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               };
 
               dispatch(addExpense(newItem));
-              dispatch(fetchExpense(user_id))
+              dispatch(fetchExpense(user_id));
               console.log(newItem);
               onClose(newItem);
               setItemName(""); // Reset name state
@@ -110,7 +116,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
         .catch((error) => {
           console.error("Error uploading image:", error);
         });
-    } else{
+    } else {
       const newItem = {
         id: uuidv4(),
         name: itemName,
@@ -140,7 +146,6 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
       setCreatedBy(""); // Reset cost state
       // setMarkup("");
     }
-    
   };
 
   const handleImageChange = (event) => {
@@ -284,33 +289,54 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 variant="outlined"
                 InputProps={{ disableUnderline: true }}
               />
-              </Container>
-
-            <Container sx={{ marginBottom: 5, position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'space-between' }}>
-              
-              <Box>
-              <Typography>Job</Typography>
-              <MyExpensesDropdown
-                options={dropdownJobs}
-                onChange={(option) => setEmploymentType(option)}
-              />
-              </Box>
-              <Box>
-              <Typography>Reimburse to</Typography>
-              <MyDropdown
-                options={dropdownOptionNames}
-                onChange={(option) => setEmploymentType(option)}
-              />
-              </Box>
-              
-              
-              {/* <MyDropdown
-                options={dropdownOptionNames}
-                onChange={(option) => setEmploymentType(option)}
-              /> */}
             </Container>
 
-            
+            {/* Select fields */}
+
+            <Container
+              sx={{
+                marginBottom: 5,
+                // position: "relative",
+                zIndex: 2,
+                display: "flex",
+                // width: '100%',
+                // backgroundColor:'#000',
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{
+                // position: "relative",
+                zIndex: 2,
+                width: '40%',
+                // justifyContent: "space-between",
+              }}>
+                <Typography>Job</Typography>
+                <MyExpensesDropdown
+                  options={dropdownJobs}
+                  onChange={(option) => {
+                    setEmploymentType(option);
+                    console.log(employmentType);
+                  }}
+                />
+              </Box>
+              <Box sx={{
+                // position: "relative",
+                zIndex: 2,
+                width: '40%',
+                // justifyContent: "space-between",
+              }}>
+                <Typography>Reimburse to</Typography>
+                <MyReimburseDropdown
+                  option={reimburseOptions}
+                  onChange={(option) => {
+                    setReimburse(option)
+                  }}
+                />
+              </Box>
+
+              
+            </Container>
+
             <Container
               sx={{
                 marginBottom: 4,
@@ -339,13 +365,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 variant="outlined"
                 InputProps={{ disableUnderline: true }}
               />
-
-              
             </Container>
-
-               
-            
-            
 
             <Container
               // justifyContent="center"
@@ -390,14 +410,18 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               )}
             </Container>
             <Container>
-                <Box>
-              <Typography>Expense Status</Typography>
-              <MyDropdown
-                options={statusOptions}
-                onChange={(option) => setStatus(option)}
-              />
+              <Box sx={{
+                // position: "relative",
+                width: '50%',
+                // justifyContent: "space-between",
+              }}>
+                <Typography>Expense Status</Typography>
+                <MyDropdown
+                  options={statusOptions}
+                  onChange={(option) => setStatus(option)}
+                />
               </Box>
-                </Container>
+            </Container>
 
             <DialogActions sx={{ marginRight: "40px" }}>
               <Button
@@ -413,10 +437,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 Cancel
               </Button>
 
-             
               <Button
-                onClick={
-                  handleClos}
+                onClick={handleClos}
                 color="primary"
                 sx={{
                   backgroundColor: "#E05858FF",

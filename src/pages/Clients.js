@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Grid,
   Button,
@@ -13,28 +13,25 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  TextField
+  TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Iconify from "../components/iconify";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
 // import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
 import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
-import LoadingSpinner from './loadingSpinner'
-import CreateNewLineItem from "./CreateNewLineItem";
-import { addItem } from '../state/redux/actions/items/create'
-import { fetchItems } from '../state/redux/actions/items/fetch'
+import LoadingSpinner from "./loadingSpinner";
+import CreateClient from "./CreateClient";
+// import { Link, useNavigate } from "react-router-dom"; 
 
-
-export default function ExpensesPage() {
+export default function ClientsPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditExpense, setIsEditExpense] = useState(false);
@@ -42,54 +39,42 @@ export default function ExpensesPage() {
   const [editedExpenseData, setEditedExpenseData] = useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
-  const [items, setItems] = useState([]);
-  const [sortedItems, setSortedItems] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
- const [isLoading, setIsLoading] = useState(false);
+  const [clients, setClients]=useState([])
+  const [sortedClients, setSortedClients]=useState([])
+  const [sortedExpenses, setSortedExpenses] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-
-const storedUser = localStorage.getItem("user");
-      const parsedUser = JSON.parse(storedUser);
-
-      const itemz = useSelector((state) => state.items.items);
-      console.log(itemz);
-      const [searchValue, setSearchValue] = useState("");
+  const storedUser = localStorage.getItem("user");
+  const parsedUser = JSON.parse(storedUser);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
-      // navigate("/login");
-      window.location.href = '/login';
+      window.location.href = "/login";
     } else {
       const storedUser = localStorage.getItem("user");
       const parsedUser = JSON.parse(storedUser);
       const id = parsedUser.userId;
       dispatch(fetchExpense(id));
-      setSortedItems(itemz);
-      
     }
   }, [dispatch, navigate]);
-   
+  const [searchValue, setSearchValue] = useState("");
 
-  
+  const expensez = useSelector((state) => state.expenses.expenses);
+  console.log(expensez);
 
- 
-  // setSortedItems(itemz)
+  const clientz = useSelector((state) => state.clients.clients);
+  console.log(clients);
+
 
   useEffect(() => {
-    setItems(itemz);
-  
-      // Filter items based on the search query
-      const searchedItems = items.filter((item) =>
-        item.item_name.toLowerCase().includes(searchValue.toLowerCase())
-      );
-      setSortedItems(searchedItems);
-    }, [searchValue, items]);
-   
-
+    setClients(clientz);
+    setSortedClients(clientz);
+  }, [clientz]);
 
   const handleMenuOpen = (event, expenseId) => {
-    console.log(expenseId)
+    console.log(expenseId);
     setAnchorEl(event.currentTarget);
     setSelectedExpenseId(expenseId);
   };
@@ -99,18 +84,64 @@ const storedUser = localStorage.getItem("user");
     setSelectedExpenseId(null);
   };
 
-  
+  const handleEditExpense = (expenseId) => {
+    const expenseToEdit = expensez.find(
+      (expense) => expense.expense_id === expenseId
+    );
+    setEditedExpenseData(expenseToEdit);
+    setIsEditExpense(true);
+  };
 
-  
-  
+  const uniqueStatusValues = [
+    ...new Set(expensez.map((expense) => expense.status)),
+  ];
 
-  
+  const statusSortOptions = uniqueStatusValues.map((status) => ({
+    value: status,
+    label: status,
+  }));
+
+  const uniqueEnteredByVlaues = [
+    ...new Set(expensez.map((expense) => expense.createdBy)),
+  ];
+
+  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
+    value: enteredBy,
+    label: enteredBy,
+  }));
+
+  const handleStatusSortChange = (selectedVal) => {
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.status === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
+  };
+
+  const handleEnteredBySortChange = (selectedVal) => {
+    const selectedOption = selectedVal;
+
+    // Sort expenses based on the selected option for "Entered By"
+    let sortedExpenses = [...expenses];
+    if (selectedOption) {
+      sortedExpenses = sortedExpenses.filter(
+        (expense) => expense.createdBy === selectedOption
+      );
+    }
+
+    setSortedExpenses(sortedExpenses);
+  };
 
   const handleDialogData = (data) => {
-    console.log(data)
- setIsLoading(true); 
+    setIsLoading(true);
 
-    if (data.name && data.description) {
+    if (data.companyName && data.companyEmail && data.phoneNumber) {
       if (editedExpenseData) {
         const updatedExpenses = expenses.map((expense) =>
           expense.id === editedExpenseData.id
@@ -120,60 +151,24 @@ const storedUser = localStorage.getItem("user");
         setExpenses(updatedExpenses);
         setIsEditExpense(false);
       } else {
-        setItems((prevItems) => [
-          ...prevItems,
+        setClients((prevClients) => [
+          ...prevClients,
           {
             id: data.id,
-            name: data.name,
-            description: data.description,
-            optionValue: data.optionValue,
-            createdAt: new Date().toLocaleDateString(),
-            total: data.cost,
+            company_name: data.name,
+            company_email: data.description,
+            street1: data.street1,
+            street2: data.street2,
+            city: data.city,
+            country: data.country,
+            userId: data.user_id,
+            createdAt: new Date().toLocaleDateString()
           },
         ]);
-        const newItem = {
-          id: data.id,
-            name: data.name,
-            description: data.description,
-            optionValue: data.optionValue,
-            createdAt: new Date().toLocaleDateString(),
-            markup: data.markup,
-            cost: data.unitPrice,
-            userId: parsedUser.userId
-        }
-        dispatch(addItem(newItem)).then((res) => {
-          console.log('item added')
-          // Fetching is complete, set isLoading back to false
-          dispatch(fetchItems(parsedUser.userId)).then(()=>{
-          }).catch((error)=>{
-            console.log(error);
-          });
-          console.log('set items data here')
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          // Handle any errors here, and also set isLoading back to false
-          console.error("Error fetching expenses:", error);
-          setIsLoading(false);
-        });
-       
-
-
       }
     }
-dispatch(fetchExpense(parsedUser.userId))
-    .then(() => {
-      // Fetching is complete, set isLoading back to false
-      console.log('set expenses data here')
-      setIsLoading(false);
-    })
-    .catch((error) => {
-      // Handle any errors here, and also set isLoading back to false
-      console.error("Error fetching expenses:", error);
-      setIsLoading(false);
-    });
-
     setIsDialogOpen(false);
+    setIsLoading(false);
     setIsEditExpense(false);
     setEditedExpenseData(null);
     setAnchorEl(null);
@@ -190,34 +185,32 @@ dispatch(fetchExpense(parsedUser.userId))
     );
     setExpenses(updatedExpenses);
   };
-  
+  // Filter expenses based on the search query
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
+  );
 
- 
-  // Define a state variable for filtered items
-const [filteredItems, setFilteredItems] = useState(sortedItems);
-  // useEffect(() => {
-  //   // Filter expenses based on the search query
-   
-  //   setSortedItems(searchedItems);
-  // }, [searchValue]);
+  useEffect(() => {
+    // Filter expenses based on the search query
+    const searchedClients = clients.filter((client) =>
+      client.company_name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setSortedClients(searchedClients);
+  }, [searchValue, clients]);
 
   const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
-  
   };
+  console.log(searchValue);
 
-
- if(isLoading){
-    return (
-      <LoadingSpinner />
-    )
+  if (isLoading) {
+    return <LoadingSpinner />;
   }
-
 
   return (
     <>
       <Helmet>
-        <title> Dashboard: Items | VBudget </title>
+        <title>Clients | VBudget </title>
       </Helmet>
 
       <Box>
@@ -228,9 +221,9 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
           mb={5}
         >
           <Typography variant="h4" gutterBottom>
-            Line Items
+            Clients
           </Typography>
-          <CreateNewLineItem
+          <CreateClient
             openDialog={isDialogOpen}
             onClose={handleDialogData}
           />
@@ -247,7 +240,7 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
             startIcon={<Iconify icon="eva:plus-fill" />}
             onClick={handleDialogOpen}
           >
-            New Item
+            New Client
           </Button>
         </Stack>
 
@@ -268,7 +261,7 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                     color: "#fff",
                   }}
                 >
-                  {sortedItems.length} Items
+                  {sortedClients.length} Clients
                 </Badge>
               </Stack>
               <Stack
@@ -277,17 +270,31 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                 alignItems="center"
                 justifyContent="space-between"
               >
-                 <TextField
-                  label="Search Items..."
+                {/* <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
+                 */}
+                <TextField
+                  label="Search Clients..."
                   variant="outlined"
                   fullWidth
                   value={searchValue}
-                  onChange={(e)=>{
-                    handleSearchChange(e)
-                  }}
-                  style={{ marginBottom: "16px", maxWidth: "30%" }}
+                  onChange={handleSearchChange}
+                  style={{ marginTop: "20px", maxWidth: "30%" }}
                 />
-                
+                <Box sx={{ width: "30%" }}>
+                  <Typography>Status</Typography>
+                  <BlogPostsSort
+                    options={statusSortOptions}
+                    onSort={handleStatusSortChange}
+                  />
+                </Box>
+                <Box sx={{ width: "30%" }}>
+                  <Typography>Entered By</Typography>
+
+                  <BlogPostsSort
+                    options={enteredByOptions}
+                    onSort={handleEnteredBySortChange}
+                  />
+                </Box>
               </Stack>
               <Stack
                 sx={{
@@ -297,9 +304,9 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                   padding: "10px",
                 }}
               >
-                {sortedItems.map((item) => (
+                {sortedClients.map((client) => (
                   <div
-                    key={item.id}
+                    key={client.id}
                     style={{
                       borderBottom: "1px solid #ccc",
                       padding: "10px",
@@ -313,12 +320,19 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                         width: "20%",
                       }}
                     >
-                      <Typography variant="subtitle1">
-                        {item.item_name}
+                      {/* <Typography variant="subtitle1">
+                        {client.company_name}
                       </Typography>
                       <Typography variant="body2">
-                        {item.item_desc}
-                      </Typography>
+                        {client.company_email}
+                      </Typography> */}
+                       {/* Link to the client details page */}
+                <Link to={`/dashboard/client-details/${client.client_id}`}> {/* Use the client's unique identifier */}
+                  <Typography variant="subtitle1">
+                    {client.company_name}
+                  </Typography>
+                  <Typography variant="body2">{client.company_email}</Typography>
+                </Link>
                     </div>
                     <div
                       style={{
@@ -326,7 +340,7 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                       }}
                     >
                       <Typography variant="subtitle3">
-                        {item.created_at}
+                        {client.created_at}
                       </Typography>
                     </div>
                     <div
@@ -337,12 +351,14 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                       }
                     >
                       <Typography variant="subtitle3">
-                        ${item.cost}
+                        {client.country}
                       </Typography>
                     </div>
                     <div>
                       <IconButton
-                        onClick={(event) => handleMenuOpen(event, item.item_id)}
+                        onClick={(event) =>
+                          handleMenuOpen(event, client.client_num)
+                        }
                       >
                         <MoreVertIcon />
                       </IconButton>
@@ -352,13 +368,13 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                         open={Boolean(anchorEl)}
                         onClose={handleMenuClose}
                       >
-                        {/* <MenuItem
+                        <MenuItem
                           onClick={() => {
                             handleEditExpense(selectedExpenseId);
                           }}
                         >
                           Edit
-                        </MenuItem> */}
+                        </MenuItem>
                         {/* <MenuItem
                           onClick={() => handleDeleteExpense(selectedExpenseId)}
                         >
@@ -390,5 +406,3 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
     </>
   );
 }
-
-

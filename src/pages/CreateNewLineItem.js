@@ -36,11 +36,11 @@ const CreateNewLineItem = ({ openDialog, onClose, index }) => {
  
 
   const dropdownOptions = [
-    "Option 1",
-    "Option 2",
-    "Option 3",
-    "Option 4",
-    "Option 5",
+    "Per Hour",
+    "Per Day",
+    "Half Day",
+    "Flat",
+    "Other",
   ];
   const [employmentType, setEmploymentType] = useState("");
 
@@ -246,6 +246,9 @@ const CreateNewLineItem = ({ openDialog, onClose, index }) => {
             </Container>
 
             <Container sx={{ marginBottom: 5 }}>
+            <Typography variant="body1">
+            RATE
+          </Typography>
               <MyDropdown
                 options={dropdownOptions}
                 onChange={(option) => setEmploymentType(option)}

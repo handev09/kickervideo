@@ -45,19 +45,17 @@ import CreateClient from "./CreateClient";
 
 const AddBudget = () => {
   const [servicesData, setServicesData] = useState([]);
-  const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0)
+  const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
 
   // Update the servicedata on change
 
   const handleServiceDataChange = (data, index) => {
-
-console.log(data)
+    console.log(data);
     if (data.selectedItem && data.selectedItem.isCustom) {
       // Access isCustom property safely
       setCustomSelectedItemIndex(parseInt(index));
       setIsDialogOpen(true);
     }
-    
 
     // Use the functional form of setServicesData to ensure you have the latest state
     setServicesData((prevServicesData) => {
@@ -99,6 +97,8 @@ console.log(data)
   const [discount, setDiscount] = useState(0);
   const [budgetNumber, setBudgetNumber] = useState(0);
   const [tax, setTax] = useState(0);
+  const [contacts, SetContacts] = useState([]);
+  const [selectedClientName, setSelectedClientName] = useState("");
 
   // Service Comp
   const [serviceCount, setServiceCount] = useState(0);
@@ -124,7 +124,12 @@ console.log(data)
   // setBudgetNumber(budgets.legth)
 
   const items = useSelector((state) => state.items.items);
-  // console.log(items);
+  const contactz = useSelector((state) => state.contacts.contacts);
+  console.log(contactz);
+
+  useEffect(() => {
+    SetContacts(contactz);
+  }, [contactz]);
 
   const handleDeleteServiceComp = (index) => {
     // console.log(index)
@@ -252,6 +257,7 @@ console.log(data)
                 status: "draft",
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
+                clientName: selectedClientName,
               };
               console.log(newBudget);
 
@@ -304,6 +310,7 @@ console.log(data)
         budgetId: budgetData.budgetId,
         status: "draft",
         budgetNumber: budgetNumber,
+        clientName: selectedClientName,
       };
       console.log(newBudget);
 
@@ -346,13 +353,45 @@ console.log(data)
 
               // Your code to use the downloadURL
               // ...
+              // Create an array of service objects
+              const serviceArray = servicesData.map((service) => {
+                const unitPrice = parseFloat(service.unitPrice);
+                const quantity = parseFloat(service.quantity);
+                const markupPercentage = parseFloat(
+                  service.selectedItem.markup?service.selectedItem.markup:service.markup
+                );
+
+                // Calculate the cost based on unitPrice, quantity, and markup percentage
+                const cost =
+                  unitPrice * quantity +
+                  (unitPrice * quantity * markupPercentage) / 100;
+
+                return {
+                  id: uuidv4(),
+                  name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
+                  description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+                  cost: cost,
+                  markup: markupPercentage,
+                  unitPrice: unitPrice,
+                  quantity: quantity,
+                  userId: user_id,
+                  budgetId: budgetData.budgetId,
+                  createdAt: new Date().toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  }),
+                  item_rate: "",
+                };
+              });
+
               const newBudget = {
                 client: selectedClient.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
                 subtotal: budgetSubTotal,
                 discount: discount,
-                tax: budgetData.tax,
+                tax: tax,
                 total: total,
                 internalNotes: budgetData.internalNotes,
                 // attachments: budgetData.attachments,
@@ -366,6 +405,8 @@ console.log(data)
                 status: "active",
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
+                clientName: selectedClientName,
+                serviceData: serviceArray
               };
               console.log(newBudget);
 
@@ -383,7 +424,7 @@ console.log(data)
                 .catch((error) => {
                   console.log(error);
                 });
-                console.log(budgetData)
+              console.log(servicesData);
 
               //Navigate to Home Page
               // navigate("/");
@@ -419,6 +460,7 @@ console.log(data)
         budgetId: budgetData.budgetId,
         status: "active",
         budgetNumber: budgetNumber,
+        clientName: selectedClientName,
       };
       console.log(newBudget);
 
@@ -436,7 +478,7 @@ console.log(data)
         .catch((error) => {
           console.log(error);
         });
-        console.log(budgetData)
+      console.log(budgetData);
 
       //Navigate to Home Page
       // navigate("/");
@@ -457,11 +499,10 @@ console.log(data)
   };
 
   const handleDialogData = (data) => {
-
     // setDialogData(data)
-    console.log(data)
+    console.log(data);
 
-    if (data.name && data.description&&data.index) {
+    if (data.name && data.description && data.index) {
       setServicesData((prevServicesData) => {
         // Find the index of the service data if it exists in the state
         const serviceIndex = prevServicesData.findIndex(
@@ -471,28 +512,27 @@ console.log(data)
 
         const newData = {
           index: data.index,
-          quantity:data.quantity,
+          quantity: data.quantity,
           selectedItem: {
             item_name: data.name,
             markup: data.markup,
-            item_desc: data.description
+            item_desc: data.description,
           },
-          unitPrice:data.unitPrice
-        }
-  
+          unitPrice: data.unitPrice,
+        };
+
         // If the service data exists, update it; otherwise, add it to the state
         if (serviceIndex !== -1) {
           const updatedServicesData = [...prevServicesData];
           updatedServicesData[serviceIndex] = newData;
           console.log(updatedServicesData);
           return updatedServicesData;
-        } 
+        }
       });
     }
 
     if (data.name && data.description) {
       setDialogData((prevData) => [...prevData, data]);
-      
 
       // Update the services array in budgetData
       setBudgetData((prevBudgetData) => ({
@@ -574,8 +614,6 @@ console.log(data)
 
     // setTotal(total.toFixed(2));
   };
-
- 
 
   useEffect(() => {
     // Calculate the total with discount and tax percentage
@@ -710,16 +748,6 @@ console.log(data)
     }));
   };
 
-  // const handleDeleteServiceComp = (indexToDelete) => {
-  //   console.log('index: '+indexToDelete)
-  //   setServiceComps((prevServiceComps) => {
-  //     // Create a copy of the serviceComps array and remove the component at the specified index
-  //     const updatedServiceComps = [...prevServiceComps];
-  //     updatedServiceComps.splice(indexToDelete, 1);
-  //     return updatedServiceComps;
-  //   });
-  // };
-
   const [openClientsBox, setOpenClientsBox] = useState(false);
   const [createClientOpen, setcreateClientOpen] = useState(false);
 
@@ -761,7 +789,7 @@ console.log(data)
           gap: "10px",
           marginBottom: "40px",
           mt: 7,
-          padding: '20px'
+          padding: "20px",
         }}
       >
         {/* ... Textfields Container ... */}
@@ -834,10 +862,16 @@ console.log(data)
             </span>
           </div>
 
-         
-          
-
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
+            <Typography variant="h5">Client Name</Typography>
+            <MyDropdown
+              options={contacts.map((contact) => contact.contact_name)}
+              onChange={(data) => {
+                setSelectedClientName(data);
+                console.log(selectedClientName);
+              }}
+            />
+
             <Typography variant="h5">Project Title</Typography>
             <TextField
               id="filled-textarea"
@@ -942,11 +976,13 @@ console.log(data)
           justifyContent: "space-between",
           flexDirection: "row",
           gap: "40px",
-          padding:'20px'
+          padding: "20px",
         }}
       >
-        <Box sx={{ mt: 1, width: "100%", }}>
-          <Typography variant="p"sx={{}}>PRODUCT/SERVICE</Typography>
+        <Box sx={{ mt: 1, width: "100%" }}>
+          <Typography variant="p" sx={{}}>
+            PRODUCT/SERVICE
+          </Typography>
           <Box>
             {serviceComps.map((service, index) => (
               <div key={index}>{service}</div>
@@ -957,7 +993,7 @@ console.log(data)
             sx={{ backgroundColor: "#E05858FF", color: "#fff", mt: 2 }}
             onClick={addServiceComp}
           >
-            + Add ServiceComp
+            + Add Line Item
           </Button>
 
           {/* <Button
@@ -1106,13 +1142,6 @@ console.log(data)
       </Container>
 
       <Container sx={{ padding: "20px", mt: 20 }}>
-        {/* <Typography variant="h5" sx={{ marginBottom: "10px" }}>
-          Budget Status
-        </Typography>
-      <MyDropdown
-                options={statusOptions}
-                onChange={(option) => setStatus(option)}
-              /> */}
         <Typography
           variant="h3"
           sx={{ marginBottom: "10px", marginTop: "30px" }}

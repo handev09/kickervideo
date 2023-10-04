@@ -10,6 +10,7 @@ import subscribeReducer from '../auth/subscribe';
 import getUserReducer from '../auth/getUserReducer';
 import itemsReducer from '../items/itemsReducer';
 import clientsReducer from '../clients/clientsReducer'
+import contactsReducer from '../contacts/contactsReducer';
 
 const rootReducer = combineReducers({
   budgets: budgetReducer,
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   user: getUserReducer,
   items: itemsReducer,
   clients: clientsReducer,
+  contacts: contactsReducer,
 });
 
 export default rootReducer;

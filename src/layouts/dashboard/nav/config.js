@@ -17,6 +17,11 @@ const navConfig = [
     icon: icon('ic_crew'),
   },
   {
+    title: 'clients',
+    path: '/dashboard/clients',
+    icon: icon('ic_clients'),
+  },
+  {
     title: 'items',
     path: '/dashboard/items',
     icon: icon('ic_items'),
@@ -31,6 +36,7 @@ const navConfig = [
     path: '/dashboard/report',
     icon: icon('ic_reports'),
   },
+  
   // {
   //   title: 'Not found',
   //   path: '/404',

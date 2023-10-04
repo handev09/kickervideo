@@ -1,5 +1,6 @@
 const initialState = {
     clients: [],
+    client: [],
     loading: false,
     error: null,
   };
@@ -21,12 +22,30 @@ const initialState = {
           loading: false,
           error: null,
         };
+        case "FETCH_CLIENT_SUCCESS":
+          console.log("Fetching client was successful.");
+        console.log("Payload:", action.payload);
+        return {
+          ...state,
+          client: action.payload,
+          loading: false,
+          error: null,
+        }
       case "FETCH_CLIENTS_FAILURE":
         console.log("Fetching clients failed.");
         console.log("Error:", action.payload);
         return {
           ...state,
           clients: [],
+          loading: false,
+          error: action.payload,
+        };
+        case "FETCH_CLIENT_FAILURE":
+        console.log("Fetching client failed.");
+        console.log("Error:", action.payload);
+        return {
+          ...state,
+          client: [],
           loading: false,
           error: action.payload,
         };

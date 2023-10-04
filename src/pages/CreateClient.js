@@ -41,6 +41,12 @@ const CreateClient = ({ openDialog, onClose }) => {
   const [city, setCity] = useState("");
   const [zip, setZip] = useState("");
   const [country, setCountry] = useState("");
+  const [prFullName, setPrFullName] = useState("");
+  const [premail, setPrEmail] = useState("");
+  const [prPhoneNumber, setPrPhoneNumber] = useState("");
+  const [prRole, setPrRole] = useState("");
+
+
 
   const [expenseData, setExpenseData] = useState({
     name: "",
@@ -78,6 +84,12 @@ const CreateClient = ({ openDialog, onClose }) => {
         day: "numeric",
         year: "numeric",
       }),
+      prId: uuidv4(),
+      prName: prFullName,
+      prPhone: prPhoneNumber,
+      prRole: prRole,
+      prEmail: premail,
+      isPrimary: true
     };
 
     dispatch(addClient(newItem)).then(()=>{
@@ -95,6 +107,10 @@ const CreateClient = ({ openDialog, onClose }) => {
     setCity(""); // Reset optionValue state
     setStreet1(""); // Reset optionValue state
     setStreet2(""); // Reset optionValue state
+    setPrFullName(""); // Reset optionValue state
+    setPhoneNumber(""); // Reset optionValue state
+    setPrEmail(""); // Reset optionValue state
+    setPrRole(""); // Reset optionValue state
     // setMarkup("");
   };
 
@@ -122,6 +138,10 @@ const CreateClient = ({ openDialog, onClose }) => {
     setCity(""); // Reset optionValue state
     setStreet1(""); // Reset optionValue state
     setStreet2(""); // Reset optionValue state
+    setPrFullName(""); // Reset optionValue state
+    setPhoneNumber(""); // Reset optionValue state
+    setPrEmail(""); // Reset optionValue state
+    setPrRole(""); // Reset optionValue state
     // setUnitPrice(""); // Reset unitPrice state
 
     // setMarkup("");
@@ -134,9 +154,6 @@ const CreateClient = ({ openDialog, onClose }) => {
   //     setSearchValue(event.target.value);
   //   };
 
-  const handleFormChange = (event) => {
-    setFormData(event.target.value);
-  };
 
   const handleButtonClick = () => {
     // Handle button click action here
@@ -167,6 +184,10 @@ const CreateClient = ({ openDialog, onClose }) => {
     setCity(""); // Reset optionValue state
     setStreet1(""); // Reset optionValue state
     setStreet2(""); // Reset optionValue state
+    setPrFullName(""); // Reset optionValue state
+    setPhoneNumber(""); // Reset optionValue state
+    setPrEmail(""); // Reset optionValue state
+    setPrRole(""); // Reset optionValue state
   };
 
   return (
@@ -271,7 +292,7 @@ const CreateClient = ({ openDialog, onClose }) => {
                 InputProps={{ disableUnderline: true }}
               />
 
-              <Typography>Property Deatails</Typography>
+              <Typography>Property Details</Typography>
 
               <TextField
                 id="filled-textarea"
@@ -377,6 +398,97 @@ const CreateClient = ({ openDialog, onClose }) => {
                 variant="filled"
                 InputProps={{ disableUnderline: true }}
               />
+
+              {/* Primary Contact */}
+              <Typography>Primary Contact</Typography>
+
+              <TextField
+                id="filled-textarea"
+                label="Full Name"
+                placeholder="ex: Han Tez"
+                multiline
+                sx={{
+                  width: "100%",
+                  "& .MuiFilledInput-root": {
+                    border: "1px solid transparent", // Add the border style here for the filled variant
+                    borderRadius: "4px", // Add border radius if you want rounded corners
+                    marginBottom: 3,
+                  },
+                }}
+                value={prFullName}
+                onChange={(e) => {
+                  setPrFullName(e.target.value);
+                }}
+                variant="filled"
+                InputProps={{ disableUnderline: true }}
+              />
+
+              <TextField
+                id="filled-textarea"
+                label="Email"
+                placeholder="ex: ceo@vbudget.com"
+                multiline
+                sx={{
+                  width: "100%",
+                  "& .MuiFilledInput-root": {
+                    border: "1px solid transparent", // Add the border style here for the filled variant
+                    borderRadius: "4px", // Add border radius if you want rounded corners
+                    marginBottom: 3,
+                  },
+                }}
+                value={premail}
+                onChange={(e) => {
+                  setPrEmail(e.target.value);
+                }}
+                variant="filled"
+                InputProps={{ disableUnderline: true }}
+              />
+
+              <TextField
+                id="filled-textarea"
+                label="Phone Number"
+                placeholder="ex: +1-(255)-453-3746"
+                multiline
+                sx={{
+                  width: "100%",
+                  "& .MuiFilledInput-root": {
+                    border: "1px solid transparent", // Add the border style here for the filled variant
+                    borderRadius: "4px", // Add border radius if you want rounded corners
+                    marginBottom: 3,
+                  },
+                }}
+                value={prPhoneNumber}
+                onChange={(e) => {
+                  setPrPhoneNumber(e.target.value);
+                }}
+                variant="filled"
+                InputProps={{ disableUnderline: true }}
+              />
+
+<TextField
+                id="filled-textarea"
+                label="Role"
+                placeholder="ex: CEO"
+                multiline
+                sx={{
+                  width: "100%",
+                  "& .MuiFilledInput-root": {
+                    border: "1px solid transparent", // Add the border style here for the filled variant
+                    borderRadius: "4px", // Add border radius if you want rounded corners
+                    marginBottom: 3,
+                  },
+                }}
+                value={prRole}
+                onChange={(e) => {
+                  setPrRole(e.target.value);
+                }}
+                variant="filled"
+                InputProps={{ disableUnderline: true }}
+              />
+
+             
+
+              
             </Container>
 
             <DialogActions sx={{ marginRight: "40px" }}>

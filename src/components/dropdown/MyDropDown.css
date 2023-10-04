@@ -4,7 +4,7 @@
 
 .dropdown {
     position: relative;
-    width: 200px;
+    width: 100%;
     font-family: "Lato", sans-serif;
     z-index: 999;
   }

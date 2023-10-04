@@ -19,6 +19,9 @@ import CustomDropdown from './components/item-price-dropdown/DropDown';
 import Reports from './pages/Report';
 import PaymentForm from './components/stripe/stripe';
 import Services from './pages/Service';
+import ClientsPage from './pages/Clients';
+import ClientDetailsPage from './pages/ClientDetail';
+import BudgetDetailsPage from './pages/BudgetDetails';
 
 // ----------------------------------------------------------------------
 
@@ -37,15 +40,16 @@ export default function Router() {
         { path: 'create-item', element: <CreateNewLineItem /> },
         { path: 'drop-down', element: <MyDropdown /> },
         { path: 'add-budget', element: <AddBudget /> },
-        // { path: 'dialog', element: <MainComponent /> },
         { path: 'dropdown', element: <CustomDropdown /> },
         { path: 'report', element: <Reports /> },
         { path: 'pay', element: <PaymentForm /> },
         { path: 'service', element: <Services /> },
-
-
+        { path: 'clients', element: <ClientsPage /> },
+        { path: 'client-details/:clientId', element: <ClientDetailsPage /> }, // Remove the leading slash '/'
+        { path: 'budget-details/:budgetId', element: <BudgetDetailsPage /> }, // Remove the leading slash '/'
       ],
     },
+    
     {
       path: 'login',
       element: <LoginPage />,

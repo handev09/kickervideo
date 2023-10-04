@@ -22,7 +22,7 @@ import {
 } from "@mui/icons-material";
 import MyDropdown from "../components/dropdown/DropDown";
 import { addExpense } from "../state/redux/actions/expense/expenseActions";
-import { fetchClients } from "../state/redux/actions/clients/fetch";
+import { fetchContacts } from "../state/redux/actions/contacts/fetch";
 import {
   getDownloadURL,
   ref as storageRef,
@@ -60,8 +60,7 @@ const ClientDialog = ({ openDialog, onClose, onClientSelect }) => {
   const user_id = user.userId;
   const budgets = useSelector((state) => state.budgets.budgets);
 
-  const dropdownJobs = budgets.map((budget) => budget.budget_name);
-  const dropdownOptionNames = budgets.map((budget) => budget.client_name);
+  
 
   const handleClos = () => {
     if (selectedImage) {
@@ -91,9 +90,6 @@ const ClientDialog = ({ openDialog, onClose, onClientSelect }) => {
                 createdBy: createdBy,
                 receipt: downloadURL,
               };
-
-              dispatch(addExpense(newItem));
-              // dispatch(fetchExpense(user_id))
               console.log(newItem);
               onClose(newItem);
               setItemName(""); // Reset name state
@@ -171,23 +167,10 @@ const ClientDialog = ({ openDialog, onClose, onClientSelect }) => {
     setCost(""); // Reset cost state
     // setMarkup("");
   };
-  const handleCostChange = (e) => {
-    const value = e.target.value;
-    // Validate that the input is a valid number (either an integer or a decimal)
-    if (/^[0-9]*\.?[0-9]*$/.test(value) || value === "") {
-      setCost(value);
-    }
-  };
+  
   const [searchValue, setSearchValue] = useState("");
   const [formData, setFormData] = useState("");
 
-  //   const handleSearchChange = (event) => {
-  //     setSearchValue(event.target.value);
-  //   };
-
-  const handleFormChange = (event) => {
-    setFormData(event.target.value);
-  };
 
   const handleButtonClick = () => {
     // Handle button click action here
@@ -329,8 +312,14 @@ const ClientDialog = ({ openDialog, onClose, onClientSelect }) => {
                         justifyContent: "space-between",
                       }}
                       onClick={() => {
+                        //fetch contacts
+                        dispatch(fetchContacts(client.client_id)).then(()=>{
+                          onClientSelect(client);
+
+                        }).catch((error)=>{
+                          console.error(error)
+                        })
                         // Call the onClientSelect callback with the selected client data
-                        onClientSelect(client);
                       }}
                     >
                       <div style={{ width: "20%" }}>

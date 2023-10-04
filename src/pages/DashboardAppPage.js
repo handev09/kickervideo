@@ -516,6 +516,7 @@ export default function DashboardAppPage() {
                       created_at,
                       project_title,
                       total,
+                      budget_id,
                       internalNotes,
                       tax,
                       status,
@@ -523,6 +524,7 @@ export default function DashboardAppPage() {
                     const selectedBudget = selected.indexOf(client_name) !== -1;
 
                     return (
+                      // <Link to={`/dashboard/budget-details/${id}`}>
                       <TableRow
                         hover
                         // key={id}
@@ -530,6 +532,11 @@ export default function DashboardAppPage() {
                         tabIndex={-1}
                         role="checkbox"
                         selected={selectedBudget}
+                        sx={{ "& > *": { padding: "8px" } }} 
+                        component="a"
+                        onClick={()=>{
+                          navigate(`/dashboard/budget-details/${budget_id}`)
+                        }}
                       >
                         <TableCell>
                           {/* <Checkbox
@@ -537,19 +544,30 @@ export default function DashboardAppPage() {
                             onChange={(event) => handleClick(event, name)}
                           /> */}
                         </TableCell>
+{/* 
+                        <Link to={`/dashboard/budget-details/${budget_id}`}> */}
+                        <TableCell component="a"  scope="row" padding="none" sx={{
 
-                        <TableCell component="th" scope="row" padding="none">
+                        }}>
                           <Stack
                             direction="row"
                             alignItems="center"
-                            // spacing={}
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center', // Center text vertically
+                            }}
+                           
                           >
-                            {/* <Avatar alt={name} src={avatarUrl} /> */}
-                            <Typography variant="subtitle2" noWrap>
+                            <Typography variant="subtitle2" noWrap sx={{
+                              textDecoration: 'none',
+                             fontWeight: 'bold'
+                              
+                            }}>
                               {client_name}
                             </Typography>
                           </Stack>
                         </TableCell>
+                        {/* </Link> */}
 
                         <TableCell align="left">{created_at}</TableCell>
 
@@ -587,6 +605,7 @@ export default function DashboardAppPage() {
                           </IconButton>
                         </TableCell>
                       </TableRow>
+                      // </Link>
                     );
                   })}
                 {emptyRows > 0 && (

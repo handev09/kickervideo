@@ -1,19 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './MyDropDown.css'; // Import the CSS file
 
-const MyExpensesDropdown = ({options, onChange, value}) => {
-  console.log(options)
-  // const { options } = props; // Extract options from props
-
-  const [selectedOption, setSelectedOption] = useState('Options');
+const MyReimburseDropdown = ({ option, onChange }) => {
+  console.log(option)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
-
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-    setIsDropdownOpen(false);
-    onChange(option)
-  };
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prevOpen) => !prevOpen);
@@ -36,33 +27,33 @@ const MyExpensesDropdown = ({options, onChange, value}) => {
     <div className="dropdown" ref={dropdownRef}>
       <div className="dropdown__filter" onClick={toggleDropdown}>
         <div className="dropdown__input dropdown__filter-selected" aria-selected="true">
-         {selectedOption.budget_name}
+          {option}
         </div>
         
         <div className={`dropdown__arrow ${isDropdownOpen ? 'rotate' : ''}`}>
-            <img src='/assets/icons/ic_arrow_down.svg' className='arrow__down' alt="arrow down" />
+          <img src='/assets/icons/ic_arrow_down.svg' className='arrow__down' alt="arrow down" />
         </div>
       </div>
       {isDropdownOpen && (
         <ul
           className="dropdown__select"
           style={{ width: dropdownRef.current ? dropdownRef.current.offsetWidth : 'auto' }}
-          
         >
-          {options.map((option, index) => (
-            <li
-              key={index}
-              className="dropdown__select-option"
-              role="option"
-              onClick={() => handleOptionChange(option)}
-            >
-              {option?`#${option.budget_num +' - ' +option.budget_name}`:'No jobs at the moment'}
-            </li>
-          ))}
+          {/* Render a single option */}
+          <li
+            className="dropdown__select-option"
+            role="option"
+            onClick={() => {
+              setIsDropdownOpen(false);
+              onChange(option); // Notify the parent component of the selected option
+            }}
+          >
+            {option}
+          </li>
         </ul>
       )}
     </div>
   );
 };
 
-export default MyExpensesDropdown;
+export default MyReimburseDropdown;
