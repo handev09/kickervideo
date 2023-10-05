@@ -11,34 +11,34 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Box
+  Box,
 } from "@mui/material";
 import {
   Close as CloseIcon, // Import the CloseIcon from @mui/icons-material
 } from "@mui/icons-material";
 import MyDropdown from "../components/dropdown/DropDown";
 
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { deleteExpense } from "../state/redux/actions/expense/deleteExpense"; // Update the import path to match your project structure
 import MyExpensesDropdown from "../components/dropdown-expenses/DropDown";
 import MyReimburseDropdown from "../components/dropdown-reimburse/DropDown";
 
-const EditExpense = ({ openDialog, onClose, initialData }) => {
+const EditBudget = ({ openDialog, onClose, initialData }) => {
   const dispatch = useDispatch();
   const [itemName, setItemName] = useState("");
   const [description, setDescription] = useState("");
   const [cost, setCost] = useState("");
   const budgets = useSelector((state) => state.budgets.budgets);
 
-console.log(budgets)
+  console.log(initialData);
 
   const dropdownOptions = budgets.map((budget) => budget.budget_name);
   const dropdownOptionNames = budgets.map((budget) => budget.client_name);
   const [employmentType, setEmploymentType] = useState("");
-  const [reimburse, setReimburse]=useState("")
+  const [reimburse, setReimburse] = useState("");
   const [reimburseOptions, setReimburseOptions] = useState("");
   const dropdownJobs = budgets.map((budget) => budget);
-  console.log(initialData)
+  console.log(initialData);
 
   useEffect(() => {
     if (initialData) {
@@ -49,11 +49,10 @@ console.log(budgets)
     }
   }, [initialData]);
 
-  
-  useEffect(()=>{
-    setReimburseOptions(employmentType.company_client)
-  }, [employmentType])
-  console.log(reimburseOptions)
+  useEffect(() => {
+    setReimburseOptions(employmentType.company_client);
+  }, [employmentType]);
+  console.log(reimburseOptions);
 
   const handleCloz = () => {
     const newItem = {
@@ -61,23 +60,22 @@ console.log(budgets)
       name: itemName,
       description: description,
       optionValue: employmentType,
-    //   unitPrice: parseFloat(unitPrice),
+      //   unitPrice: parseFloat(unitPrice),
       cost: parseFloat(cost),
-    //   markup: parseFloat(markup),
-      quantity: 1
+      //   markup: parseFloat(markup),
+      quantity: 1,
       // Convert unitPrice to a float number
       // You can add other properties as needed
     };
     onClose(newItem);
     setItemName(""); // Reset name state
     setDescription(""); // Reset description state
-    setEmploymentType(""); // Reset optionValue state
-    // setUnitPrice(""); // Reset unitPrice state
+    setEmploymentType("");
     setCost("");
   };
 
   const handleDeleteExpense = (expenseId) => {
-    console.log(expenseId)
+    console.log(expenseId);
     dispatch(deleteExpense(expenseId));
     const newItem = {
       id: "",
@@ -86,7 +84,7 @@ console.log(budgets)
       optionValue: "",
       cost: "",
     };
-    onClose(newItem)
+    onClose(newItem);
   };
 
   const handleNormalClose = () => {
@@ -101,8 +99,7 @@ console.log(budgets)
     onClose(newItem);
     setItemName(""); // Reset name state
     setDescription(""); // Reset description state
-    setEmploymentType(""); // Reset optionValue state
-    // setUnitPrice(""); // Reset unitPrice state
+    setEmploymentType("");
     setCost(""); // Reset cost state
     // setMarkup("");
   };
@@ -114,24 +111,24 @@ console.log(budgets)
     }
   };
 
-//   const handleMarkupChange = (e) => {
-//     const value = e.target.value;
-//     // Validate that the input is a valid integer
-//     if (/^[0-9]*$/.test(value) || value === "") {
-//       setMarkup(value);
-//     }
-//   };
+  //   const handleMarkupChange = (e) => {
+  //     const value = e.target.value;
+  //     // Validate that the input is a valid integer
+  //     if (/^[0-9]*$/.test(value) || value === "") {
+  //       setMarkup(value);
+  //     }
+  //   };
 
   // Calculate and update the unitPrice whenever cost or markup changes
-//   useEffect(() => {
-//     if (cost && markup) {
-//       const calculatedUnitPrice =
-//         parseFloat(cost) + parseFloat(cost) * (parseFloat(markup) / 100);
-//       setUnitPrice(calculatedUnitPrice.toFixed(2)); // Round to 2 decimal places
-//     } else {
-//       setUnitPrice("");
-//     }
-//   }, [cost, markup]);
+  //   useEffect(() => {
+  //     if (cost && markup) {
+  //       const calculatedUnitPrice =
+  //         parseFloat(cost) + parseFloat(cost) * (parseFloat(markup) / 100);
+  //       setUnitPrice(calculatedUnitPrice.toFixed(2)); // Round to 2 decimal places
+  //     } else {
+  //       setUnitPrice("");
+  //     }
+  //   }, [cost, markup]);
 
   return (
     <form>
@@ -155,7 +152,7 @@ console.log(budgets)
               variant="h4"
               sx={{ backgroundColor: "#F3F4F6FF", marginBottom: 5 }}
             >
-              Edit Expense
+              Edit Budget
             </DialogTitle>
             <IconButton
               aria-label="close"
@@ -170,25 +167,26 @@ console.log(budgets)
             </IconButton>
             {/* ... Dialog content ... */}
             <Container>
+              <Typography variant="h5">Project Title</Typography>
+
               <TextField
                 id="filled-textarea"
-                label="Expense Name"
-                placeholder="ex: Animation"
+                // label="Full Name"
+                placeholder="Title"
+                size="medium"
                 multiline
                 sx={{
                   width: "100%",
                   "& .MuiFilledInput-root": {
-                    border: "1px solid transparent", // Add the border style here for the filled variant
-                    borderRadius: "4px", // Add border radius if you want rounded corners
-                    marginBottom: 3,
+                    border: "1px solid #000",
+                    borderRadius: "4px",
+                    marginBottom: 0,
                   },
                 }}
-                value={itemName}
-                onChange={(e) => {
-                  setItemName(e.target.value);
-                }}
-                variant="filled"
+                variant="outlined"
                 InputProps={{ disableUnderline: true }}
+                value={itemName}
+                onChange={(e) => setItemName(e.target.value)}
               />
 
               <TextField
@@ -223,12 +221,14 @@ console.log(budgets)
                 justifyContent: "space-between",
               }}
             >
-              <Box sx={{
-                // position: "relative",
-                zIndex: 2,
-                width: '40%',
-                // justifyContent: "space-between",
-              }}>
+              <Box
+                sx={{
+                  // position: "relative",
+                  zIndex: 2,
+                  width: "40%",
+                  // justifyContent: "space-between",
+                }}
+              >
                 <Typography>Job</Typography>
                 <MyExpensesDropdown
                   options={dropdownJobs}
@@ -238,22 +238,22 @@ console.log(budgets)
                   }}
                 />
               </Box>
-              <Box sx={{
-                // position: "relative",
-                zIndex: 2,
-                width: '40%',
-                // justifyContent: "space-between",
-              }}>
+              <Box
+                sx={{
+                  // position: "relative",
+                  zIndex: 2,
+                  width: "40%",
+                  // justifyContent: "space-between",
+                }}
+              >
                 <Typography>Reimburse to</Typography>
                 <MyReimburseDropdown
                   option={reimburseOptions}
                   onChange={(option) => {
-                    setReimburse(option)
+                    setReimburse(option);
                   }}
                 />
               </Box>
-
-              
             </Container>
 
             <Container
@@ -282,59 +282,68 @@ console.log(budgets)
                 variant="filled"
                 InputProps={{ disableUnderline: true }}
               />
-
-            
-              
             </Container>
 
-            <DialogActions sx={{ marginRight: "40px", display: 'flex' }}>
-            <Container sx={{display: 'flex', width: '100%',  justifyContent: 'space-between' }}>
-            <Container>
-            <Button
-                color="primary"
-                onClick={()=>{
-                  handleDeleteExpense(initialData.expense_id);
-                }}
-                variant="outlined"
+            <DialogActions sx={{ marginRight: "40px", display: "flex" }}>
+              <Container
                 sx={{
-                  padding: "8px 25px",
-                  borderColor: "#E05858FF",
-                  color: "#E05858FF",
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "space-between",
                 }}
               >
-                Delete
-              </Button>
-              </Container>
+                <Container>
+                  <Button
+                    color="primary"
+                    onClick={() => {
+                      handleDeleteExpense(initialData.expense_id);
+                    }}
+                    variant="outlined"
+                    sx={{
+                      padding: "8px 25px",
+                      borderColor: "#E05858FF",
+                      color: "#E05858FF",
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Container>
 
-              <Container sx={{display: 'flex', justifyContent:'flex-end', gap: '20px'}}>
-              <Button
-                color="primary"
-                onClick={handleNormalClose}
-                variant="outlined"
-                sx={{
-                  padding: "8px 25px",
-                  borderColor: "#9095A0FF",
-                  color: "#9095A0FF",
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={()=>{
-                 handleCloz();
-                }}
-                color="primary"
-                sx={{
-                  backgroundColor: "#E05858FF",
-                  color: "#fff",
-                  borderRadius: "3px",
-                  padding: "8px 25px",
-                }}
-              >
-                Create
-              </Button>
+                <Container
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: "20px",
+                  }}
+                >
+                  <Button
+                    color="primary"
+                    onClick={handleNormalClose}
+                    variant="outlined"
+                    sx={{
+                      padding: "8px 25px",
+                      borderColor: "#9095A0FF",
+                      color: "#9095A0FF",
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      handleCloz();
+                    }}
+                    color="primary"
+                    sx={{
+                      backgroundColor: "#E05858FF",
+                      color: "#fff",
+                      borderRadius: "3px",
+                      padding: "8px 25px",
+                    }}
+                  >
+                    Create
+                  </Button>
+                </Container>
               </Container>
-            </Container>
             </DialogActions>
           </Dialog>
         </Container>
@@ -343,4 +352,4 @@ console.log(budgets)
   );
 };
 
-export default EditExpense;
+export default EditBudget;

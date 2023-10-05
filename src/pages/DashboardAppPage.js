@@ -56,6 +56,7 @@ import { getUser } from "../state/redux/actions/users/getUser";
 import StateIndicator from "../components/status-indicator/status";
 import { fetchClients } from "../state/redux/actions/clients/fetch";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
+import EditBudget from "./EditBudget";
 
 // ----------------------------------------------------------------------
 
@@ -107,6 +108,7 @@ function applySortFilter(array, comparator, query) {
 export default function DashboardAppPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [budget, setBudgets] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isLoggedIn);
   //budgets from state
@@ -162,9 +164,12 @@ export default function DashboardAppPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [budgetsTotal, setBudgetsTotal] = useState(0);
+  const [editedBudgetData, setEditedBudgetData] = useState(null);
+  const [selectedBudget, setSelectedBudget] = useState(null);
 
-  const handleOpenMenu = (event) => {
+  const handleOpenMenu = (event, budgetId) => {
     setOpen(event.currentTarget);
+    setSelectedBudget(budgetId);
   };
 
   const handleCloseMenu = () => {
@@ -227,14 +232,26 @@ export default function DashboardAppPage() {
     filterName
   );
 
+  const handleEditBudget = (budgetId) => {
+    const budgetToEdit = filteredUsers.find(
+      (budget) => budget.budget_id === budgetId
+    );
+    setEditedBudgetData(budgetToEdit);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogData = (data) => {
+    console.log(data);
+    setIsDialogOpen(false)
+  };
+
   useEffect(() => {
     // Check if the user is not logged in
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
       // Redirect to the login page
       // navigate("/login");
-      window.location.href = '/login';
-
+      window.location.href = "/login";
     } else {
       // Retrieve user data from local storage
       const storedUser = localStorage.getItem("user");
@@ -242,8 +259,8 @@ export default function DashboardAppPage() {
       const id = parsedUser.userId; // Access the userId property
       dispatch(fetchUserBudgets(id));
       dispatch(fetchItems(id));
-      dispatch(fetchClients(id))
-      dispatch(fetchExpense(id))
+      dispatch(fetchClients(id));
+      dispatch(fetchExpense(id));
       setBudgetsTotal(budgets.length);
       console.log(budgetsTotal);
 
@@ -469,8 +486,8 @@ export default function DashboardAppPage() {
                     color="primary"
                     sx={{ backgroundColor: "#E05858FF" }}
                     startIcon={<Iconify icon="eva:plus-fill" />}
-            component={Link} // Use the Link component
-            to="/dashboard/add-budget"
+                    component={Link} // Use the Link component
+                    to="/dashboard/add-budget"
                   >
                     Create a Budget
                   </Button>
@@ -532,11 +549,11 @@ export default function DashboardAppPage() {
                         tabIndex={-1}
                         role="checkbox"
                         selected={selectedBudget}
-                        sx={{ "& > *": { padding: "8px" } }} 
-                        component="a"
-                        onClick={()=>{
-                          navigate(`/dashboard/budget-details/${budget_id}`)
-                        }}
+                        sx={{ "& > *": { padding: "8px" } }}
+                        // component="a"
+                        // onClick={()=>{
+                        //   navigate(`/dashboard/budget-details/${budget_id}`)
+                        // }}
                       >
                         <TableCell>
                           {/* <Checkbox
@@ -544,25 +561,33 @@ export default function DashboardAppPage() {
                             onChange={(event) => handleClick(event, name)}
                           /> */}
                         </TableCell>
-{/* 
+                        {/* 
                         <Link to={`/dashboard/budget-details/${budget_id}`}> */}
-                        <TableCell component="a"  scope="row" padding="none" sx={{
-
-                        }}>
+                        <TableCell
+                          component="a"
+                          onClick={() => {
+                            navigate(`/dashboard/budget-details/${budget_id}`);
+                          }}
+                          scope="row"
+                          padding="none"
+                          sx={{}}
+                        >
                           <Stack
                             direction="row"
                             alignItems="center"
                             sx={{
-                              display: 'flex',
-                              alignItems: 'center', // Center text vertically
+                              display: "flex",
+                              alignItems: "center", // Center text vertically
                             }}
-                           
                           >
-                            <Typography variant="subtitle2" noWrap sx={{
-                              textDecoration: 'none',
-                             fontWeight: 'bold'
-                              
-                            }}>
+                            <Typography
+                              variant="subtitle2"
+                              noWrap
+                              sx={{
+                                textDecoration: "none",
+                                fontWeight: "bold",
+                              }}
+                            >
                               {client_name}
                             </Typography>
                           </Stack>
@@ -599,7 +624,9 @@ export default function DashboardAppPage() {
                             size="large"
                             color="inherit"
                             // sx={{width: '200px'}}
-                            onClick={handleOpenMenu}
+                            onClick={(event) =>
+                              handleOpenMenu(event, budget_id)
+                            }
                           >
                             <Iconify icon={"eva:more-vertical-fill"} />
                           </IconButton>
@@ -672,8 +699,15 @@ export default function DashboardAppPage() {
           },
         }}
       >
-        <MenuItem>
-          <Iconify icon={"eva:edit-fill"} sx={{ mr: 2 }} />
+        <MenuItem  onClick={() => {
+              console.log('Edit Clicked+')
+              handleEditBudget(selectedBudget);
+            }}>
+          <Iconify
+            icon={"eva:edit-fill"}
+            sx={{ mr: 2 }}
+           
+          />
           Edit
         </MenuItem>
 
@@ -682,6 +716,12 @@ export default function DashboardAppPage() {
           Delete
         </MenuItem>
       </Popover>
+
+      <EditBudget
+        openDialog={isDialogOpen}
+        onClose={handleDialogData}
+        initialData={editedBudgetData}
+      />
     </>
   );
 }
