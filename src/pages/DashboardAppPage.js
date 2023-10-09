@@ -57,6 +57,7 @@ import StateIndicator from "../components/status-indicator/status";
 import { fetchClients } from "../state/redux/actions/clients/fetch";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import EditBudget from "./EditBudget";
+import { deleteBudget } from "../state/redux/actions/budget/delete";
 
 // ----------------------------------------------------------------------
 
@@ -111,6 +112,7 @@ export default function DashboardAppPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [budget, setBudgets] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isLoggedIn);
+  const [isLoading, setIsLoading]=useState(false)
   //budgets from state
   let budgets = useSelector((state) => state.budgets.budgets);
   const loading = useSelector((state) => state.budgets.loading);
@@ -227,7 +229,7 @@ export default function DashboardAppPage() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - budgets.length) : 0;
 
   const filteredUsers = applySortFilter(
-    budgets,
+    budget,
     getComparator(order, orderBy),
     filterName
   );
@@ -275,13 +277,30 @@ export default function DashboardAppPage() {
 
   // useEffect(() => {
   //   setBudgets(budgets);
-  //   budgets=budget
+  //   // budgets=budget
   // }, [budgets]);
 
   useEffect(() => {
     setBudgets(budgets);
-    budgets = budget;
+    // budgets = budget;
   }, [budgets]);
+
+
+
+
+
+  const handleDeleteBudget = (budgetId) => {
+    console.log('id: '+budgetId)
+    setIsLoading(true)
+    console.log(budgetId)
+    dispatch(deleteBudget(budgetId)).then(()=>{
+      dispatch(fetchUserBudgets(user)).then(()=>{
+        setIsLoading(false)
+        setOpen(false)
+      
+      })
+    })
+  }
 
   // useEffect(() => {
   //   if (user && user.id) {
@@ -291,6 +310,10 @@ export default function DashboardAppPage() {
   // }, [dispatch, user]);
 
   if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
@@ -711,17 +734,24 @@ export default function DashboardAppPage() {
           Edit
         </MenuItem>
 
-        <MenuItem sx={{ color: "error.main" }}>
+        <MenuItem sx={{ color: "error.main" }} onClick={() => {
+              console.log('Edit Clicked+')
+              handleDeleteBudget(selectedBudget);
+            }}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
 
-      <EditBudget
-        openDialog={isDialogOpen}
-        onClose={handleDialogData}
-        initialData={editedBudgetData}
-      />
+
+{editedBudgetData &&(
+  <EditBudget
+  openDialog={isDialogOpen}
+  onClose={handleDialogData}
+  initialData={editedBudgetData}
+/>
+)}
+      
     </>
   );
 }

@@ -52,7 +52,7 @@ const contactsReducer = (state = initialState, action) => {
     case "DELETE_CONTACT":
       console.log("Deleting an contact...");
       const updatedClients = state.contacts.filter(
-        (contact) => contact.id !== action.payload
+        (contact) => contact.contact_id !== action.payload
       );
       return {
         ...state,

@@ -22,56 +22,49 @@ import { useSelector, useDispatch } from "react-redux";
 import { deleteExpense } from "../state/redux/actions/expense/deleteExpense"; // Update the import path to match your project structure
 import MyExpensesDropdown from "../components/dropdown-expenses/DropDown";
 import MyReimburseDropdown from "../components/dropdown-reimburse/DropDown";
+import { updateBudget } from "../state/redux/actions/budget/update";
 
 const EditBudget = ({ openDialog, onClose, initialData }) => {
   const dispatch = useDispatch();
-  const [itemName, setItemName] = useState("");
-  const [description, setDescription] = useState("");
-  const [cost, setCost] = useState("");
-  const budgets = useSelector((state) => state.budgets.budgets);
+
+  const [projectTile, setProjectTile] = useState("");
+  const [projectStatus, setProjectStatus]=useState("")
+  const [internalNotes, setInternalNotes]=useState("")
+  const [status, setStatus]=useState("")
+
+ 
 
   console.log(initialData);
 
-  const dropdownOptions = budgets.map((budget) => budget.budget_name);
-  const dropdownOptionNames = budgets.map((budget) => budget.client_name);
-  const [employmentType, setEmploymentType] = useState("");
-  const [reimburse, setReimburse] = useState("");
-  const [reimburseOptions, setReimburseOptions] = useState("");
-  const dropdownJobs = budgets.map((budget) => budget);
   console.log(initialData);
+  const [selectedOption, setSelectedOption] = useState("");
+
+  const budgetStatusOption = ["Draft", "Sent", "Active", "Archive"];
 
   useEffect(() => {
-    if (initialData) {
-      setItemName(initialData.expense_name || "");
-      setDescription(initialData.description || "");
-      setCost(initialData.cost || "");
-      setEmploymentType(initialData.optionValue || "");
+    if (initialData) {  
+      setProjectTile(initialData.project_title || "");
+      setProjectStatus(initialData.status || "");
+      setInternalNotes(initialData.internal_notes || "");
+     
     }
   }, [initialData]);
 
-  useEffect(() => {
-    setReimburseOptions(employmentType.company_client);
-  }, [employmentType]);
-  console.log(reimburseOptions);
+ 
 
   const handleCloz = () => {
     const newItem = {
-      id: uuidv4(),
-      name: itemName,
-      description: description,
-      optionValue: employmentType,
-      //   unitPrice: parseFloat(unitPrice),
-      cost: parseFloat(cost),
-      //   markup: parseFloat(markup),
-      quantity: 1,
-      // Convert unitPrice to a float number
-      // You can add other properties as needed
+     budget_id: initialData.budget_id,
+     project_title: projectTile,
+     status: status,
+     internal_notes: internalNotes
     };
+    dispatch(updateBudget(initialData.budget_id,newItem))
     onClose(newItem);
-    setItemName(""); // Reset name state
-    setDescription(""); // Reset description state
-    setEmploymentType("");
-    setCost("");
+    setProjectTile(""); // Reset name state
+    setProjectStatus(""); // Reset description state
+    setInternalNotes("");
+   
   };
 
   const handleDeleteExpense = (expenseId) => {
@@ -87,6 +80,9 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
     onClose(newItem);
   };
 
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+  };
   const handleNormalClose = () => {
     const newItem = {
       id: "",
@@ -97,38 +93,11 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
     };
 
     onClose(newItem);
-    setItemName(""); // Reset name state
-    setDescription(""); // Reset description state
-    setEmploymentType("");
-    setCost(""); // Reset cost state
-    // setMarkup("");
-  };
-  const handleCostChange = (e) => {
-    const value = e.target.value;
-    // Validate that the input is a valid number (either an integer or a decimal)
-    if (/^[0-9]*\.?[0-9]*$/.test(value) || value === "") {
-      setCost(value);
-    }
+    setProjectTile(""); // Reset name state
+    setProjectStatus(""); // Reset description state
+    setInternalNotes("");
   };
 
-  //   const handleMarkupChange = (e) => {
-  //     const value = e.target.value;
-  //     // Validate that the input is a valid integer
-  //     if (/^[0-9]*$/.test(value) || value === "") {
-  //       setMarkup(value);
-  //     }
-  //   };
-
-  // Calculate and update the unitPrice whenever cost or markup changes
-  //   useEffect(() => {
-  //     if (cost && markup) {
-  //       const calculatedUnitPrice =
-  //         parseFloat(cost) + parseFloat(cost) * (parseFloat(markup) / 100);
-  //       setUnitPrice(calculatedUnitPrice.toFixed(2)); // Round to 2 decimal places
-  //     } else {
-  //       setUnitPrice("");
-  //     }
-  //   }, [cost, markup]);
 
   return (
     <form>
@@ -172,7 +141,7 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
-                placeholder="Title"
+                placeholder="Project Title"
                 size="medium"
                 multiline
                 sx={{
@@ -185,102 +154,41 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
                 }}
                 variant="outlined"
                 InputProps={{ disableUnderline: true }}
-                value={itemName}
-                onChange={(e) => setItemName(e.target.value)}
+                value={projectTile}
+                onChange={(e) => setProjectTile(e.target.value)}
               />
+
+              <Typography variant="h5">Current Project Status</Typography>
+              <Typography variant="h5">{initialData.status}</Typography>
+
+              <Typography variant="h5">Change Project Status</Typography>
+              <MyDropdown
+                options={budgetStatusOption}
+                value={initialData.status}
+                onChange={handleOptionChange}
+              />
+
+              <Typography variant="h5">Internal Notes</Typography>
 
               <TextField
                 id="filled-textarea"
-                label="Description"
-                placeholder="input text"
+                // label="Full Name"
+                placeholder="Internal Notes"
+                size="medium"
                 multiline
+                rows={4}
                 sx={{
                   width: "100%",
                   "& .MuiFilledInput-root": {
-                    border: "1px solid transparent", // Add the border style here for the filled variant
-                    borderRadius: "4px", // Add border radius if you want rounded corners
-                    marginBottom: 3,
-                  },
-                }}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                variant="filled"
-                rows={4}
-                InputProps={{ disableUnderline: true }}
-              />
-            </Container>
-
-            <Container
-              sx={{
-                marginBottom: 5,
-                // position: "relative",
-                zIndex: 2,
-                display: "flex",
-                // width: '100%',
-                // backgroundColor:'#000',
-                justifyContent: "space-between",
-              }}
-            >
-              <Box
-                sx={{
-                  // position: "relative",
-                  zIndex: 2,
-                  width: "40%",
-                  // justifyContent: "space-between",
-                }}
-              >
-                <Typography>Job</Typography>
-                <MyExpensesDropdown
-                  options={dropdownJobs}
-                  onChange={(option) => {
-                    setEmploymentType(option);
-                    console.log(employmentType);
-                  }}
-                />
-              </Box>
-              <Box
-                sx={{
-                  // position: "relative",
-                  zIndex: 2,
-                  width: "40%",
-                  // justifyContent: "space-between",
-                }}
-              >
-                <Typography>Reimburse to</Typography>
-                <MyReimburseDropdown
-                  option={reimburseOptions}
-                  onChange={(option) => {
-                    setReimburse(option);
-                  }}
-                />
-              </Box>
-            </Container>
-
-            <Container
-              sx={{
-                marginBottom: 8,
-                width: "100%",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <TextField
-                id="filled-textarea"
-                label="Cost ($)"
-                placeholder="0.00"
-                type="number" // Set the input type to "number"
-                inputProps={{ step: "0.01", min: "0" }}
-                multiline
-                sx={{
-                  width: "30%",
-                  "& .MuiFilledInput-root": {
+                    border: "1px solid #000",
+                    borderRadius: "4px",
                     marginBottom: 0,
                   },
                 }}
-                value={cost}
-                onChange={handleCostChange}
-                variant="filled"
+                variant="outlined"
                 InputProps={{ disableUnderline: true }}
+                value={internalNotes}
+                onChange={(e) => setInternalNotes(e.target.value)}
               />
             </Container>
 

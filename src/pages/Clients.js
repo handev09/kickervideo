@@ -27,6 +27,8 @@ import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import LoadingSpinner from "./loadingSpinner";
 import CreateClient from "./CreateClient";
+import EditClient from "./EditClient";
+import { fetchClients } from "../state/redux/actions/clients/fetch";
 // import { Link, useNavigate } from "react-router-dom"; 
 
 export default function ClientsPage() {
@@ -34,10 +36,10 @@ export default function ClientsPage() {
   const dispatch = useDispatch();
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditExpense, setIsEditExpense] = useState(false);
+  const [isEditClient, setIsEdiClient] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [editedExpenseData, setEditedExpenseData] = useState(null);
-  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [editedClientData, setEditedClientData] = useState(null);
+  const [selectedClientId, setSelectedClientId] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [clients, setClients]=useState([])
   const [sortedClients, setSortedClients]=useState([])
@@ -73,108 +75,132 @@ export default function ClientsPage() {
     setSortedClients(clientz);
   }, [clientz]);
 
-  const handleMenuOpen = (event, expenseId) => {
-    console.log(expenseId);
+  const handleMenuOpen = (event, clientId) => {
+    console.log(clientId);
     setAnchorEl(event.currentTarget);
-    setSelectedExpenseId(expenseId);
+    setSelectedClientId(clientId);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedExpenseId(null);
+    setSelectedClientId(null);
   };
 
-  const handleEditExpense = (expenseId) => {
-    const expenseToEdit = expensez.find(
-      (expense) => expense.expense_id === expenseId
+  const handleEditClient = (clientId) => {
+    const clientToEdit = clientz.find(
+      (client) => client.client_id === clientId
     );
-    setEditedExpenseData(expenseToEdit);
-    setIsEditExpense(true);
+    setEditedClientData(clientToEdit);
+    setIsEdiClient(true);
   };
 
-  const uniqueStatusValues = [
-    ...new Set(expensez.map((expense) => expense.status)),
-  ];
 
-  const statusSortOptions = uniqueStatusValues.map((status) => ({
-    value: status,
-    label: status,
-  }));
+  // const handleDialogData = (data) => {
+  //   setIsLoading(true);
+    
+  //   console.log(data)
 
-  const uniqueEnteredByVlaues = [
-    ...new Set(expensez.map((expense) => expense.createdBy)),
-  ];
+  //   if (data.companyName && data.companyEmail && data.phoneNumber) {
+  //     if (data.isEditClientedData) {
+  //       const updatedClients = clients.map((client) =>
+  //         client.client_id === data.id
+  //           ? { ...editedClientData, ...data }
+  //           : client
+  //       );
+  //       console.log(updatedClients)
+  //       setClients(updatedClients);
+  //       setIsEdiClient(false);
+  //     } else {
+  //       setClients((prevClients) => [
+  //         ...prevClients,
+  //         {
+  //           id: data.id,
+  //           company_name: data.name,
+  //           company_email: data.description,
+  //           street1: data.street1,
+  //           street2: data.street2,
+  //           city: data.city,
+  //           country: data.country,
+  //           userId: data.user_id,
+  //           createdAt: new Date().toLocaleDateString()
+  //         },
+  //       ]);
+  //     }
 
-  const enteredByOptions = uniqueEnteredByVlaues.map((enteredBy) => ({
-    value: enteredBy,
-    label: enteredBy,
-  }));
+  //     dispatch(fetchClients(parsedUser.userId)).then(()=>{
+  //     }).catch((error)=>{
+  //       setIsLoading(false)
+  //       console.log(error);
+  //     });
+  //   }
+  //   setIsDialogOpen(false);
+  //   setIsLoading(false);
+  //   setIsEdiClient(false);
+  //   setEditedClientData(null);
+  //   setAnchorEl(null);
+  //   setSelectedClientId(null);
+  // };
 
-  const handleStatusSortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.status === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
-
-  const handleEnteredBySortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.createdBy === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
 
   const handleDialogData = (data) => {
     setIsLoading(true);
-
+  
+    console.log(data);
+  
     if (data.companyName && data.companyEmail && data.phoneNumber) {
-      if (editedExpenseData) {
-        const updatedExpenses = expenses.map((expense) =>
-          expense.id === editedExpenseData.id
-            ? { ...editedExpenseData, ...data }
-            : expense
+      if (data.isEditClientedData) {
+        // Update existing client if it exists
+        const updatedClients = clients.map((client) =>
+          client.client_id === data.id ? { ...editedClientData, ...data } : client
         );
-        setExpenses(updatedExpenses);
-        setIsEditExpense(false);
+        setClients(updatedClients);
+        setIsEdiClient(false);
       } else {
-        setClients((prevClients) => [
-          ...prevClients,
-          {
-            id: data.id,
-            company_name: data.name,
-            company_email: data.description,
-            street1: data.street1,
-            street2: data.street2,
-            city: data.city,
-            country: data.country,
-            userId: data.user_id,
-            createdAt: new Date().toLocaleDateString()
-          },
-        ]);
+        // Check if the client already exists
+        const existingClient = clients.find((client) => client.id === data.id);
+  
+        if (existingClient) {
+          // Update the existing client
+          const updatedClients = clients.map((client) =>
+            client.client_id === data.id ? { ...client, ...data } : client
+          );
+          setClients(updatedClients);
+        } else {
+          // Add a new client if it doesn't exist
+          setClients((prevClients) => [
+            ...prevClients,
+            {
+              id: data.id,
+              company_name: data.name,
+              company_email: data.description,
+              street1: data.street1,
+              street2: data.street2,
+              city: data.city,
+              country: data.country,
+              userId: data.user_id,
+              createdAt: new Date().toLocaleDateString(),
+            },
+          ]);
+        }
       }
+  
+      dispatch(fetchClients(parsedUser.userId))
+        .then(() => {
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          // setIsLoading(false);
+          console.log(error);
+        });
     }
     setIsDialogOpen(false);
     setIsLoading(false);
-    setIsEditExpense(false);
-    setEditedExpenseData(null);
+    setIsEdiClient(false);
+    setEditedClientData(null);
     setAnchorEl(null);
-    setSelectedExpenseId(null);
+    setSelectedClientId(null);
   };
-
+  
   const handleDialogOpen = () => {
     setIsDialogOpen(true);
   };
@@ -185,15 +211,13 @@ export default function ClientsPage() {
     );
     setExpenses(updatedExpenses);
   };
-  // Filter expenses based on the search query
-  const filteredExpenses = expenses.filter((expense) =>
-    expense.expense_name?.toLowerCase().includes(searchQuery?.toLowerCase())
-  );
+ 
 
   useEffect(() => {
+    setClients(clientz)
     // Filter expenses based on the search query
     const searchedClients = clients.filter((client) =>
-      client.company_name.toLowerCase().includes(searchValue.toLowerCase())
+      client.company_name &&client.company_name.toLowerCase().includes(searchValue.toLowerCase())
     );
     setSortedClients(searchedClients);
   }, [searchValue, clients]);
@@ -280,21 +304,21 @@ export default function ClientsPage() {
                   onChange={handleSearchChange}
                   style={{ marginTop: "20px", maxWidth: "30%" }}
                 />
-                <Box sx={{ width: "30%" }}>
+                {/* <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
                   <BlogPostsSort
                     options={statusSortOptions}
                     onSort={handleStatusSortChange}
                   />
-                </Box>
-                <Box sx={{ width: "30%" }}>
+                </Box> */}
+                {/* <Box sx={{ width: "30%" }}>
                   <Typography>Entered By</Typography>
 
                   <BlogPostsSort
                     options={enteredByOptions}
                     onSort={handleEnteredBySortChange}
                   />
-                </Box>
+                </Box> */}
               </Stack>
               <Stack
                 sx={{
@@ -357,7 +381,7 @@ export default function ClientsPage() {
                     <div>
                       <IconButton
                         onClick={(event) =>
-                          handleMenuOpen(event, client.client_num)
+                          handleMenuOpen(event, client.client_id)
                         }
                       >
                         <MoreVertIcon />
@@ -370,7 +394,7 @@ export default function ClientsPage() {
                       >
                         <MenuItem
                           onClick={() => {
-                            handleEditExpense(selectedExpenseId);
+                            handleEditClient(selectedClientId);
                           }}
                         >
                           Edit
@@ -398,11 +422,13 @@ export default function ClientsPage() {
           </Stack>
         </Stack>
       </Box>
-      <EditExpense
-        openDialog={isEditExpense}
-        onClose={handleDialogData}
-        initialData={editedExpenseData}
-      />
+      {editedClientData && (
+  <EditClient
+    openDialog={isEditClient}
+    onClose={handleDialogData}
+    initialData={editedClientData}
+  />
+)}
     </>
   );
 }

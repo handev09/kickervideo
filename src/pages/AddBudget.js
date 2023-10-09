@@ -237,13 +237,45 @@ const AddBudget = () => {
 
               // Your code to use the downloadURL
               // ...
+               // Create an array of service objects
+               const serviceArray = servicesData.map((service) => {
+                const unitPrice = parseFloat(service.unitPrice);
+                const quantity = parseFloat(service.quantity);
+                const markupPercentage = parseFloat(
+                  service.selectedItem.markup?service.selectedItem.markup:service.markup
+                );
+
+                // Calculate the cost based on unitPrice, quantity, and markup percentage
+                const cost =
+                  unitPrice * quantity +
+                  (unitPrice * quantity * markupPercentage) / 100;
+
+                return {
+                  id: uuidv4(),
+                  name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
+                  description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+                  cost: cost,
+                  markup: markupPercentage,
+                  unitPrice: unitPrice,
+                  quantity: quantity,
+                  userId: user_id,
+                  budgetId: budgetData.budgetId,
+                  createdAt: new Date().toLocaleDateString("en-US", {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric",
+                  }),
+                  item_rate: "",
+                };
+              });
+
               const newBudget = {
                 client: selectedClient.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
                 subtotal: budgetSubTotal,
                 discount: discount,
-                tax: budgetData.tax,
+                tax: tax,
                 total: total,
                 internalNotes: budgetData.internalNotes,
                 // attachments: budgetData.attachments,
@@ -254,10 +286,11 @@ const AddBudget = () => {
                 }),
                 userId: user_id,
                 budgetId: budgetData.budgetId,
-                status: "draft",
+                status: "active",
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
                 clientName: selectedClientName,
+                serviceData: serviceArray
               };
               console.log(newBudget);
 
@@ -277,7 +310,7 @@ const AddBudget = () => {
                 });
 
               //Navigate to Home Page
-              // navigate("/");
+              navigate("/");
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);
@@ -291,13 +324,45 @@ const AddBudget = () => {
     } else {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
+       // Create an array of service objects
+       const serviceArray = servicesData.map((service) => {
+        const unitPrice = parseFloat(service.unitPrice);
+        const quantity = parseFloat(service.quantity);
+        const markupPercentage = parseFloat(
+          service.selectedItem.markup?service.selectedItem.markup:service.markup
+        );
+
+        // Calculate the cost based on unitPrice, quantity, and markup percentage
+        const cost =
+          unitPrice * quantity +
+          (unitPrice * quantity * markupPercentage) / 100;
+
+        return {
+          id: uuidv4(),
+          name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
+          description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+          cost: cost,
+          markup: markupPercentage,
+          unitPrice: unitPrice,
+          quantity: quantity,
+          userId: user_id,
+          budgetId: budgetData.budgetId,
+          createdAt: new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          item_rate: "",
+        };
+      });
+
       const newBudget = {
         client: selectedClient.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
         subtotal: budgetSubTotal,
         discount: discount,
-        tax: budgetData.tax,
+        tax: tax,
         total: total,
         internalNotes: budgetData.internalNotes,
         // attachments: budgetData.attachments,
@@ -308,9 +373,11 @@ const AddBudget = () => {
         }),
         userId: user_id,
         budgetId: budgetData.budgetId,
-        status: "draft",
+        status: "active",
+        attachmentsUrl: "",
         budgetNumber: budgetNumber,
         clientName: selectedClientName,
+        serviceData: serviceArray
       };
       console.log(newBudget);
 
@@ -330,7 +397,7 @@ const AddBudget = () => {
         });
 
       //Navigate to Home Page
-      // navigate("/");
+      navigate("/");
     }
   };
 
@@ -427,7 +494,7 @@ const AddBudget = () => {
               console.log(servicesData);
 
               //Navigate to Home Page
-              // navigate("/");
+              navigate("/");
             })
             .catch((error) => {
               console.error("Error getting download URL:", error);
@@ -441,13 +508,45 @@ const AddBudget = () => {
     } else {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
+       // Create an array of service objects
+       const serviceArray = servicesData.map((service) => {
+        const unitPrice = parseFloat(service.unitPrice);
+        const quantity = parseFloat(service.quantity);
+        const markupPercentage = parseFloat(
+          service.selectedItem.markup?service.selectedItem.markup:service.markup
+        );
+
+        // Calculate the cost based on unitPrice, quantity, and markup percentage
+        const cost =
+          unitPrice * quantity +
+          (unitPrice * quantity * markupPercentage) / 100;
+
+        return {
+          id: uuidv4(),
+          name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
+          description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+          cost: cost,
+          markup: markupPercentage,
+          unitPrice: unitPrice,
+          quantity: quantity,
+          userId: user_id,
+          budgetId: budgetData.budgetId,
+          createdAt: new Date().toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          item_rate: "",
+        };
+      });
+
       const newBudget = {
         client: selectedClient.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
         subtotal: budgetSubTotal,
         discount: discount,
-        tax: budgetData.tax,
+        tax: tax,
         total: total,
         internalNotes: budgetData.internalNotes,
         // attachments: budgetData.attachments,
@@ -459,8 +558,10 @@ const AddBudget = () => {
         userId: user_id,
         budgetId: budgetData.budgetId,
         status: "active",
+        attachmentsUrl: "",
         budgetNumber: budgetNumber,
         clientName: selectedClientName,
+        serviceData: serviceArray
       };
       console.log(newBudget);
 
@@ -481,7 +582,7 @@ const AddBudget = () => {
       console.log(budgetData);
 
       //Navigate to Home Page
-      // navigate("/");
+      navigate("/");
     }
   };
 

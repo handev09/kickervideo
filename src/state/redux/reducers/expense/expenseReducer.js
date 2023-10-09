@@ -33,7 +33,7 @@ const expenseReducer = (state = initialState, action) => {
     case "DELETE_EXPENSE":
       console.log("Deleting an expense...");
       const updatedExpenses = state.expenses.filter(
-        (expense) => expense.id !== action.payload
+        (expense) => expense.expense_id !== action.payload
       );
       return {
         ...state,

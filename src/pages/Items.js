@@ -29,6 +29,7 @@ import LoadingSpinner from './loadingSpinner'
 import CreateNewLineItem from "./CreateNewLineItem";
 import { addItem } from '../state/redux/actions/items/create'
 import { fetchItems } from '../state/redux/actions/items/fetch'
+import EditLineItem from "./EditLineItem";
 
 
 export default function ExpensesPage() {
@@ -37,9 +38,9 @@ export default function ExpensesPage() {
   
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditExpense, setIsEditExpense] = useState(false);
+  const [isEditItem, setIsEditItem] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [editedExpenseData, setEditedExpenseData] = useState(null);
+  const [editedItemData, setEditedItemData] = useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
   const [items, setItems] = useState([]);
@@ -81,7 +82,7 @@ const storedUser = localStorage.getItem("user");
   
       // Filter items based on the search query
       const searchedItems = items.filter((item) =>
-        item.item_name.toLowerCase().includes(searchValue.toLowerCase())
+      item.item_name && item.item_name.toLowerCase().includes(searchValue.toLowerCase())
       );
       setSortedItems(searchedItems);
     }, [searchValue, items]);
@@ -99,6 +100,12 @@ const storedUser = localStorage.getItem("user");
     setSelectedExpenseId(null);
   };
 
+  const handleEditItem = (itemId) => {
+    const itemToEdit = itemz.find((item) => item.item_id === itemId);
+    setEditedItemData(itemToEdit);
+    setIsEditItem(true);
+  };
+
   
 
   
@@ -111,14 +118,14 @@ const storedUser = localStorage.getItem("user");
  setIsLoading(true); 
 
     if (data.name && data.description) {
-      if (editedExpenseData) {
-        const updatedExpenses = expenses.map((expense) =>
-          expense.id === editedExpenseData.id
-            ? { ...editedExpenseData, ...data }
-            : expense
+      if (editedItemData) {
+        const updatedtems = items.map((item) =>
+          item.id === editedItemData.id
+            ? { ...editedItemData, ...data }
+            : item
         );
-        setExpenses(updatedExpenses);
-        setIsEditExpense(false);
+        setItems(updatedtems);
+        setIsEditItem(false);
       } else {
         setItems((prevItems) => [
           ...prevItems,
@@ -131,31 +138,15 @@ const storedUser = localStorage.getItem("user");
             total: data.cost,
           },
         ]);
-        const newItem = {
-          id: data.id,
-            name: data.name,
-            description: data.description,
-            optionValue: data.optionValue,
-            createdAt: new Date().toLocaleDateString(),
-            markup: data.markup,
-            cost: data.unitPrice,
-            userId: parsedUser.userId
-        }
-        dispatch(addItem(newItem)).then((res) => {
-          console.log('item added')
+       
+        
           // Fetching is complete, set isLoading back to false
           dispatch(fetchItems(parsedUser.userId)).then(()=>{
           }).catch((error)=>{
+            setIsLoading(false)
             console.log(error);
           });
-          console.log('set items data here')
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          // Handle any errors here, and also set isLoading back to false
-          console.error("Error fetching expenses:", error);
-          setIsLoading(false);
-        });
+          
        
 
 
@@ -174,8 +165,8 @@ dispatch(fetchExpense(parsedUser.userId))
     });
 
     setIsDialogOpen(false);
-    setIsEditExpense(false);
-    setEditedExpenseData(null);
+    setIsEditItem(false);
+    setEditedItemData(null);
     setAnchorEl(null);
     setSelectedExpenseId(null);
   };
@@ -352,13 +343,13 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
                         open={Boolean(anchorEl)}
                         onClose={handleMenuClose}
                       >
-                        {/* <MenuItem
+                        <MenuItem
                           onClick={() => {
-                            handleEditExpense(selectedExpenseId);
+                            handleEditItem(selectedExpenseId);
                           }}
                         >
                           Edit
-                        </MenuItem> */}
+                        </MenuItem>
                         {/* <MenuItem
                           onClick={() => handleDeleteExpense(selectedExpenseId)}
                         >
@@ -382,11 +373,14 @@ const [filteredItems, setFilteredItems] = useState(sortedItems);
           </Stack>
         </Stack>
       </Box>
-      <EditExpense
-        openDialog={isEditExpense}
+      {editedItemData&&(
+        <EditLineItem
+        openDialog={isEditItem}
         onClose={handleDialogData}
-        initialData={editedExpenseData}
+        initialData={editedItemData}
       />
+      )}
+      
     </>
   );
 }
