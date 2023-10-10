@@ -262,11 +262,22 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
             />
           </Box>
 
-          <TextareaAutosize
+          {/* <TextareaAutosize
             minRows={7} // You can adjust the number of rows as needed
             placeholder="Description"
             style={{ width: "100%", resize: "vertical" }}
             value={selectedItem ? selectedItem.item_desc : ""}
+          /> */}
+
+<TextField
+            id="description"
+            multiline
+            placeholder="Note details"
+            rows={4}
+            fullWidth
+            variant="outlined"
+            value={selectedItem ? selectedItem.item_desc : ""}
+            // onChange={handleNotes}
           />
         </Stack>
 

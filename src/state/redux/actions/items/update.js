@@ -7,8 +7,8 @@ export const UPDATE_ITEM = 'UPDATE_ITEM';
 export const updateItem = (itemId, data) => {
   return async (dispatch) => {
     try {
-      const response = await axios.put(`http://localhost:3001/api/v1/items/update/${itemId}`, data);
-      // const response = await axios.put(`https://kickervideoapi.vercel.app/api/v1/clients/update/${clientId}`, updatedClientData);
+      // const response = await axios.put(`http://localhost:3001/api/v1/items/update/${itemId}`, data);
+      const response = await axios.put(`https://kickervideoapi.vercel.app/api/v1/items/update/${itemId}`, data);
       const itemData = response.data;
 
       dispatch({

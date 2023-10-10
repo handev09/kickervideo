@@ -141,6 +141,7 @@ function PaymentForm() {
 
       // Redirect to the dashboard page
       navigate("/dashboard");
+      // window.location.href="/dashboard"
     } catch (error) {
       setError("An error occurred while confirming the payment.");
       console.error(error);

@@ -3,8 +3,8 @@ import axios from 'axios';
 export const addContact = (contact) => {
   return async (dispatch) => {
     try {
-      const response = await axios.post('http://localhost:3001/api/v1/contacts/create', contact);
-      // const response = await axios.post('https://kickervideoapi.vercel.app/api/v1/expense/create', expense);
+      // const response = await axios.post('http://localhost:3001/api/v1/contacts/create', contact);
+      const response = await axios.post('https://kickervideoapi.vercel.app/api/v1/contacts/create', contact);
       const newContact = response.data;
       
       dispatch({

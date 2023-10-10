@@ -34,9 +34,9 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
 
  
 
-  console.log(initialData);
-
-  console.log(initialData);
+  // console.log(initialData);
+// 
+  // console.log(initialData);
   const [selectedOption, setSelectedOption] = useState("");
 
   const budgetStatusOption = ["Draft", "Sent", "Active", "Archive"];
@@ -56,10 +56,11 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
     const newItem = {
      budget_id: initialData.budget_id,
      project_title: projectTile,
-     status: status,
+     status: projectStatus,
      internal_notes: internalNotes
     };
     dispatch(updateBudget(initialData.budget_id,newItem))
+    console.log(newItem)
     onClose(newItem);
     setProjectTile(""); // Reset name state
     setProjectStatus(""); // Reset description state
@@ -81,7 +82,20 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
   };
 
   const handleOptionChange = (option) => {
-    setSelectedOption(option);
+    if(option==='Draft'){
+      setSelectedOption('draft');
+    setProjectStatus('draft')
+    } else if(option==='Sent'){
+      setSelectedOption('sent');
+    setProjectStatus('sent')
+    } else if(option==='Active'){
+      setSelectedOption('active');
+      setProjectStatus('active')
+    } else {
+      setSelectedOption('archived');
+      setProjectStatus('archived')
+    }
+   
   };
   const handleNormalClose = () => {
     const newItem = {
@@ -201,7 +215,7 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
                 }}
               >
                 <Container>
-                  <Button
+                  {/* <Button
                     color="primary"
                     onClick={() => {
                       handleDeleteExpense(initialData.expense_id);
@@ -214,7 +228,7 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
                     }}
                   >
                     Delete
-                  </Button>
+                  </Button> */}
                 </Container>
 
                 <Container
@@ -248,7 +262,7 @@ const EditBudget = ({ openDialog, onClose, initialData }) => {
                       padding: "8px 25px",
                     }}
                   >
-                    Create
+                    Update
                   </Button>
                 </Container>
               </Container>

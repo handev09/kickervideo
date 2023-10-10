@@ -3,8 +3,8 @@ import axios from 'axios';
 export const deleteItem = (itemId) => {
   return async (dispatch) => {
     try {
-      await axios.delete(`http://localhost:3001/api/v1/items/delete/${itemId}`);
-      // const response = await axios.delete(`https://kickervideoapi.vercel.app/api/v1/expense/delete/${expenseId}`);
+      // await axios.delete(`http://localhost:3001/api/v1/items/delete/${itemId}`);
+      const response = await axios.delete(`https://kickervideoapi.vercel.app/api/v1/items/delete/${itemId}`);
       
       // Dispatch an action to remove the deleted expense from the state
       dispatch({

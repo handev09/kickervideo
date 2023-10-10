@@ -28,7 +28,8 @@ export const updateBudget = (budgetId,budget) => {
     try {
       // Make a PUT request to update the budget
       const response = await axios.put(
-        `http://localhost:3001/api/v1/budget/update/${budgetId}`,
+        // `http://localhost:3001/api/v1/budget/update/${budgetId}`,
+        `https://kickervideoapi.vercel.app/api/v1/budget/update/${budgetId}`,
         budget
       );
 

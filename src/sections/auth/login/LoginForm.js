@@ -35,27 +35,50 @@ export default function LoginForm() {
   const user = useSelector((state) => state.login.user);
 
   // const user = localStorage.getItem('user')
+  // const handleSubmit = async (e) => {
+  //   setLoading(true)
+  //   e.preventDefault();
+  //   dispatch(loginRequest(email, password)).then(()=>{
+  //     if (isAuthenticated) {
+  //       setLoading(false)
+  //       // Navigate to the dashboard
+  //       localStorage.setItem("user", JSON.stringify(user));
+  //       navigate("/dashboard", { replace: true });
+  //     } else {
+  //       // Handle login failure, if needed
+  //       setLoading(false)
+  //     }
+
+  //   }).catch((error)=>{
+  //   console.error(error)
+  // })
+    
+  // };
+
   const handleSubmit = async (e) => {
-    setLoading(true)
     e.preventDefault();
-    dispatch(loginRequest(email, password)).then(()=>{
+    setLoading(true);
+    
+    try {
+      await dispatch(loginRequest(email, password));
+  
       if (isAuthenticated) {
-        setLoading(false)
         // Navigate to the dashboard
         localStorage.setItem("user", JSON.stringify(user));
         navigate("/dashboard", { replace: true });
       } else {
         // Handle login failure, if needed
       }
-
-    }).catch((error)=>{
-    console.error(error)
-  })
-    
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form>
       <Stack spacing={3}>
         <TextField
           name="email"
@@ -112,7 +135,7 @@ export default function LoginForm() {
         size="large"
         type="submit"
         variant="contained"
-        // onClick={handleSubmit}
+        onClick={handleSubmit}
         sx={{
           backgroundColor: "rgba(224, 88, 88, 1)",
           "&:hover": {

@@ -58,6 +58,7 @@ import { fetchClients } from "../state/redux/actions/clients/fetch";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import EditBudget from "./EditBudget";
 import { deleteBudget } from "../state/redux/actions/budget/delete";
+import LoadingSpinner from "./loadingSpinner";
 
 // ----------------------------------------------------------------------
 
@@ -65,6 +66,7 @@ const TABLE_HEAD = [
   { id: "client", label: "Client", alignLeft: true },
   { id: "created", label: "Created", alignRight: false },
   { id: "project-title", label: "Project Title", alignRight: false },
+  { id: "budget-number", label: "Budget#", alignRight: false },
   // { id: "isV  erified", label: "Verified", alignRight: false },
   { id: "isV  erified", label: "", alignRight: false },
   { id: "budget-amount", label: "Budget Amount", alignRight: false },
@@ -110,16 +112,16 @@ export default function DashboardAppPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [budget, setBudgets] = useState([]);
+  const [budgets, setBudgets] = useState([]);
   const isAuthenticated = useSelector((state) => state.auth.isLoggedIn);
   const [isLoading, setIsLoading]=useState(false)
   //budgets from state
-  let budgets = useSelector((state) => state.budgets.budgets);
+  const budgetz = useSelector((state) => state.budgets.budgets);
   const loading = useSelector((state) => state.budgets.loading);
   const error = useSelector((state) => state.budgets.error);
   const subscribedUser = useSelector((state) => state.user.user);
 
-  console.log(budgets);
+  // console.log(budgets);
 
   const registrationStatus = useSelector(
     (state) => state.auth.registrationStatus
@@ -129,13 +131,13 @@ export default function DashboardAppPage() {
   );
 
   const user = useSelector((state) => state.login.user);
-  console.log(user);
+  // console.log(user);
 
   // if(user.isPaid===false){
   //   console.log('Subscription Ended')
   // }
 
-  console.log(registrationStatus);
+  // console.log(registrationStatus);
   // const history = useHistory();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -229,7 +231,7 @@ export default function DashboardAppPage() {
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - budgets.length) : 0;
 
   const filteredUsers = applySortFilter(
-    budget,
+    budgets,
     getComparator(order, orderBy),
     filterName
   );
@@ -245,6 +247,7 @@ export default function DashboardAppPage() {
   const handleDialogData = (data) => {
     console.log(data);
     setIsDialogOpen(false)
+    // console.log(data)
   };
 
   useEffect(() => {
@@ -264,7 +267,7 @@ export default function DashboardAppPage() {
       dispatch(fetchClients(id));
       dispatch(fetchExpense(id));
       setBudgetsTotal(budgets.length);
-      console.log(budgetsTotal);
+      // console.log(budgetsTotal);
 
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
@@ -281,22 +284,28 @@ export default function DashboardAppPage() {
   // }, [budgets]);
 
   useEffect(() => {
-    setBudgets(budgets);
+    setBudgets(budgetz);
     // budgets = budget;
-  }, [budgets]);
+  }, [budgetz]);
 
 
 
 
 
   const handleDeleteBudget = (budgetId) => {
-    console.log('id: '+budgetId)
+    // console.log('id: '+budgetId)
     setIsLoading(true)
-    console.log(budgetId)
+    // console.log(budgetId)
     dispatch(deleteBudget(budgetId)).then(()=>{
       dispatch(fetchUserBudgets(user)).then(()=>{
-        setIsLoading(false)
-        setOpen(false)
+        const updatedBudgets = budgets.filter(budget => budget.budget_id !== budgetId);
+      setBudgets(updatedBudgets);
+      setIsLoading(false);
+      setOpen(false);
+      setSelected("")
+        // setBudgets(budgets);
+        // setIsLoading(false)
+        // setOpen(false)
       
       })
     })
@@ -313,9 +322,14 @@ export default function DashboardAppPage() {
     return <div>Loading...</div>;
   }
 
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
+
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
+
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -324,12 +338,12 @@ export default function DashboardAppPage() {
   const isNotFound = !filteredUsers.length && !!filterName;
 
   const loggedInUser = localStorage.getItem("user");
-  console.log(loggedInUser);
+  // console.log(loggedInUser);
 
   if (user) {
     // dispatch(getUser(user.userId))
-    console.log("Current User is LoggedIn");
-    console.log(user.isPaid);
+    // console.log("Current User is LoggedIn");
+    // console.log(user.isPaid);
     if (user.isPaid === false) {
       // If user is not paid, display a message and a button
       return (
@@ -361,7 +375,7 @@ export default function DashboardAppPage() {
       );
     }
   } else {
-    console.log("User not Logged in");
+    // console.log("User not Logged in");
   }
 
   return (
@@ -560,6 +574,8 @@ export default function DashboardAppPage() {
                       internalNotes,
                       tax,
                       status,
+                      budget_num,
+                      budget_numb
                     } = row;
                     const selectedBudget = selected.indexOf(client_name) !== -1;
 
@@ -620,6 +636,7 @@ export default function DashboardAppPage() {
                         <TableCell align="left">{created_at}</TableCell>
 
                         <TableCell align="left">{project_title}</TableCell>
+                        <TableCell align="left">#{budget_numb?budget_numb:budget_num}</TableCell>
 
                         <TableCell align="left">
                           <StateIndicator
@@ -723,7 +740,7 @@ export default function DashboardAppPage() {
         }}
       >
         <MenuItem  onClick={() => {
-              console.log('Edit Clicked+')
+              // console.log('Edit Clicked+')
               handleEditBudget(selectedBudget);
             }}>
           <Iconify
@@ -735,7 +752,7 @@ export default function DashboardAppPage() {
         </MenuItem>
 
         <MenuItem sx={{ color: "error.main" }} onClick={() => {
-              console.log('Edit Clicked+')
+              // console.log('Edit Clicked+')
               handleDeleteBudget(selectedBudget);
             }}>
           <Iconify icon={"eva:trash-2-outline"} sx={{ mr: 2 }} />

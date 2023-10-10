@@ -11,7 +11,12 @@ export default function LoadingSpinner() {
         height: "100vh",
       }}
     >
-      <CircularProgress color="primary" size={80} thickness={5} />
+      {/* <CircularProgress color="primary" size={80} thickness={5} /> */}
+      <CircularProgress
+        style={{ color: "#E05858FF" }} // Set the color to "blue"
+        size={80}
+        thickness={5}
+      />
     </div>
   );
 }

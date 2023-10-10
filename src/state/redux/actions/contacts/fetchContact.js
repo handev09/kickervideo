@@ -3,8 +3,8 @@ import axios from "axios";
 export const fetchContact = (id) => async (dispatch) => {
   try {
     console.log("Fetching client...");
-    const response = await axios.get(`http://localhost:3001/api/v1/clients/contact-details?contactId=${id}`);
-    // const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/clients/client-details?clientId=${id}`);
+    // const response = await axios.get(`http://localhost:3001/api/v1/clients/contact-details?contactId=${id}`);
+    const response = await axios.get(`https://kickervideoapi.vercel.app/api/v1/clients/contact-details?contactId=${id}`);
     const contact = response.data;
     
     console.log("Fetched contact:", contact); // Log the fetched items
