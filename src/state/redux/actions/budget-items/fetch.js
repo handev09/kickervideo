@@ -10,7 +10,7 @@ export const fetchItems = (id) => async (dispatch) => {
     console.log("Fetched items:", items); // Log the fetched items
     
     dispatch({
-      type: "FETCH_ITEM_SUCCESS",
+      type: "FETCH_ITEM_SUCCESS", 
       payload: items,
     });
   } catch (error) {
