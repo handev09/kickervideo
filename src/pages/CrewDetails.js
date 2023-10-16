@@ -34,9 +34,8 @@ import {
   ref as storageRef,
   uploadBytes,
 } from "firebase/storage";
-import { v4 as uuidv4 } from "uuid";
 
-const AddCrewForm = () => {
+const CrewDetails = () => {
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
   const [employmentType, setEmploymentType] = useState("");
   const [fullName, setFullName] = useState("");
@@ -203,7 +202,6 @@ const AddCrewForm = () => {
 
               // Create the user object with the download URL
               const newUser = {
-                crewId: uuidv4(),
                 fullName: userData.fullName,
                 phone: userData.phone,
                 email: userData.email,
@@ -241,7 +239,6 @@ const AddCrewForm = () => {
       // Handle the case where no image is selected
       console.log("No Image Selected");
       const newUser = {
-        crewId: uuidv4(),
         fullName: userData.fullName,
         phone: userData.phone,
         email: userData.email,
@@ -261,7 +258,7 @@ const AddCrewForm = () => {
       // Dispatch the new user to the Redux store
       dispatch(addUser(newUser)).then(()=>{
         dispatch(fetchUserCrew(user_id)).then(()=>{
-          navigate("/dashboard/crew");
+          navigate("/dashboard/user");
         }).catch((error)=>{
         console.error(error)
       })
@@ -721,4 +718,4 @@ const AddCrewForm = () => {
   );
 };
 
-export default AddCrewForm;
+export default CrewDetails;

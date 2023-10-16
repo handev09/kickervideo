@@ -288,7 +288,7 @@ const AddBudget = () => {
                 }),
                 userId: user_id,
                 budgetId: budgetData.budgetId,
-                status: "active",
+                status: "draft",
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
                 clientName: selectedClientName,
@@ -375,7 +375,7 @@ const AddBudget = () => {
         }),
         userId: user_id,
         budgetId: budgetData.budgetId,
-        status: "active",
+        status: "draft",
         attachmentsUrl: "",
         budgetNumber: budgetNumber,
         clientName: selectedClientName,
@@ -966,7 +966,7 @@ const AddBudget = () => {
           </div>
 
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
-            <Typography variant="h5">Client Name</Typography>
+            <Typography variant="h5">Contact Name</Typography>
             <MyDropdown
               options={contacts.map((contact) => contact.contact_name)}
               onChange={(data) => {

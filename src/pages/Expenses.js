@@ -199,7 +199,7 @@ dispatch(fetchExpense(parsedUser.userId))
   useEffect(() => {
     // Filter expenses based on the search query
     const searchedExpenses = expenses.filter((expense) =>
-      expense.expense_name.toLowerCase().includes(searchValue.toLowerCase())
+      expense.expense_name?.toLowerCase().includes(searchValue.toLowerCase())
     );
     setSortedExpenses(searchedExpenses);
   }, [searchValue,expenses]);
@@ -338,6 +338,18 @@ console.log(searchValue)
                         {expense.description}
                       </Typography>
                     </div>
+                    
+
+                    <div
+                      style={{
+                        width: "20%",
+                      }}
+                    >
+                      <Typography variant="subtitle3">
+                        #{expense.budget_number?expense.budget_number:0}
+                      </Typography>
+                    </div>
+
                     <div
                       style={{
                         width: "20%",

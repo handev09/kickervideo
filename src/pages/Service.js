@@ -19,31 +19,6 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
   console.log("Inde " + index);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  //   const items = [
-  //     {
-  //       name: "Item 1",
-  //       description: "Description 1",
-  //       price: 10,
-  //       markup: 0.1,
-  //       id: 1,
-  //     },
-  //     {
-  //       name: "Item 2",
-  //       description: "Description 2",
-  //       price: 20,
-  //       markup: 0.2,
-  //       id: 2,
-  //     },
-  //     {
-  //       name: "Item 3",
-  //       description: "Description 3",
-  //       price: 30,
-  //       markup: 0.15,
-  //       id: 3,
-  //     },
-  //     // Add more items as needed
-  //   ];
-
   const items = useSelector((state) => state.items.items);
   console.log(items);
 
@@ -176,18 +151,29 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
               handleHomeEndKeys
               id="free-solo-with-text-demo"
               options={items}
+              // getOptionLabel={(option) => {
+              //   // console.log(option);
+              //   // Value selected with enter, right from the input
+              //   if (typeof option === "string") {
+              //     return option;
+              //   } else if (option.inputValue) {
+              //     return option.inputValue;
+              //   } else{
+
+              //     return option.item_name;
+              //   }
+              //   // Regular option
+              // }}
+
+              //returning an option label
               getOptionLabel={(option) => {
-                // console.log(option);
-                // Value selected with enter, right from the input
                 if (typeof option === "string") {
                   return option;
-                }
-                // Add "xxx" option created dynamically
-                if (option.inputValue) {
+                } else if (option.inputValue) {
                   return option.inputValue;
+                } else {
+                  return option.item_name || ""; // Make sure it always returns a string
                 }
-                // Regular option
-                return option.item_name;
               }}
               renderOption={(props, option) => (
                 <li

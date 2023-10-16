@@ -226,7 +226,7 @@ export default function BudgetDetailsPage() {
             comName={budgetDetails.company_name}
             comId={budgetDetails.client_id}
           />
-          <Button
+          {/* <Button
             variant="contained"
             sx={{
               backgroundColor: "#E05858FF",
@@ -240,7 +240,7 @@ export default function BudgetDetailsPage() {
             onClick={handleDialogOpen}
           >
             New Contact
-          </Button>
+          </Button> */}
         </Stack>
 
         {/* Company details here */}
@@ -332,6 +332,15 @@ export default function BudgetDetailsPage() {
             </Typography>
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               ${budgetDetails.total}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              Budget Number
+            </Typography>
+            <Typography  sx={{ fontWeight: "bold" }}>
+              #{budgetDetails.budget_numb?budgetDetails.budget_numb:budgetDetails.budget_num}
             </Typography>
           </Box>
           

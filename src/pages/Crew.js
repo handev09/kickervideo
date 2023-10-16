@@ -258,6 +258,7 @@ export default function CrewPage() {
                       email,
                       phone_number,
                       profileUrl,
+                      crew_id
                       // zip,
                     } = row;
                     const selectedUser = selected.indexOf(name) !== -1;
@@ -274,7 +275,9 @@ export default function CrewPage() {
                           {/* <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} /> */}
                         </TableCell>
 
-                        <TableCell component="th" scope="row" padding="none">
+                        <TableCell component="a" onClick={() => {
+                            navigate(`/dashboard/crew-details/${crew_id}`);
+                          }}scope="row" padding="none">
                           <Stack
                             direction="row"
                             alignItems="center"
