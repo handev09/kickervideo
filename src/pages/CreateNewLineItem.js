@@ -19,8 +19,9 @@ import MyDropdown from "../components/dropdown/DropDown";
 import { fetchItems } from "../state/redux/actions/items/fetch";
 import { addItem } from "../state/redux/actions/items/create";
 import { useDispatch, useSelector } from "react-redux";
+import { set } from "date-fns";
 
-const CreateNewLineItem = ({ openDialog, onClose, index }) => {
+const CreateNewLineItem = ({ openDialog, onClose, index,inputValue }) => {
   console.log(index)
   const itemNum = index
 
@@ -33,6 +34,10 @@ const CreateNewLineItem = ({ openDialog, onClose, index }) => {
   const [cost, setCost] = useState("");
   const [markup, setMarkup] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
+
+  useEffect(()=>{
+    setFullName(inputValue)
+  }, [inputValue])
  
 
   const dropdownOptions = [

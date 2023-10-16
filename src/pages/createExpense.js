@@ -48,6 +48,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   });
   // const [rei]
   const [selectedImage, setSelectedImage] = useState(null);
+  const [budgetNumber, setBudgetNumber]=useState("")
   const imageInputRef = useRef(null);
 
   const statusOptions = ["Draft", "Active", "Sent", "Paid"];
@@ -65,6 +66,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
 
   useEffect(()=>{
     setReimburseOptions(employmentType.company_client)
+    setBudgetNumber(employmentType.budget_num?employmentType.budget_num:employmentType.budget_numb)
   }, [employmentType])
   console.log(reimburseOptions)
 
@@ -95,6 +97,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 status: status,
                 createdBy: createdBy,
                 receipt: downloadURL,
+                budgetNumber: budgetNumber
               };
 
               dispatch(addExpense(newItem));
@@ -133,6 +136,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
         status: status,
         createdBy: createdBy,
         receipt: "",
+        budgetNumber: budgetNumber
       };
 
       dispatch(addExpense(newItem));

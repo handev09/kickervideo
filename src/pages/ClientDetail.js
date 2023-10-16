@@ -215,7 +215,7 @@ export default function ClientDetails() {
       try {
         // Replace this with your actual data fetching logic
         const response = await fetch(
-          `http://localhost:3001/api/v1/clients/client-details?clientId=${clientId}`
+          `https://kickervideoapi.vercel.app/api/v1/clients/client-details?clientId=${clientId}`
         );
         const data = await response.json();
         setClientDetails(data[0]);
@@ -228,7 +228,7 @@ export default function ClientDetails() {
       try {
         // Replace this with your actual data fetching logic
         const response = await fetch(
-          `http://localhost:3001/api/v1/contacts/fetch?companyId=${clientId}`
+          `https://kickervideoapi.vercel.app/api/v1/contacts/fetch?companyId=${clientId}`
         );
         const data = await response.json();
         setContacts(data);

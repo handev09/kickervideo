@@ -170,7 +170,7 @@ export default function BudgetDetailsPage() {
       try {
         // Replace this with your actual data fetching logic
         const response = await fetch(
-          `http://localhost:3001/api/v1/budget/budget-details?budgetId=${budgetId}`
+          `https://kickervideoapi.vercel.app/api/v1/budget/budget-details?budgetId=${budgetId}`
         );
         const data = await response.json();
         setBudgetDetails(data[0]);
@@ -183,7 +183,7 @@ export default function BudgetDetailsPage() {
       try {
         // Replace this with your actual data fetching logic
         const response = await fetch(
-          `http://localhost:3001/api/v1/budget-items/fetch?budgetId=${budgetId}`
+          `https://kickervideoapi.vercel.app/api/v1/budget-items/fetch?budgetId=${budgetId}`
         );
         const data = await response.json();
         setBudgetItems(data);
@@ -306,9 +306,7 @@ export default function BudgetDetailsPage() {
         </Stack>
 
         {/* Comapny Address here */}
-        <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-          Budget Totals
-        </Typography>
+        
         <Stack
           sx={{
             display: "flex",
@@ -317,6 +315,7 @@ export default function BudgetDetailsPage() {
             gap: "20px",
             //   maxWidth: '800px',
             marginBottom: "20px",
+            marginTop: "40px"
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
@@ -335,30 +334,7 @@ export default function BudgetDetailsPage() {
               ${budgetDetails.total}
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              City
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              {budgetDetails.city}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Zip
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              {budgetDetails.zip}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              Country
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-              {budgetDetails.country}
-            </Typography>
-          </Box>
+          
         </Stack>
 
         {/* Other Contacts */}

@@ -207,7 +207,7 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
                       }}
                     >
                       <Typography variant="subtitle1">
-                        This is a custom line item
+                        Would you like to add this new item?
                       </Typography>
                       <button
                         onClick={() => {

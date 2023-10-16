@@ -46,6 +46,7 @@ import CreateClient from "./CreateClient";
 const AddBudget = () => {
   const [servicesData, setServicesData] = useState([]);
   const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
+  const [customInputValue, setCustomInputValue]=useState("")
 
   // Update the servicedata on change
 
@@ -53,6 +54,7 @@ const AddBudget = () => {
     console.log(data);
     if (data.selectedItem && data.selectedItem.isCustom) {
       // Access isCustom property safely
+      setCustomInputValue(data.selectedItem.inputValue);
       setCustomSelectedItemIndex(parseInt(index));
       setIsDialogOpen(true);
     }
@@ -1111,6 +1113,7 @@ const AddBudget = () => {
             openDialog={isDialogOpen}
             onClose={handleDialogData}
             index={customSelectedItemIndex}
+            inputValue={customInputValue}
           />
         </Box>
       </Stack>

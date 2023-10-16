@@ -90,6 +90,7 @@ const CreateClient = ({ openDialog, onClose }) => {
       prRole: prRole,
       prEmail: premail,
       isPrimary: true
+
     };
 
     dispatch(addClient(newItem)).then(()=>{
