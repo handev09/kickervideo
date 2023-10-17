@@ -23,6 +23,7 @@ import {
   } from "firebase/storage";
   import { storage } from "../components/firebase/firebase-config";
   import { useDispatch, useSelector } from "react-redux";
+  import { updateCrew } from "../state/redux/actions/crew/update";
 
 const CrewDetails = () => {
     // const [budget, setBudget] = useState('');
@@ -44,6 +45,7 @@ const CrewDetails = () => {
   const [editProfile, setEditProfile] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
 const [contractType, setContractType]=useState("")
+const [loading, setLoading]=useState(false)
 
 const loggedInUser = useSelector((state) => state.login.user);
 console.log(loggedInUser.userId);
@@ -81,6 +83,7 @@ const user_id = loggedInUser.userId;
 
 //   Update user function
   const handleUpdateUser = () => {
+    setLoading(true)
     console.log("Image Selected True");
 
     if (selectedImage) {
@@ -111,11 +114,42 @@ const user_id = loggedInUser.userId;
                 unitPrice: unitPrice,
                 userId: user_id,
                 profileUrl: downloadURL, // Add the image URL
+                employmentType: employmentType
               };
               console.log(newUser);
 
               // Dispatch the new user to the Redux store
-            //   dispatch(addUser(newUser));
+              dispatch(updateCrew(crewId,newUser)).then(()=>{
+                const fetchCrewDetail = async () => {
+                    try {
+                      // Replace this with your actual data fetching logic
+                      const response = await fetch(
+                        `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
+                      );
+                      const data = await response.json();
+                      setUser(data[0]);
+                      setEmploymentType(data[0].contract_type);
+                      setFullName(data[0].name);
+                      setPhone(data[0].phone_number);
+                      setEmail(data[0].email);
+                      setAddress(data[0].address);
+                      setStreet(data[0].street);
+                      setState(data[0].state);
+                      setCity(data[0].city);
+                      setZip(data[0].zip);
+                      setRole(data[0].role);
+                      setCost(data[0].cost);
+                      setMarkup(data[0].markup);
+                      setUnitPrice(data[0].unitPrice);
+                    } catch (error) {
+                      console.error("Error fetching client details:", error);
+                    }
+                  };
+
+                  fetchCrewDetail() 
+                  setEditProfile(false)
+                  setLoading(false)
+              })
 
               // Navigate to Home Page
             //   navigate("/dashboard/crew");
@@ -147,10 +181,42 @@ const user_id = loggedInUser.userId;
         cost: cost,
         markup: markup,
         unitPrice: unitPrice,
-        userId: user_id // Add the image URL
+        userId: user_id,// Add the image URL
+        employmentType: employmentType
       };
 
       // Dispatch the new user to the Redux store
+      dispatch(updateCrew(crewId,newUser)).then(()=>{
+        const fetchCrewDetail = async () => {
+            try {
+              // Replace this with your actual data fetching logic
+              const response = await fetch(
+                `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
+              );
+              const data = await response.json();
+              setUser(data[0]);
+              setEmploymentType(data[0].contract_type);
+              setFullName(data[0].name);
+              setPhone(data[0].phone_number);
+              setEmail(data[0].email);
+              setAddress(data[0].address);
+              setStreet(data[0].street);
+              setState(data[0].state);
+              setCity(data[0].city);
+              setZip(data[0].zip);
+              setRole(data[0].role);
+              setCost(data[0].cost);
+              setMarkup(data[0].markup);
+              setUnitPrice(data[0].unitPrice);
+            } catch (error) {
+              console.error("Error fetching client details:", error);
+            }
+          };
+
+          fetchCrewDetail() 
+          setEditProfile(false)
+          setLoading(false)
+      })
     //   dispatch(addUser(newUser)).then(()=>{
     //     dispatch(fetchUserCrew(user_id)).then(()=>{
     //     //   navigate("/dashboard/crew");
@@ -165,6 +231,10 @@ const user_id = loggedInUser.userId;
       // Navigate to Home Page
      
     }
+  };
+
+  const handleEmploymentTypeChange = (event) => {
+    setEmploymentType(event.target.value);
   };
 
 
@@ -234,6 +304,12 @@ const user_id = loggedInUser.userId;
     // Render a loading spinner or other loading indicator
     return <LoadingSpinner />;
   }
+
+  if(loading){
+    return <LoadingSpinner />
+  }
+
+
   return (
     <div>
       {/* Title */}
@@ -288,7 +364,7 @@ const user_id = loggedInUser.userId;
                 aria-label="employmentType"
                 name="employmentType"
                 value={employmentType}
-                //   onChange={handleEmploymentTypeChange}
+                  onChange={handleEmploymentTypeChange}
               >
                 <Container
                   sx={{

@@ -258,7 +258,7 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
 <TextField
             id="description"
             multiline
-            placeholder="Note details"
+            placeholder="Description"
             rows={4}
             fullWidth
             variant="outlined"

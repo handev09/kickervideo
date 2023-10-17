@@ -679,14 +679,14 @@ const AddBudget = () => {
     setIsDropdownOpen(false);
   };
 
-  const handleDiscountChange = (event) => {
-    const newDiscount = parseFloat(event.target.value);
-    if (!isNaN(newDiscount)) {
-      setDiscount(newDiscount);
-    } else {
-      setDiscount(0); // Set discount to 0 if the input is not a valid number
-    }
-  };
+  // const handleDiscountChange = (event) => {
+  //   const newDiscount = parseFloat(event.target.value);
+  //   if (!isNaN(newDiscount)) {
+  //     setDiscount(newDiscount);
+  //   } else {
+  //     setDiscount(0); // Set discount to 0 if the input is not a valid number
+  //   }
+  // };
 
   const handleBudgetNumberCahange = (event) => {
     const newNumber = parseInt(event.target.value);
@@ -965,15 +965,20 @@ const AddBudget = () => {
             </span>
           </div>
 
-          <Box sx={{ marginLeft: 0, marginTop: 2 }}>
+          <Box sx={{ marginLeft: 0, marginTop: 2}}>
             <Typography variant="h5">Contact Name</Typography>
-            <MyDropdown
+            {selectedClient?(
+              <MyDropdown
               options={contacts.map((contact) => contact.contact_name)}
               onChange={(data) => {
                 setSelectedClientName(data);
                 console.log(selectedClientName);
               }}
             />
+            ):(
+              <Typography variant="p">Please Choose a Company First</Typography>
+            )}
+            
 
             <Typography variant="h5">Project Title</Typography>
             <TextField
@@ -1161,13 +1166,16 @@ const AddBudget = () => {
           {isDiscountEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
-                placeholder="1"
+                placeholder="0"
                 size="small"
                 type="number"
                 // type="number"
                 value={discount}
                 // size="small"
-                onChange={handleDiscountChange}
+                // onChange={handleDiscountChange}
+                onChange={(e)=>{
+                  setDiscount(e.target.value)
+                }}
                 variant="outlined"
                 style={{}}
                 // ... (other props)
@@ -1201,13 +1209,16 @@ const AddBudget = () => {
           {isTaxEdit ? (
             <Stack display="flex" flexDirection="row">
               <TextField
-                placeholder="1"
+                placeholder="0"
                 size="small"
                 type="number"
                 // type="number"
                 value={tax}
                 // size="small"
-                onChange={handleTaxChange}
+                // onChange={handleTaxChange}
+                onChange={(e)=>{
+                  setTax(e.target.value)
+                }}
                 variant="outlined"
                 style={{}}
                 // ... (other props)

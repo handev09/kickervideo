@@ -245,6 +245,29 @@ export default function DashboardAppPage() {
   };
 
   const handleDialogData = (data) => {
+    setIsLoading(true)
+    const storedUser = localStorage.getItem("user");
+      const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
+      const id = parsedUser.userId;
+      const fetchUserBudgets = async () => {
+        try {
+          // Replace this with your actual data fetching logic
+          const response = await fetch(
+            `http://localhost:3001/api/v1/budget/fetch?userId=${id}`
+          );
+          const data = await response.json();
+          setBudgets(data)
+          setIsLoading(false)
+        } catch (error) {
+          console.error("Error fetching client details:", error);
+        }
+      };
+
+      fetchUserBudgets()
+    // dispatch(fetchUserBudgets(id)).then(()=>{
+      
+    //   setIsLoading(false)
+    // })
     console.log(data);
     setIsDialogOpen(false)
     // console.log(data)
@@ -319,7 +342,7 @@ export default function DashboardAppPage() {
   // }, [dispatch, user]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   // if (isLoading) {

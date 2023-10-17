@@ -26,6 +26,22 @@ const crewReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
+      case "UPDATE_CREW":
+        console.log("Updating a crew member...");
+        const { crewId, crewData } = action.payload;
+        // Find the index of the item to update
+        const crewIndex = state.members.findIndex((crew) => crew.crew_id === crewId);
+        if (crewIndex !== -1) {
+          // Create a new array with the updated item
+          const updatedCrewArray = [...state.members];
+          updatedCrewArray[crewIndex] = crewData;
+          return {
+            ...state,
+            members: updatedCrewArray,
+          };
+        }
+        // If item not found, return the current state
+        return state;
     default:
       return state;
   }
