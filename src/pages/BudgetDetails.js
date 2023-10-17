@@ -81,15 +81,6 @@ export default function BudgetDetailsPage() {
     setSelectedExpenseId(null);
   };
 
- 
-
-  
-
-  
-
-  
-
- 
   const handleDialogData = (data) => {
     setIsLoading(true);
 
@@ -306,7 +297,7 @@ export default function BudgetDetailsPage() {
         </Stack>
 
         {/* Comapny Address here */}
-        
+
         <Stack
           sx={{
             display: "flex",
@@ -315,7 +306,7 @@ export default function BudgetDetailsPage() {
             gap: "20px",
             //   maxWidth: '800px',
             marginBottom: "20px",
-            marginTop: "40px"
+            marginTop: "40px",
           }}
         >
           <Box sx={{ display: "flex", flexDirection: "column", width: "30%" }}>
@@ -339,11 +330,13 @@ export default function BudgetDetailsPage() {
             <Typography variant="body1" sx={{ fontWeight: "bold" }}>
               Budget Number
             </Typography>
-            <Typography  sx={{ fontWeight: "bold" }}>
-              #{budgetDetails.budget_numb?budgetDetails.budget_numb:budgetDetails.budget_num}
+            <Typography sx={{ fontWeight: "bold" }}>
+              #
+              {budgetDetails.budget_numb
+                ? budgetDetails.budget_numb
+                : budgetDetails.budget_num}
             </Typography>
           </Box>
-          
         </Stack>
 
         {/* Other Contacts */}
@@ -460,7 +453,7 @@ export default function BudgetDetailsPage() {
                           handleMenuOpen(event, budget.contact_id)
                         }
                       >
-                        <MoreVertIcon />   
+                        <MoreVertIcon />
                       </IconButton>
 
                       <Menu

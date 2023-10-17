@@ -291,7 +291,7 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 onChange={(e) => setCompanyEmail(e.target.value)}
               />
 
-              <Typography>Property Details</Typography>
+              <Typography>Address Details</Typography>
 
               <TextField
                 id="filled-textarea"
