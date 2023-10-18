@@ -15,7 +15,7 @@ import CustomDropdown from "../components/item-price-dropdown/DropDown";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchItems } from "../state/redux/actions/items/fetch";
 
-const ServiceComp = ({ onDelete, onChange, index }) => {
+const ServiceComp = ({ onDelete, onChange, index,data }) => {
   console.log("Inde " + index);
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -28,6 +28,16 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
   const [unitPrice, setUnitPrice] = useState(0);
   const [value, setValue] = useState(null);
   const [total, setTotal] = useState(0);
+  // const [data, setData] = useState({
+  //   index: 0,
+  //   quantity: 0,
+  //   selectedItem: {
+  //     item_name: '',
+  //     markup: 0,
+  //     item_desc: '',
+  //   },
+  //   unitPrice: 0,
+  // });
 
   useEffect(() => {
     // Create an object with the relevant data
@@ -49,6 +59,15 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
         : 0;
     setTotal(newTotal);
   }, [selectedItem, quantity, unitPrice, index, onChange]);
+
+  // useEffect(() => {
+  //   setSelectedItem(data.selectedItem || null);
+  //   setQuantity(data.quantity || 1);
+  //   setCost(data.cost || 0);
+  //   setMarkup(data.markup || 0);
+  //   setUnitPrice(data.unitPrice || 0);
+  //   // ... (initialize other state variables)
+  // }, [data]);
 
   const handleInputChange = (event, value) => {
     setValue(value); // Set the selected value
@@ -206,6 +225,7 @@ const ServiceComp = ({ onDelete, onChange, index }) => {
                       </button>
                     </div>
                   ) : (
+                    
                     <React.Fragment>
                       <div style={{ display: "flex", width: "100%" }}>
                         <div style={{ flex: 1, width: "100%" }}>

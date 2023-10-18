@@ -191,7 +191,7 @@ const user_id = loggedInUser.userId;
             try {
               // Replace this with your actual data fetching logic
               const response = await fetch(
-                `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
+                `https://kickervideoapi.vercel.app/api/v1/crew/details?crewId=${crewId}`
               );
               const data = await response.json();
               setUser(data[0]);
@@ -256,7 +256,7 @@ const user_id = loggedInUser.userId;
       try {
         // Replace this with your actual data fetching logic
         const response = await fetch(
-          `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
+          `https://kickervideoapi.vercel.app/api/v1/crew/details?crewId=${crewId}`
         );
         const data = await response.json();
         setUser(data[0]);

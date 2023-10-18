@@ -23,10 +23,12 @@ import { useSelector } from "react-redux";
 import { BlogPostsSort, ExpensesSearch } from "../sections/@dashboard/expenses";
 // import POSTS from "../_mock/blog";
 import CreateNewExpense from "./createExpense";
-import EditExpense from "./EditExpense";
+// import EditExpense from "./EditExpense";
 import { fetchExpense } from "../state/redux/actions/expense/fetchExpense";
 import LoadingSpinner from "./loadingSpinner";
 import CreateContact from "./CreateContact";
+import EditContact from "./EditContact";
+import { fetchContacts } from "../state/redux/actions/contacts/fetch";
 
 export default function ClientDetails() {
   const navigate = useNavigate();
@@ -37,12 +39,12 @@ export default function ClientDetails() {
   const [sortedClients, setSortedClients] = useState([]);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isEditExpense, setIsEditExpense] = useState(false);
+  const [isEditContact, setIsEditContact] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [editedExpenseData, setEditedExpenseData] = useState(null);
-  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [editedContactData, setEditedContactData] = useState(null);
+  const [selectedContactId, setSelectedContactId] = useState(null);
   const [expenses, setExpenses] = useState([]);
-  const [sortedExpenses, setSortedExpenses] = useState([]);
+  const [sortedContacts, setSortedContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,33 +62,44 @@ export default function ClientDetails() {
       dispatch(fetchExpense(id));
     }
   }, [dispatch, navigate]);
+
+  
   const [searchValue, setSearchValue] = useState("");
 
   const expensez = useSelector((state) => state.expenses.expenses);
   console.log(expensez);
+
+  const contactz = useSelector((state) => state.contacts.contacts);
+  console.log(contactz);
 
   useEffect(() => {
     setSortedClients(clientDetails);
     // setSortedExpenses(expensez);
   }, [clientDetails]);
 
-  const handleMenuOpen = (event, expenseId) => {
-    console.log(expenseId);
+  const handleMenuOpen = (event, contactId) => {
+    console.log(contactId);
     setAnchorEl(event.currentTarget);
-    setSelectedExpenseId(expenseId);
+    setSelectedContactId(contactId);
   };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-    setSelectedExpenseId(null);
+    setSelectedContactId(null);
   };
 
-  const handleEditExpense = (expenseId) => {
-    const expenseToEdit = expensez.find(
-      (expense) => expense.expense_id === expenseId
+  // useEffect(()=>{
+  //   setContacts(contactz)
+  // },[contactz])
+
+  const handleEditContact = (contactId) => {
+    console.log(contactId)
+    const contactToEdit = contacts.find(
+      (contact) => contact.contact_id === contactId
     );
-    setEditedExpenseData(expenseToEdit);
-    setIsEditExpense(true);
+    console.log(contactToEdit)
+    setEditedContactData(contactToEdit);
+    setIsEditContact(true);
   };
 
   const uniqueStatusValues = [
@@ -107,46 +120,22 @@ export default function ClientDetails() {
     label: enteredBy,
   }));
 
-  const handleStatusSortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
+  // 
 
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.status === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
-
-  const handleEnteredBySortChange = (selectedVal) => {
-    const selectedOption = selectedVal;
-
-    // Sort expenses based on the selected option for "Entered By"
-    let sortedExpenses = [...expenses];
-    if (selectedOption) {
-      sortedExpenses = sortedExpenses.filter(
-        (expense) => expense.createdBy === selectedOption
-      );
-    }
-
-    setSortedExpenses(sortedExpenses);
-  };
+ 
 
   const handleDialogData = (data) => {
     setIsLoading(true);
 
     if (data.name && data.description && data.reimburse) {
-      if (editedExpenseData) {
-        const updatedExpenses = expenses.map((expense) =>
-          expense.id === editedExpenseData.id
-            ? { ...editedExpenseData, ...data }
-            : expense
+      if (editedContactData) {
+        const updatedContacts = contacts.map((contact) =>
+          contact.contact_id === editedContactData.id
+            ? { ...editedContactData, ...data }
+            : contact
         );
-        setExpenses(updatedExpenses);
-        setIsEditExpense(false);
+        setContacts(updatedContacts);
+        setIsEditContact(false);
       } else {
         setExpenses((prevExpenses) => [
           ...prevExpenses,
@@ -161,7 +150,7 @@ export default function ClientDetails() {
         ]);
       }
     }
-    dispatch(fetchExpense(parsedUser.userId))
+    dispatch(fetchContacts(parsedUser.userId))
       .then(() => {
         // Fetching is complete, set isLoading back to false
         console.log("set expenses data here");
@@ -174,10 +163,10 @@ export default function ClientDetails() {
       });
 
     setIsDialogOpen(false);
-    setIsEditExpense(false);
-    setEditedExpenseData(null);
+    setIsEditContact(false);
+    setEditedContactData(null);
     setAnchorEl(null);
-    setSelectedExpenseId(null);
+    setSelectedContactId(null);
   };
 
   const handleDialogOpen = () => {
@@ -197,11 +186,11 @@ export default function ClientDetails() {
 
   useEffect(() => {
     // Filter expenses based on the search query
-    const searchedExpenses = expenses.filter((expense) =>
-      expense.expense_name.toLowerCase().includes(searchValue.toLowerCase())
+    const searchedExpenses = contacts.filter((contact) =>
+      contact.contact_name?.toLowerCase().includes(searchValue.toLowerCase())
     );
-    setSortedExpenses(searchedExpenses);
-  }, [searchValue, expenses]);
+    setSortedContacts(searchedExpenses);
+  }, [searchValue, contacts]);
 
   const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
@@ -232,6 +221,7 @@ export default function ClientDetails() {
         );
         const data = await response.json();
         setContacts(data);
+        setSortedContacts(data)
         console.log(data)
       } catch (error) {
         console.error("Error fetching client details:", error);
@@ -422,7 +412,7 @@ export default function ClientDetails() {
                     color: "#fff",
                   }}
                 >
-                  {contacts.length} Contacts
+                  {sortedContacts.length} Contacts
                 </Badge>
                 {/* <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
@@ -448,7 +438,7 @@ export default function ClientDetails() {
                   padding: "10px",
                 }}
               >
-                {contacts.map((contact) => (
+                {sortedContacts.map((contact) => (
                   <div
                     key={contact.contact_id}
                     style={{
@@ -508,6 +498,12 @@ export default function ClientDetails() {
                 opacity: 0.8, // Adjust the opacity value as needed
                 backgroundColor: "#E05858FF",
               }}}>Primary</Button>}
+
+              {!contact.isPrimary&&
+              <Button variant='filled' sx={{color:'#fff',backgroundColor:'#fff'}}>Primary</Button>
+              
+              }
+
                      
                     </div>
                     <div>
@@ -526,7 +522,7 @@ export default function ClientDetails() {
                       >
                         <MenuItem
                           onClick={() => {
-                            handleEditExpense(selectedExpenseId);
+                            handleEditContact(selectedContactId);
                           }}
                         >
                           Edit
@@ -554,10 +550,12 @@ export default function ClientDetails() {
           </Stack>
         </Stack>
       </Box>
-      <EditExpense
-        openDialog={isEditExpense}
+      <EditContact
+        openDialog={isEditContact}
         onClose={handleDialogData}
-        initialData={editedExpenseData}
+        initialData={editedContactData}
+        comName={clientDetails.company_name}
+        comId={clientDetails.client_id}
       />
     </>
   );

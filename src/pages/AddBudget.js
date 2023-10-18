@@ -51,6 +51,7 @@ const AddBudget = () => {
   // Update the servicedata on change
 
   const handleServiceDataChange = (data, index) => {
+   
     console.log(data);
     if (data.selectedItem && data.selectedItem.isCustom) {
       // Access isCustom property safely
@@ -118,6 +119,16 @@ const AddBudget = () => {
       index={0}
       onDelete={() => handleDeleteServiceComp(0)}
       onChange={handleServiceDataChange}
+      data={{
+        index: 0,
+        quantity: 0,
+        selectedItem: {
+          item_name: '',
+          markup: 0,
+          item_desc: '',
+        },
+        unitPrice: 0,
+      }}
     />,
   ]);
 
@@ -197,6 +208,16 @@ const AddBudget = () => {
         index={newIndex}
         onDelete={handleDeleteServiceComp}
         onChange={handleServiceDataChange}
+        data={{
+          index: 0,
+          quantity: 1000,
+          selectedItem: {
+            item_name: '',
+            markup: 0,
+            item_desc: '',
+          },
+          unitPrice: 0,
+        }}
       />,
     ]);
   };
@@ -605,6 +626,19 @@ const AddBudget = () => {
     // setDialogData(data)
     console.log(data);
 
+    const newData = {
+      index: data.index,
+      quantity: data.quantity,
+      selectedItem: {
+        item_name: data.name,
+        markup: data.markup,
+        item_desc: data.description,
+      },
+      unitPrice: data.unitPrice,
+    };
+
+    handleServiceDataChange(newData, newData.index);
+
     if (data.name && data.description && data.index) {
       setServicesData((prevServicesData) => {
         // Find the index of the service data if it exists in the state
@@ -624,6 +658,8 @@ const AddBudget = () => {
           unitPrice: data.unitPrice,
         };
 
+       
+
         // If the service data exists, update it; otherwise, add it to the state
         if (serviceIndex !== -1) {
           const updatedServicesData = [...prevServicesData];
@@ -632,6 +668,7 @@ const AddBudget = () => {
           return updatedServicesData;
         }
       });
+  
     }
 
     if (data.name && data.description) {
@@ -654,6 +691,57 @@ const AddBudget = () => {
     setIsDialogOpen(false);
     setOpenClientsBox(false);
   };
+
+
+  //new handledialogdatafunction
+
+  // const handleDialogData = (data) => {
+  //   console.log(data);
+  
+  //   if (data.name && data.description && data.index) {
+  //     setServicesData((prevServicesData) => {
+  //       const newData = {
+  //         index: data.index,
+  //         quantity: data.quantity,
+  //         selectedItem: {
+  //           item_name: data.name,
+  //           markup: data.markup,
+  //           item_desc: data.description,
+  //         },
+  //         unitPrice: data.unitPrice,
+  //       };
+  
+  //       // Update the servicesData array with the new data
+  //       // const updatedServicesData = prevServicesData.map((service) =>
+  //       //   service.index === data.index ? newData : service
+  //       // );
+  
+  //       // return updatedServicesData;
+  //       handleServiceDataChange(newData, newData.index)
+  //     });
+  //   }
+  
+  //   if (data.name && data.description) {
+  //     setDialogData((prevData) => [...prevData, data]);
+  
+  //     // Update the services array in budgetData
+  //     setBudgetData((prevBudgetData) => ({
+  //       ...prevBudgetData,
+  //       services: [...prevBudgetData.services, data],
+  //     }));
+  //   }
+  
+  //   if (data.createClient) {
+  //     setOpenClientsBox(false);
+  //     setcreateClientOpen(true);
+  //   } else {
+  //     setcreateClientOpen(false);
+  //   }
+  
+  //   setIsDialogOpen(false);
+  //   setOpenClientsBox(false);
+  // };
+  
 
   const handleNotes = (e) => {
     setNotes(e.target.value);

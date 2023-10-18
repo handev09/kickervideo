@@ -278,6 +278,7 @@ export default function DashboardAppPage() {
     console.log(data);
     setIsDialogOpen(false);
     setIsLoading(false)
+    setOpen(false)
   };
   
   

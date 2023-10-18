@@ -58,6 +58,22 @@ const contactsReducer = (state = initialState, action) => {
         ...state,
         contacts: updatedClients,
       };
+      case "UPDATE_CONTACT":
+        console.log("Updating a contact...");
+        const { contactId, contactData } = action.payload;
+        // Find the index of the item to update
+        const contactIndex = state.contacts.findIndex((contact) => contact.contact_id === contactId);
+        if (contactIndex !== -1) {
+          // Create a new array with the updated item
+          const updatedContactArray = [...state.contacts];
+          updatedContactArray[contactIndex] = contactData;
+          return {
+            ...state,
+            contacts: updatedContactArray,
+          };
+        }
+        // If item not found, return the current state
+        return state;
     default:
       return state;
   }
