@@ -42,7 +42,7 @@ export default function BudgetDetailsPage() {
   const [editedExpenseData, setEditedExpenseData] = useState(null);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [expenses, setExpenses] = useState([]);
-  const [sortedExpenses, setSortedExpenses] = useState([]);
+  const [sortedItems, setSortedItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -143,11 +143,11 @@ export default function BudgetDetailsPage() {
 
   useEffect(() => {
     // Filter expenses based on the search query
-    const searchedExpenses = expenses.filter((expense) =>
-      expense.expense_name.toLowerCase().includes(searchValue.toLowerCase())
+    const searchedExpenses = budgetItems.filter((item) =>
+      item.item_name.toLowerCase().includes(searchValue.toLowerCase())
     );
-    setSortedExpenses(searchedExpenses);
-  }, [searchValue, expenses]);
+    setSortedItems(searchedExpenses);
+  }, [searchValue, budgetItems]);
 
   const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
@@ -178,6 +178,7 @@ export default function BudgetDetailsPage() {
         );
         const data = await response.json();
         setBudgetItems(data);
+        setSortedItems(data)
       } catch (error) {
         console.error("Error fetching budget Items:", error);
       }
@@ -361,7 +362,7 @@ export default function BudgetDetailsPage() {
                 {/* <ExpensesSearch expenses={expensez} onSearch={setSearchQuery} />
                  */}
                 <TextField
-                  label="Search Contacts..."
+                  label="Search Items..."
                   variant="outlined"
                   fullWidth
                   value={searchValue}
@@ -378,7 +379,7 @@ export default function BudgetDetailsPage() {
                     color: "#fff",
                   }}
                 >
-                  {budgetItems.length} Contacts
+                  {budgetItems.length} Items
                 </Badge>
                 {/* <Box sx={{ width: "30%" }}>
                   <Typography>Status</Typography>
@@ -404,7 +405,7 @@ export default function BudgetDetailsPage() {
                   padding: "10px",
                 }}
               >
-                {budgetItems.map((budget) => (
+                {sortedItems.map((budget) => (
                   <div
                     key={budget.item_id}
                     style={{

@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Typography,
   Container,
@@ -10,23 +10,23 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  Stack
+  Stack,
 } from "@mui/material";
 import LoadingSpinner from "./loadingSpinner";
 import { Form, Link, useNavigate, useParams } from "react-router-dom";
 import Iconify from "../components/iconify";
 import MyDropdown from "../components/dropdown/DropDown";
 import {
-    getDownloadURL,
-    ref as storageRef,
-    uploadBytes,
-  } from "firebase/storage";
-  import { storage } from "../components/firebase/firebase-config";
-  import { useDispatch, useSelector } from "react-redux";
-  import { updateCrew } from "../state/redux/actions/crew/update";
+  getDownloadURL,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
+import { storage } from "../components/firebase/firebase-config";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCrew } from "../state/redux/actions/crew/update";
 
 const CrewDetails = () => {
-    // const [budget, setBudget] = useState('');
+  // const [budget, setBudget] = useState('');
   const dispatch = useDispatch();
   const dropdownOptions = ["Hour", "Day", "Half Day", "Flat"];
   const [employmentType, setEmploymentType] = useState("");
@@ -44,12 +44,12 @@ const CrewDetails = () => {
   const [unitPrice, setUnitPrice] = useState("");
   const [editProfile, setEditProfile] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
-const [contractType, setContractType]=useState("")
-const [loading, setLoading]=useState(false)
+  const [contractType, setContractType] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const loggedInUser = useSelector((state) => state.login.user);
-console.log(loggedInUser.userId);
-const user_id = loggedInUser.userId;
+  const loggedInUser = useSelector((state) => state.login.user);
+  console.log(loggedInUser.userId);
+  const user_id = loggedInUser.userId;
 
   //old
   const [user, setUser] = useState(null);
@@ -79,90 +79,86 @@ const user_id = loggedInUser.userId;
     setSelectedImage(file);
   };
 
-
-
-//   Update user function
+  //   Update user function
   const handleUpdateUser = () => {
-    setLoading(true)
+    setLoading(true);
     console.log("Image Selected True");
 
     if (selectedImage) {
       const imageRef = storageRef(storage, `images/${selectedImage.name}`);
 
-      uploadBytes(imageRef, selectedImage)
-        .then((snapshot) => {
-          getDownloadURL(snapshot.ref)
-            .then((downloadURL) => {
-              console.log("Image Uploaded Successfully");
-              console.log(downloadURL);
+      uploadBytes(imageRef, selectedImage).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          console.log("Image Uploaded Successfully");
+          console.log(downloadURL);
 
-              // Create the user object with the download URL
-              const newUser = {
-                crewId: crewId,
-                fullName: fullName,
-                phone: phone,
-                email: email,
-                address: address,
-                street: street,
-                state: state,
-                city: city,
-                zip: zip,
-                role: role,
-                contractType: contractType,
-                cost: cost,
-                markup: markup,
-                unitPrice: unitPrice,
-                userId: user_id,
-                profileUrl: downloadURL, // Add the image URL
-                employmentType: employmentType
-              };
-              console.log(newUser);
+          // Create the user object with the download URL
+          const newUser = {
+            crewId: crewId,
+            fullName: fullName,
+            phone: phone,
+            email: email,
+            address: address,
+            street: street,
+            state: state,
+            city: city,
+            zip: zip,
+            role: role,
+            contractType: contractType,
+            cost: cost,
+            markup: markup,
+            unitPrice: unitPrice,
+            userId: user_id,
+            profileUrl: downloadURL, // Add the image URL
+            employmentType: employmentType,
+          };
+          console.log(newUser);
 
-              // Dispatch the new user to the Redux store
-              dispatch(updateCrew(crewId,newUser)).then(()=>{
-                const fetchCrewDetail = async () => {
-                    try {
-                      // Replace this with your actual data fetching logic
-                      const response = await fetch(
-                        `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
-                      );
-                      const data = await response.json();
-                      setUser(data[0]);
-                      setEmploymentType(data[0].contract_type);
-                      setFullName(data[0].name);
-                      setPhone(data[0].phone_number);
-                      setEmail(data[0].email);
-                      setAddress(data[0].address);
-                      setStreet(data[0].street);
-                      setState(data[0].state);
-                      setCity(data[0].city);
-                      setZip(data[0].zip);
-                      setRole(data[0].role);
-                      setCost(data[0].cost);
-                      setMarkup(data[0].markup);
-                      setUnitPrice(data[0].unitPrice);
-                    } catch (error) {
-                      console.error("Error fetching client details:", error);
-                    }
-                  };
+          // Dispatch the new user to the Redux store
+          dispatch(updateCrew(crewId, newUser)).then(() => {
+            const fetchCrewDetail = async () => {
+              try {
+                // Replace this with your actual data fetching logic
+                const response = await fetch(
+                  `http://localhost:3001/api/v1/crew/details?crewId=${crewId}`
+                );
+                const data = await response.json();
+                setUser(data[0]);
+                setEmploymentType(data[0].contract_type);
+                setFullName(data[0].name);
+                setPhone(data[0].phone_number);
+                setEmail(data[0].email);
+                setAddress(data[0].address);
+                setStreet(data[0].street);
+                setState(data[0].state);
+                setCity(data[0].city);
+                setZip(data[0].zip);
+                setRole(data[0].role);
+                setCost(data[0].cost);
+                setMarkup(data[0].markup);
+                setUnitPrice(data[0].unitPrice);
+              } catch (error) {
+                console.error("Error fetching client details:", error);
+              }
+            };
 
-                  fetchCrewDetail() 
-                  setEditProfile(false)
-                  setLoading(false)
-              })
+            fetchCrewDetail();
+            setEditProfile(false);
+            setLoading(false);
+          });
 
-              // Navigate to Home Page
-            //   navigate("/dashboard/crew");
-            })
-            // .catch((error) => {
-            //   console.error("Error getting download URL:", error);
-            //   // Handle error, e.g., show an error message to the user
-            // });
-        })
+          // Navigate to Home Page
+          //   navigate("/dashboard/crew");
+        });
         // .catch((error) => {
-        //   console.error("Error uploading image:", error);
+        //   console.error("Error getting download URL:", error);
         //   // Handle error, e.g., show an error message to the user
         // });
+      });
+      // .catch((error) => {
+      //   console.error("Error uploading image:", error);
+      //   // Handle error, e.g., show an error message to the user
+      // });
     } else {
       // Handle the case where no image is selected
       console.log("No Image Selected");
@@ -181,63 +177,60 @@ const user_id = loggedInUser.userId;
         cost: cost,
         markup: markup,
         unitPrice: unitPrice,
-        userId: user_id,// Add the image URL
-        employmentType: employmentType
+        userId: user_id, // Add the image URL
+        employmentType: employmentType,
       };
 
       // Dispatch the new user to the Redux store
-      dispatch(updateCrew(crewId,newUser)).then(()=>{
+      dispatch(updateCrew(crewId, newUser)).then(() => {
         const fetchCrewDetail = async () => {
-            try {
-              // Replace this with your actual data fetching logic
-              const response = await fetch(
-                `https://kickervideoapi.vercel.app/api/v1/crew/details?crewId=${crewId}`
-              );
-              const data = await response.json();
-              setUser(data[0]);
-              setEmploymentType(data[0].contract_type);
-              setFullName(data[0].name);
-              setPhone(data[0].phone_number);
-              setEmail(data[0].email);
-              setAddress(data[0].address);
-              setStreet(data[0].street);
-              setState(data[0].state);
-              setCity(data[0].city);
-              setZip(data[0].zip);
-              setRole(data[0].role);
-              setCost(data[0].cost);
-              setMarkup(data[0].markup);
-              setUnitPrice(data[0].unitPrice);
-            } catch (error) {
-              console.error("Error fetching client details:", error);
-            }
-          };
+          try {
+            // Replace this with your actual data fetching logic
+            const response = await fetch(
+              `https://kickervideoapi.vercel.app/api/v1/crew/details?crewId=${crewId}`
+            );
+            const data = await response.json();
+            setUser(data[0]);
+            setEmploymentType(data[0].contract_type);
+            setFullName(data[0].name);
+            setPhone(data[0].phone_number);
+            setEmail(data[0].email);
+            setAddress(data[0].address);
+            setStreet(data[0].street);
+            setState(data[0].state);
+            setCity(data[0].city);
+            setZip(data[0].zip);
+            setRole(data[0].role);
+            setCost(data[0].cost);
+            setMarkup(data[0].markup);
+            setUnitPrice(data[0].unitPrice);
+          } catch (error) {
+            console.error("Error fetching client details:", error);
+          }
+        };
 
-          fetchCrewDetail() 
-          setEditProfile(false)
-          setLoading(false)
-      })
-    //   dispatch(addUser(newUser)).then(()=>{
-    //     dispatch(fetchUserCrew(user_id)).then(()=>{
-    //     //   navigate("/dashboard/crew");
-    //     }).catch((error)=>{
-    //     console.error(error)
-    //   })
+        fetchCrewDetail();
+        setEditProfile(false);
+        setLoading(false);
+      });
+      //   dispatch(addUser(newUser)).then(()=>{
+      //     dispatch(fetchUserCrew(user_id)).then(()=>{
+      //     //   navigate("/dashboard/crew");
+      //     }).catch((error)=>{
+      //     console.error(error)
+      //   })
 
-    //   }).catch((error)=>{
-    //     console.error(error)
-    //   })
+      //   }).catch((error)=>{
+      //     console.error(error)
+      //   })
 
       // Navigate to Home Page
-     
     }
   };
 
   const handleEmploymentTypeChange = (event) => {
     setEmploymentType(event.target.value);
   };
-
-
 
   useEffect(() => {
     if (cost && markup) {
@@ -297,7 +290,7 @@ const user_id = loggedInUser.userId;
 
   const handleOptionChange = (option) => {
     setSelectedOption(option);
-    setContractType(option)
+    setContractType(option);
   };
 
   if (user === null) {
@@ -305,10 +298,9 @@ const user_id = loggedInUser.userId;
     return <LoadingSpinner />;
   }
 
-  if(loading){
-    return <LoadingSpinner />
+  if (loading) {
+    return <LoadingSpinner />;
   }
-
 
   return (
     <div>
@@ -331,12 +323,10 @@ const user_id = loggedInUser.userId;
           // component={Link}
           // to="/dashboard/addcrew"
           onClick={() => {
-            if(editProfile){
-                handleUpdateUser()
-
-            } else{
-
-                setEditProfile(true);
+            if (editProfile) {
+              handleUpdateUser();
+            } else {
+              setEditProfile(true);
             }
           }}
           sx={{
@@ -349,7 +339,7 @@ const user_id = loggedInUser.userId;
           }}
           // startIcon={<Iconify icon="eva:plus-fill" />}
         >
-          {editProfile?'Update Profile':'Edit Profile'}
+          {editProfile ? "Update Profile" : "Edit Profile"}
         </Button>
       </Container>
 
@@ -364,7 +354,7 @@ const user_id = loggedInUser.userId;
                 aria-label="employmentType"
                 name="employmentType"
                 value={employmentType}
-                  onChange={handleEmploymentTypeChange}
+                onChange={handleEmploymentTypeChange}
               >
                 <Container
                   sx={{
@@ -688,52 +678,52 @@ const user_id = loggedInUser.userId;
             </Container>
 
             <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        style={{
-          display: "none",
-        }}
-        ref={imageInputRef}
-      />
-      <Stack
-        justifyContent="center"
-        alignItems="center"
-        flexDirection="column"
-        sx={{ marginTop: "20px", marginBottom: "50px" }}
-      >
-        <Typography variant="h4" sx={{ marginBottom: "30px" }}>
-          Select Profile Image
-        </Typography>
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{
+                display: "none",
+              }}
+              ref={imageInputRef}
+            />
+            <Stack
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="column"
+              sx={{ marginTop: "20px", marginBottom: "50px" }}
+            >
+              <Typography variant="h4" sx={{ marginBottom: "30px" }}>
+                Select Profile Image
+              </Typography>
 
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            backgroundColor: "#E05858FF",
-            color: "#fff",
-            borderRadius: "3px",
-          }}
-        >
-          Upload Image
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            style={{
-              display: "none",
-            }}
-            ref={imageInputRef}
-          />
-        </Button>
-        {selectedImage && (
-          <img
-            src={URL.createObjectURL(selectedImage)}
-            alt="Selected"
-            style={{ maxWidth: "100px", maxHeight: "100px" }}
-          />
-        )}
-      </Stack>
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  backgroundColor: "#E05858FF",
+                  color: "#fff",
+                  borderRadius: "3px",
+                }}
+              >
+                Upload Image
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{
+                    display: "none",
+                  }}
+                  ref={imageInputRef}
+                />
+              </Button>
+              {selectedImage && (
+                <img
+                  src={URL.createObjectURL(selectedImage)}
+                  alt="Selected"
+                  style={{ maxWidth: "100px", maxHeight: "100px" }}
+                />
+              )}
+            </Stack>
           </>
         ) : (
           <>
@@ -870,15 +860,22 @@ const user_id = loggedInUser.userId;
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 mt: 10,
                 gap: "20px",
               }}
             >
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                   RATE
                 </Typography>
-                <Typography variant="body1">{user.contract_type}</Typography>
+                <Typography variant="body1">{user.contrat_type}</Typography>
               </Box>
 
               <Box sx={{ display: "flex", flexDirection: "column" }}>
@@ -909,23 +906,7 @@ const user_id = loggedInUser.userId;
                 padding: "10px",
                 gap: "20px",
               }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "20px",
-                }}
-              >
-                <Button
-                  variant="filled"
-                  sx={{ backgroundColor: "#F3F4F6FF", color: "#565E6CFF" }}
-                >
-                  Back
-                </Button>
-                {/* You can add an edit button here if you want to allow users to edit their profile */}
-              </Box>
-            </Container>
+            ></Container>
           </>
         )
 
