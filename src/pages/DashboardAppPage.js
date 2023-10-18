@@ -120,7 +120,8 @@ export default function DashboardAppPage() {
   const loading = useSelector((state) => state.budgets.loading);
   const error = useSelector((state) => state.budgets.error);
   const subscribedUser = useSelector((state) => state.user.user);
-  // setBudgets(budgetz)
+  const [userx, setUserx]=useState({})
+  // setBudgets(subscribedUser)
 
   // console.log(budgets);
 
@@ -132,6 +133,10 @@ export default function DashboardAppPage() {
   );
 
   const user = useSelector((state) => state.login.user);
+
+  useEffect(()=>{
+    setUserx(user)
+  }, user)
   // console.log(user);
 
   // if(user.isPaid===false){
@@ -374,11 +379,11 @@ export default function DashboardAppPage() {
   const loggedInUser = localStorage.getItem("user");
   // console.log(loggedInUser);
 
-  if (user) {
+  if (userx) {
     // dispatch(getUser(user.userId))
     // console.log("Current User is LoggedIn");
     // console.log(user.isPaid);
-    if (user.isPaid === false) {
+    if (userx.isPaid === false) {
       // If user is not paid, display a message and a button
       return (
         <>
@@ -387,7 +392,7 @@ export default function DashboardAppPage() {
           </Helmet>
           <Container>
             <Typography variant="h4" gutterBottom>
-              {user && user.name ? `Welcome ${user.name}` : "Welcome"}
+              {userx && userx.name ? `Welcome ${userx.name}` : "Welcome"}
             </Typography>
             <Typography variant="body1" gutterBottom>
               Your subscription has ended. Please renew your subscription to

@@ -80,6 +80,7 @@ function PaymentForm() {
 
       // Make an API call to your server to create or retrieve a Payment Intent
       const response = await fetch("https://stripe-eight-flax.vercel.app/pay", {
+      // const response = await fetch("http://localhost:3001/api/v1/subscription/pay", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +118,7 @@ function PaymentForm() {
         dispatch(getUser(user.userId))
       .then(() => {
         
-        dispatch(updateUser(subscribedUser));
+        // dispatch(updateUser(subscribedUser));
       })
       .catch((error) => {
         // Handle any errors here, and also set isLoading back to false
@@ -140,7 +141,7 @@ function PaymentForm() {
       setLoading(false); // Reset loading state
 
       // Redirect to the dashboard page
-      navigate("/dashboard");
+      // navigate("/dashboard");
       // window.location.href="/dashboard"
     } catch (error) {
       setError("An error occurred while confirming the payment.");
