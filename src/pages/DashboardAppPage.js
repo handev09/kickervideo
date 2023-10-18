@@ -120,6 +120,7 @@ export default function DashboardAppPage() {
   const loading = useSelector((state) => state.budgets.loading);
   const error = useSelector((state) => state.budgets.error);
   const subscribedUser = useSelector((state) => state.user.user);
+  // setBudgets(budgetz)
 
   // console.log(budgets);
 
@@ -245,33 +246,41 @@ export default function DashboardAppPage() {
   };
 
   const handleDialogData = (data) => {
-    setIsLoading(true)
-    const storedUser = localStorage.getItem("user");
-      const parsedUser = JSON.parse(storedUser); // Parse the storedUser string
-      const id = parsedUser.userId;
-      const fetchUserBudgets = async () => {
-        try {
-          // Replace this with your actual data fetching logic
-          const response = await fetch(
-            `http://localhost:3001/api/v1/budget/fetch?userId=${id}`
-          );
-          const data = await response.json();
-          setBudgets(data)
-          setIsLoading(false)
-        } catch (error) {
-          console.error("Error fetching client details:", error);
-        }
-      };
-
-      fetchUserBudgets()
-    // dispatch(fetchUserBudgets(id)).then(()=>{
-      
-    //   setIsLoading(false)
-    // })
     console.log(data);
-    setIsDialogOpen(false)
-    // console.log(data)
+    setIsLoading(true);
+  
+    // Assuming 'data' contains the new values for 'status', 'project title', and 'internal notes'
+    const { status, projectTitle, internalNotes } = data;
+  
+    // Create a copy of the previous budgets
+    const updatedBudgets = [...budgets];
+  
+    // Find the index of the budget to update based on 'budgetIdToFilter'
+    const index = updatedBudgets.findIndex((budget) => budget.budget_id === data.budget_id);
+  
+    if (index !== -1) {
+      // Update the budget with the new values
+      updatedBudgets[index] = {
+        ...updatedBudgets[index],
+        status,
+        projectTitle,
+        internalNotes,
+      };
+  
+      // Update the state with the edited budget
+      setBudgets(updatedBudgets);
+    }
+  
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = JSON.parse(storedUser);
+    const id = parsedUser.userId;
+  
+    console.log(data);
+    setIsDialogOpen(false);
+    setIsLoading(false)
   };
+  
+  
 
   useEffect(() => {
     // Check if the user is not logged in
@@ -309,6 +318,7 @@ export default function DashboardAppPage() {
   useEffect(() => {
     setBudgets(budgetz);
     // budgets = budget;
+    // setIsLoading(false)
   }, [budgetz]);
 
 

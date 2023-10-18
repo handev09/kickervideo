@@ -213,7 +213,7 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
               variant="h4"
               sx={{ backgroundColor: "#F3F4F6FF", marginBottom: 5 }}
             >
-              Edit Client Details
+              Edit Company Details
             </DialogTitle>
             <IconButton
               aria-label="close"
@@ -228,9 +228,11 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
             </IconButton>
             {/* ... Dialog content ... */}
             <Container>
-              <Typography variant="h6">Client Details</Typography>
+              <Typography variant="h6">Company Details</Typography>
               {/* <Typography variant="h6">{initialData.client_name}</Typography> */}
 
+             <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Company Name</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -250,7 +252,10 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
               />
+              </Box>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Phone Number</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -270,7 +275,10 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
+              </Box>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Company Email</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -290,9 +298,12 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={companyEmail}
                 onChange={(e) => setCompanyEmail(e.target.value)}
               />
+              </Box>
 
-              <Typography>Address Details</Typography>
+              <Typography>Company Address Details</Typography>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Street</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -312,7 +323,10 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={street1}
                 onChange={(e) => setStreet1(e.target.value)}
               />
+              </Box>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Street Line 2</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -332,7 +346,10 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={street2}
                 onChange={(e) => setStreet2(e.target.value)}
               />
+              </Box>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>City</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -352,7 +369,10 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
               />
-
+              </Box>
+              
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Zip</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
@@ -372,11 +392,14 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={zip}
                 onChange={(e) => setZip(e.target.value)}
               />
+              </Box>
 
+              <Box sx={{marginBottom:'20px', marginTop:'20px'}}>
+              <Typography>Country</Typography>
               <TextField
                 id="filled-textarea"
                 // label="Full Name"
-                placeholder="Zip"
+                placeholder="Country"
                 size="medium"
                 multiline
                 sx={{
@@ -392,6 +415,7 @@ const EditClient = ({ openDialog, onClose, initialData }) => {
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
               />
+              </Box>
 
              
             </Container>

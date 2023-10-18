@@ -232,6 +232,7 @@ export default function ClientDetails() {
         );
         const data = await response.json();
         setContacts(data);
+        console.log(data)
       } catch (error) {
         console.error("Error fetching client details:", error);
       }
@@ -476,9 +477,24 @@ export default function ClientDetails() {
                       }}
                     >
                       <Typography variant="subtitle3">
+                        {contact.company_name}
+                      </Typography>
+                    </div>
+                    <div
+                      style={
+                        {
+                          width: '20%'
+                        }
+                      }
+                    >
+                      
+
+                      <Typography variant="subtitle3">
                         {contact.created_at}
                       </Typography>
                     </div>
+
+                    {/* Primary Contact Badge */}
                     <div
                       style={
                         {
@@ -486,9 +502,13 @@ export default function ClientDetails() {
                         }
                       }
                     >
-                      <Typography variant="subtitle3">
-                        {contact.company_name}
-                      </Typography>
+                      
+                      {contact.isPrimary&&<Button variant="filled" sx={{backgroundColor:'#E05858FF',color:'#fff',transition: "opacity 0.3s ease-in-out", // Adding a transition for smooth effect
+              "&:hover": {
+                opacity: 0.8, // Adjust the opacity value as needed
+                backgroundColor: "#E05858FF",
+              }}}>Primary</Button>}
+                     
                     </div>
                     <div>
                       <IconButton
