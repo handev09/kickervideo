@@ -179,6 +179,7 @@ const CrewDetails = () => {
         unitPrice: unitPrice,
         userId: user_id, // Add the image URL
         employmentType: employmentType,
+        profileUrl: user.profileUrl
       };
 
       // Dispatch the new user to the Redux store
