@@ -794,7 +794,7 @@ const CrewDetails = () => {
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                   Phone
                 </Typography>
-                <Typography variant="body1">{user.phone}</Typography>
+                <Typography variant="body1">{user.phone_number}</Typography>
               </Box>
               <Box
                 sx={{ display: "flex", flexDirection: "column", width: "30%" }}
