@@ -138,10 +138,11 @@ function PaymentForm() {
 
       // Set payment succeeded state
       setPaymentSucceeded(true);
+      localStorage.setItem("user", JSON.stringify({ ...user, isPaid: true }));
       setLoading(false); // Reset loading state
 
       // Redirect to the dashboard page
-      // navigate("/dashboard");
+      navigate("/dashboard");
       // window.location.href="/dashboard"
     } catch (error) {
       setError("An error occurred while confirming the payment.");

@@ -134,9 +134,9 @@ export default function DashboardAppPage() {
 
   const user = useSelector((state) => state.login.user);
 
-  useEffect(()=>{
-    setUserx(user)
-  }, user)
+  // useEffect(()=>{
+  //   setUserx(user)
+  // }, user)
   // console.log(user);
 
   // if(user.isPaid===false){
@@ -285,6 +285,9 @@ export default function DashboardAppPage() {
     setIsLoading(false)
     setOpen(false)
   };
+
+  const storedUser = localStorage.getItem("user");
+  const parsedUser = JSON.parse(storedUser);
   
   
 
@@ -379,11 +382,11 @@ export default function DashboardAppPage() {
   const loggedInUser = localStorage.getItem("user");
   // console.log(loggedInUser);
 
-  if (userx) {
+  if (parsedUser) {
     // dispatch(getUser(user.userId))
     // console.log("Current User is LoggedIn");
     // console.log(user.isPaid);
-    if (userx.isPaid === false) {
+    if (parsedUser.isPaid === false) {
       // If user is not paid, display a message and a button
       return (
         <>
