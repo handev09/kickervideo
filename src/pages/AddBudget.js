@@ -44,17 +44,20 @@ import ClientDialog from "./ClientsDalog";
 import CreateClient from "./CreateClient";
 
 const AddBudget = () => {
+  let ignorePop=false
   const [servicesData, setServicesData] = useState([]);
   const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
-  const [customInputValue, setCustomInputValue]=useState("")
+  const [customInputValue, setCustomInputValue] = useState("");
+  const [ignore, setIgnore]=useState(false)
 
   // Update the servicedata on change
 
   const handleServiceDataChange = (data, index) => {
-   
-    console.log(data);
-    if (data.selectedItem && data.selectedItem.isCustom) {
-      // Access isCustom property safely
+    setIgnore(false)
+    console.log(data.selectedItem&&data.selectedItem.isCustom);
+    console.log(servicesData)
+    if (data.selectedItem && data.selectedItem.isCustom&&ignorePop===false) {
+      // Access isCustom property safely'
       setCustomInputValue(data.selectedItem.inputValue);
       setCustomSelectedItemIndex(parseInt(index));
       setIsDialogOpen(true);
@@ -123,9 +126,9 @@ const AddBudget = () => {
         index: 0,
         quantity: 0,
         selectedItem: {
-          item_name: '',
+          item_name: "",
           markup: 0,
-          item_desc: '',
+          item_desc: "",
         },
         unitPrice: 0,
       }}
@@ -151,15 +154,15 @@ const AddBudget = () => {
     setServiceComps(updatedServiceComps);
     // console.log(serviceComps);
 
-    const updatedServiceData = [...servicesData];
-    updatedServiceData.splice(index, 1);
-    setServicesData(updatedServiceData);
-    // console.log(servicesData)
-    if (serviceCount <= 0) {
-      setServiceCount(0);
-    } else {
-      setServiceCount(serviceCount - 1);
-    }
+    // const updatedServiceData = [...servicesData];
+    // updatedServiceData.splice(index, 1);
+    // setServicesData(updatedServiceData);
+    // // console.log(servicesData)
+    // if (serviceCount <= 0) {
+    //   setServiceCount(0);
+    // } else {
+    //   setServiceCount(serviceCount - 1);
+    // }
   };
 
   // States for Dialog
@@ -197,10 +200,49 @@ const AddBudget = () => {
     setTotal(budgetSubTotal);
   }, [budgetSubTotal]);
 
-  const addServiceComp = () => {
+  // const addServiceComp = (data) => {
+  //   console.log('new service comp')
+  //   const newIndex = serviceCount + 1;
+  //   setServiceCount(newIndex);
+
+  //   setServiceComps((prevServiceComps) => [
+  //     ...prevServiceComps,
+  //     <ServiceComp
+  //       key={newIndex}
+  //       index={newIndex}
+  //       onDelete={handleDeleteServiceComp}
+  //       onChange={handleServiceDataChange}
+  //       data=data?data:{{
+  //         index: 0,
+  //         quantity: 1000,
+  //         selectedItem: {
+  //           item_name: "",
+  //           markup: 0,
+  //           item_desc: "",
+  //         },
+  //         unitPrice: 0,
+  //       }}
+  //     />,
+  //   ]);
+  // };
+
+  const addServiceComp = (data) => {
+    console.log('new service comp');
+    console.log(data)
     const newIndex = serviceCount + 1;
     setServiceCount(newIndex);
-
+  
+    const newData = data || {
+      index: 0,
+      quantity: 1000,
+      selectedItem: {
+        item_name: "",
+        markup: 0,
+        item_desc: "",
+      },
+      unitPrice: 0,
+    };
+  
     setServiceComps((prevServiceComps) => [
       ...prevServiceComps,
       <ServiceComp
@@ -208,19 +250,11 @@ const AddBudget = () => {
         index={newIndex}
         onDelete={handleDeleteServiceComp}
         onChange={handleServiceDataChange}
-        data={{
-          index: 0,
-          quantity: 1000,
-          selectedItem: {
-            item_name: '',
-            markup: 0,
-            item_desc: '',
-          },
-          unitPrice: 0,
-        }}
+        data={newData}
       />,
     ]);
   };
+  
 
   const navigate = useNavigate();
   // const [budget, setBudget] = useState('');
@@ -260,12 +294,14 @@ const AddBudget = () => {
 
               // Your code to use the downloadURL
               // ...
-               // Create an array of service objects
-               const serviceArray = servicesData.map((service) => {
+              // Create an array of service objects
+              const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
                 const markupPercentage = parseFloat(
-                  service.selectedItem.markup?service.selectedItem.markup:service.markup
+                  service.selectedItem.markup
+                    ? service.selectedItem.markup
+                    : service.markup
                 );
 
                 // Calculate the cost based on unitPrice, quantity, and markup percentage
@@ -275,8 +311,12 @@ const AddBudget = () => {
 
                 return {
                   id: uuidv4(),
-                  name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
-                  description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+                  name: service.selectedItem.item_name
+                    ? service.selectedItem.item_name
+                    : service.name,
+                  description: service.selectedItem.item_desc
+                    ? service.selectedItem.item_desc
+                    : service.description,
                   cost: cost,
                   markup: markupPercentage,
                   unitPrice: unitPrice,
@@ -313,7 +353,7 @@ const AddBudget = () => {
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
                 clientName: selectedClientName,
-                serviceData: serviceArray
+                serviceData: serviceArray,
               };
               console.log(newBudget);
 
@@ -347,12 +387,14 @@ const AddBudget = () => {
     } else {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
-       // Create an array of service objects
-       const serviceArray = servicesData.map((service) => {
+      // Create an array of service objects
+      const serviceArray = servicesData.map((service) => {
         const unitPrice = parseFloat(service.unitPrice);
         const quantity = parseFloat(service.quantity);
         const markupPercentage = parseFloat(
-          service.selectedItem.markup?service.selectedItem.markup:service.markup
+          service.selectedItem.markup
+            ? service.selectedItem.markup
+            : service.markup
         );
 
         // Calculate the cost based on unitPrice, quantity, and markup percentage
@@ -362,8 +404,12 @@ const AddBudget = () => {
 
         return {
           id: uuidv4(),
-          name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
-          description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+          name: service.selectedItem.item_name
+            ? service.selectedItem.item_name
+            : service.name,
+          description: service.selectedItem.item_desc
+            ? service.selectedItem.item_desc
+            : service.description,
           cost: cost,
           markup: markupPercentage,
           unitPrice: unitPrice,
@@ -400,7 +446,7 @@ const AddBudget = () => {
         attachmentsUrl: "",
         budgetNumber: budgetNumber,
         clientName: selectedClientName,
-        serviceData: serviceArray
+        serviceData: serviceArray,
       };
       console.log(newBudget);
 
@@ -448,7 +494,9 @@ const AddBudget = () => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
                 const markupPercentage = parseFloat(
-                  service.selectedItem.markup?service.selectedItem.markup:service.markup
+                  service.selectedItem.markup
+                    ? service.selectedItem.markup
+                    : service.markup
                 );
 
                 // Calculate the cost based on unitPrice, quantity, and markup percentage
@@ -458,8 +506,12 @@ const AddBudget = () => {
 
                 return {
                   id: uuidv4(),
-                  name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
-                  description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+                  name: service.selectedItem.item_name
+                    ? service.selectedItem.item_name
+                    : service.name,
+                  description: service.selectedItem.item_desc
+                    ? service.selectedItem.item_desc
+                    : service.description,
                   cost: cost,
                   markup: markupPercentage,
                   unitPrice: unitPrice,
@@ -496,7 +548,7 @@ const AddBudget = () => {
                 attachmentsUrl: downloadURL,
                 budgetNumber: budgetNumber,
                 clientName: selectedClientName,
-                serviceData: serviceArray
+                serviceData: serviceArray,
               };
               console.log(newBudget);
 
@@ -531,12 +583,14 @@ const AddBudget = () => {
     } else {
       console.error("No selected image to upload.");
       // Handle the case where no image is selected
-       // Create an array of service objects
-       const serviceArray = servicesData.map((service) => {
+      // Create an array of service objects
+      const serviceArray = servicesData.map((service) => {
         const unitPrice = parseFloat(service.unitPrice);
         const quantity = parseFloat(service.quantity);
         const markupPercentage = parseFloat(
-          service.selectedItem.markup?service.selectedItem.markup:service.markup
+          service.selectedItem.markup
+            ? service.selectedItem.markup
+            : service.markup
         );
 
         // Calculate the cost based on unitPrice, quantity, and markup percentage
@@ -546,8 +600,12 @@ const AddBudget = () => {
 
         return {
           id: uuidv4(),
-          name: service.selectedItem.item_name?service.selectedItem.item_name:service.name,
-          description: service.selectedItem.item_desc?service.selectedItem.item_desc:service.description,
+          name: service.selectedItem.item_name
+            ? service.selectedItem.item_name
+            : service.name,
+          description: service.selectedItem.item_desc
+            ? service.selectedItem.item_desc
+            : service.description,
           cost: cost,
           markup: markupPercentage,
           unitPrice: unitPrice,
@@ -584,7 +642,7 @@ const AddBudget = () => {
         attachmentsUrl: "",
         budgetNumber: budgetNumber,
         clientName: selectedClientName,
-        serviceData: serviceArray
+        serviceData: serviceArray,
       };
       console.log(newBudget);
 
@@ -623,9 +681,13 @@ const AddBudget = () => {
   };
 
   const handleDialogData = (data) => {
+    setIgnore(true)
+    ignorePop=true
     // setDialogData(data)
-    console.log(data);
+    console.log(data.index);
+    console.log(servicesData)
 
+    
     const newData = {
       index: data.index,
       quantity: data.quantity,
@@ -635,17 +697,44 @@ const AddBudget = () => {
         item_desc: data.description,
       },
       unitPrice: data.unitPrice,
+      cost: data.cost
     };
+    
+    // handleDeleteServiceComp(newData.index)
+    // addServiceComp(newData);
 
-    handleServiceDataChange(newData, newData.index);
+      // Find the index of the ServiceComp to be modified in the serviceComps array
+  const serviceCompIndex = serviceComps.findIndex(
+    (serviceComp) => serviceComp.props.index === data.index
+  );
 
+  if (serviceCompIndex !== -1) {
+    // Create the updated ServiceComp with the new data
+    
+    const updatedServiceComp = (
+      <ServiceComp
+        key={data.index}
+        index={data.index}
+        onDelete={handleDeleteServiceComp}
+        onChange={handleServiceDataChange}
+        data={newData}
+      />
+    );
+
+    // Create a copy of the serviceComps array and replace the old ServiceComp with the updated one
+    const updatedServiceComps = [...serviceComps];
+    updatedServiceComps[serviceCompIndex] = updatedServiceComp;
+
+    // Set the state with the updated serviceComps array
+    setServiceComps(updatedServiceComps);
+  }
     if (data.name && data.description && data.index) {
       setServicesData((prevServicesData) => {
         // Find the index of the service data if it exists in the state
         const serviceIndex = prevServicesData.findIndex(
           (service) => service.index === data.index
         );
-        console.log(serviceIndex);
+        console.log('indi '+serviceIndex);
 
         const newData = {
           index: data.index,
@@ -658,17 +747,15 @@ const AddBudget = () => {
           unitPrice: data.unitPrice,
         };
 
-       
-
         // If the service data exists, update it; otherwise, add it to the state
         if (serviceIndex !== -1) {
           const updatedServicesData = [...prevServicesData];
+          console.log(updatedServicesData)
           updatedServicesData[serviceIndex] = newData;
           console.log(updatedServicesData);
           return updatedServicesData;
         }
       });
-  
     }
 
     if (data.name && data.description) {
@@ -692,12 +779,11 @@ const AddBudget = () => {
     setOpenClientsBox(false);
   };
 
-
   //new handledialogdatafunction
 
   // const handleDialogData = (data) => {
   //   console.log(data);
-  
+
   //   if (data.name && data.description && data.index) {
   //     setServicesData((prevServicesData) => {
   //       const newData = {
@@ -710,38 +796,37 @@ const AddBudget = () => {
   //         },
   //         unitPrice: data.unitPrice,
   //       };
-  
+
   //       // Update the servicesData array with the new data
   //       // const updatedServicesData = prevServicesData.map((service) =>
   //       //   service.index === data.index ? newData : service
   //       // );
-  
+
   //       // return updatedServicesData;
   //       handleServiceDataChange(newData, newData.index)
   //     });
   //   }
-  
+
   //   if (data.name && data.description) {
   //     setDialogData((prevData) => [...prevData, data]);
-  
+
   //     // Update the services array in budgetData
   //     setBudgetData((prevBudgetData) => ({
   //       ...prevBudgetData,
   //       services: [...prevBudgetData.services, data],
   //     }));
   //   }
-  
+
   //   if (data.createClient) {
   //     setOpenClientsBox(false);
   //     setcreateClientOpen(true);
   //   } else {
   //     setcreateClientOpen(false);
   //   }
-  
+
   //   setIsDialogOpen(false);
   //   setOpenClientsBox(false);
   // };
-  
 
   const handleNotes = (e) => {
     setNotes(e.target.value);
@@ -1053,20 +1138,19 @@ const AddBudget = () => {
             </span>
           </div>
 
-          <Box sx={{ marginLeft: 0, marginTop: 2}}>
+          <Box sx={{ marginLeft: 0, marginTop: 2 }}>
             <Typography variant="h5">Contact Name</Typography>
-            {selectedClient?(
+            {selectedClient ? (
               <MyDropdown
-              options={contacts.map((contact) => contact.contact_name)}
-              onChange={(data) => {
-                setSelectedClientName(data);
-                console.log(selectedClientName);
-              }}
-            />
-            ):(
+                options={contacts.map((contact) => contact.contact_name)}
+                onChange={(data) => {
+                  setSelectedClientName(data);
+                  console.log(selectedClientName);
+                }}
+              />
+            ) : (
               <Typography variant="p">Please Choose a Company First</Typography>
             )}
-            
 
             <Typography variant="h5">Project Title</Typography>
             <TextField
@@ -1192,16 +1276,6 @@ const AddBudget = () => {
             + Add Line Item
           </Button>
 
-          {/* <Button
-            variant="filled"
-            sx={{ backgroundColor: "#E05858FF", color: "#fff", mt: 2 }}
-            onClick={handleDialogOpen}
-          >
-            + Add
-          </Button> */}
-
-          {/* ... Dialog stuff ... */}
-
           <CreateNewLineItem
             openDialog={isDialogOpen}
             onClose={handleDialogData}
@@ -1214,8 +1288,6 @@ const AddBudget = () => {
       <Container
         sx={{
           display: "flex",
-          // justifyContent: "center",
-          // gap: "150px",
           width: "100%",
           padding: "10px",
           alignItems: "end",
@@ -1261,8 +1333,8 @@ const AddBudget = () => {
                 value={discount}
                 // size="small"
                 // onChange={handleDiscountChange}
-                onChange={(e)=>{
-                  setDiscount(e.target.value)
+                onChange={(e) => {
+                  setDiscount(e.target.value);
                 }}
                 variant="outlined"
                 style={{}}
@@ -1304,8 +1376,8 @@ const AddBudget = () => {
                 value={tax}
                 // size="small"
                 // onChange={handleTaxChange}
-                onChange={(e)=>{
-                  setTax(e.target.value)
+                onChange={(e) => {
+                  setTax(e.target.value);
                 }}
                 variant="outlined"
                 style={{}}

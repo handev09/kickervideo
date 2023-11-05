@@ -15,8 +15,11 @@ import CustomDropdown from "../components/item-price-dropdown/DropDown";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchItems } from "../state/redux/actions/items/fetch";
 
-const ServiceComp = ({ onDelete, onChange, index,data }) => {
+const ServiceComp = ({ onDelete, onChange, index, data }) => {
   console.log("Inde " + index);
+  console.log(data.unitPrice);
+  const uniPrice = data?data.unitPrice:0
+  console.log(uniPrice)
   const [selectedItem, setSelectedItem] = useState(null);
 
   const items = useSelector((state) => state.items.items);
@@ -26,18 +29,24 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
   const [cost, setCost] = useState(0);
   const [markup, setMarkup] = useState(0);
   const [unitPrice, setUnitPrice] = useState(0);
-  const [value, setValue] = useState(null);
+  // const [value, setValue] = useState(null);
+  const [value, setValue] = useState( ""
+  );
   const [total, setTotal] = useState(0);
-  // const [data, setData] = useState({
-  //   index: 0,
-  //   quantity: 0,
-  //   selectedItem: {
-  //     item_name: '',
-  //     markup: 0,
-  //     item_desc: '',
-  //   },
-  //   unitPrice: 0,
-  // });
+
+
+  // Use a useEffect to set state variables based on the data prop
+  useEffect(() => {
+    if (data) {
+      setSelectedItem(data.selectedItem || null);
+      // setQuantity(data.quantity || 1);
+      setCost(data.cost || 0);
+      setMarkup(data.selectedItem ? data.selectedItem.markup : 0);
+      // setUnitPrice(data.unitPrice || 0);
+      // Set other state variables based on the data prop
+      setValue(data.selectedItem?data.selectedItem.item_name:"")
+    }
+  }, [data]);
 
   useEffect(() => {
     // Create an object with the relevant data
@@ -53,21 +62,15 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
 
     // Emit the data to the parent component
     onChange(serviceData, index);
-    const newTotal =
-      !isNaN(unitPrice) && !isNaN(quantity)
-        ? (quantity * unitPrice).toFixed(2)
-        : 0;
-    setTotal(newTotal);
+    // const newTotal =
+    //   !isNaN(unitPrice) && !isNaN(quantity)
+    //     ? (quantity * unitPrice).toFixed(2)
+    //     : 0;
+    // setTotal(newTotal);
   }, [selectedItem, quantity, unitPrice, index, onChange]);
 
-  // useEffect(() => {
-  //   setSelectedItem(data.selectedItem || null);
-  //   setQuantity(data.quantity || 1);
-  //   setCost(data.cost || 0);
-  //   setMarkup(data.markup || 0);
-  //   setUnitPrice(data.unitPrice || 0);
-  //   // ... (initialize other state variables)
-  // }, [data]);
+
+  
 
   const handleInputChange = (event, value) => {
     setValue(value); // Set the selected value
@@ -104,7 +107,7 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
           flexDirection: "row",
           justifyContent: "space-between",
           gap: "30px",
-          marginTop:'30px'
+          marginTop: "30px",
         }}
       >
         <Stack
@@ -221,11 +224,10 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
                           // Add your custom logic here for handling the button click
                         }}
                       >
-                        Add to Services
+                        Add to Items
                       </button>
                     </div>
                   ) : (
-                    
                     <React.Fragment>
                       <div style={{ display: "flex", width: "100%" }}>
                         <div style={{ flex: 1, width: "100%" }}>
@@ -250,11 +252,13 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
               freeSolo
               renderInput={(params) => (
                 <TextField
+                autoFocus="false"
                   {...params}
                   label="Search for Product/Service"
                   // variant="outlined"
                   fullWidth
                   //   sx={{width: '100%'}}
+                  // value={selectedItem ? selectedItem.item_name : ""}
                   freeSolo
                   size="small"
                   onChange={handleInputChange}
@@ -275,7 +279,7 @@ const ServiceComp = ({ onDelete, onChange, index,data }) => {
             value={selectedItem ? selectedItem.item_desc : ""}
           /> */}
 
-<TextField
+          <TextField
             id="description"
             multiline
             placeholder="Description"
