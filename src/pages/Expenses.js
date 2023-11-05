@@ -346,7 +346,7 @@ console.log(searchValue)
                       }}
                     >
                       <Typography variant="subtitle3">
-                        #{expense.budget_number?expense.budget_number:0}
+                        #{expense.budget_number?expense.budget_number:0} - {expense.budget_name?expense.budget_name:"No Title"}
                       </Typography>
                     </div>
 

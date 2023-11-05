@@ -36,7 +36,7 @@ const MyExpensesDropdown = ({options, onChange, value}) => {
     <div className="dropdown" ref={dropdownRef}>
       <div className="dropdown__filter" onClick={toggleDropdown}>
         <div className="dropdown__input dropdown__filter-selected" aria-selected="true">
-         {selectedOption.budget_name}
+         #{selectedOption.budget_numb?selectedOption.budget_numb:selectedOption.budget_num} - {selectedOption.budget_name}
         </div>
         
         <div className={`dropdown__arrow ${isDropdownOpen ? 'rotate' : ''}`}>

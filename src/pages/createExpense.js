@@ -50,6 +50,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [budgetNumber, setBudgetNumber]=useState("")
   const imageInputRef = useRef(null);
+  const [budgetName, setBudgetName]=useState("")
 
   const statusOptions = ["Draft", "Active", "Sent", "Paid"];
   const [reimburse, setReimburse] = useState("");
@@ -67,6 +68,7 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
   useEffect(()=>{
     setReimburseOptions(employmentType.company_client)
     setBudgetNumber(employmentType.budget_num?employmentType.budget_num:employmentType.budget_numb)
+    setBudgetName(employmentType.budget_name?employmentType.budget_name:employmentType.project_title)
   }, [employmentType])
   console.log(reimburseOptions)
 
@@ -97,7 +99,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
                 status: status,
                 createdBy: createdBy,
                 receipt: downloadURL,
-                budgetNumber: budgetNumber
+                budgetNumber: budgetNumber,
+                budgetName: budgetName
               };
 
               dispatch(addExpense(newItem));
@@ -136,7 +139,8 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
         status: status,
         createdBy: createdBy,
         receipt: "",
-        budgetNumber: budgetNumber
+        budgetNumber: budgetNumber,
+        budgetName: budgetName
       };
 
       dispatch(addExpense(newItem));
@@ -316,8 +320,10 @@ const CreateNewExpense = ({ openDialog, onClose }) => {
               }}>
                 <Typography>Job</Typography>
                 <MyExpensesDropdown
+
                   options={dropdownJobs}
                   onChange={(option) => {
+                    console.log(option)
                     setEmploymentType(option);
                     console.log(employmentType);
                   }}
