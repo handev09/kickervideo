@@ -173,21 +173,6 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
               handleHomeEndKeys
               id="free-solo-with-text-demo"
               options={items}
-              // getOptionLabel={(option) => {
-              //   // console.log(option);
-              //   // Value selected with enter, right from the input
-              //   if (typeof option === "string") {
-              //     return option;
-              //   } else if (option.inputValue) {
-              //     return option.inputValue;
-              //   } else{
-
-              //     return option.item_name;
-              //   }
-              //   // Regular option
-              // }}
-
-              //returning an option label
               getOptionLabel={(option) => {
                 if (typeof option === "string") {
                   return option;
