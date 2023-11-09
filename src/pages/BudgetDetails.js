@@ -696,6 +696,7 @@ const BudgetDetailsPage = () => {
   };
 
   const handleDialogData = (data) => {
+    setSelectedClientName("")
     setIgnore(true);
     ignorePop = true;
     // setDialogData(data)
@@ -1173,7 +1174,7 @@ const BudgetDetailsPage = () => {
 
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
             <Typography variant="h5">Contact Name</Typography>
-            {selectedClientName? (
+            {selectedClientName!==""? (
               
               <Typography variant="p">{selectedClientName}</Typography>
             ) : (

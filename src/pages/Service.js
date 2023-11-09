@@ -18,8 +18,8 @@ import { fetchItems } from "../state/redux/actions/items/fetch";
 const ServiceComp = ({ onDelete, onChange, index, data }) => {
   console.log("Inde " + index);
   console.log(data.unitPrice);
-  const uniPrice = data?data.unitPrice:0
-  console.log(uniPrice)
+  const uniPrice = data ? data.unitPrice : 0;
+  console.log(uniPrice);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const items = useSelector((state) => state.items.items);
@@ -30,10 +30,8 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
   const [markup, setMarkup] = useState(0);
   const [unitPrice, setUnitPrice] = useState(0);
   // const [value, setValue] = useState(null);
-  const [value, setValue] = useState( ""
-  );
+  const [value, setValue] = useState("");
   const [total, setTotal] = useState(0);
-
 
   // Use a useEffect to set state variables based on the data prop
   useEffect(() => {
@@ -44,7 +42,7 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
       setMarkup(data.selectedItem ? data.selectedItem.markup : 0);
       // setUnitPrice(data.unitPrice || 0);
       // Set other state variables based on the data prop
-      setValue(data.selectedItem?data.selectedItem.item_name:"")
+      setValue(data.selectedItem ? data.selectedItem.item_name : "");
     }
   }, [data]);
 
@@ -56,21 +54,10 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
       unitPrice,
       index,
       total,
-      // Add more data properties as needed
     };
-    // console.log(serviceData);
 
-    // Emit the data to the parent component
     onChange(serviceData, index);
-    // const newTotal =
-    //   !isNaN(unitPrice) && !isNaN(quantity)
-    //     ? (quantity * unitPrice).toFixed(2)
-    //     : 0;
-    // setTotal(newTotal);
   }, [selectedItem, quantity, unitPrice, index, onChange]);
-
-
-  
 
   const handleInputChange = (event, value) => {
     setValue(value); // Set the selected value
@@ -237,7 +224,7 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
               freeSolo
               renderInput={(params) => (
                 <TextField
-                autoFocus="false"
+                  autoFocus="false"
                   {...params}
                   label="Search for Product/Service"
                   // variant="outlined"
