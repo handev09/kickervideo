@@ -4,7 +4,7 @@ import { LOGIN_SUCCESS, LOGIN_FAILURE } from '../../actions/users/loginUser';
 const initialState = {
   isLoading: false,
   isLoggedIn: false,
-  user: null,
+  user: null || {},
   error: null,
 };
 

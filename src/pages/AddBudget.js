@@ -299,8 +299,8 @@ const AddBudget = () => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
                 const markupPercentage = parseFloat(
-                  service.selectedItem.markup
-                    ? service.selectedItem.markup
+                  service.selectedItem?.markup
+                    ? service.selectedItem?.markup
                     : service.markup
                 );
 
@@ -333,7 +333,7 @@ const AddBudget = () => {
               });
 
               const newBudget = {
-                client: selectedClient.company_name,
+                client: selectedClient?.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
                 subtotal: budgetSubTotal,
@@ -392,8 +392,8 @@ const AddBudget = () => {
         const unitPrice = parseFloat(service.unitPrice);
         const quantity = parseFloat(service.quantity);
         const markupPercentage = parseFloat(
-          service.selectedItem.markup
-            ? service.selectedItem.markup
+          service.selectedItem?.markup
+            ? service.selectedItem?.markup
             : service.markup
         );
 
@@ -426,7 +426,7 @@ const AddBudget = () => {
       });
 
       const newBudget = {
-        client: selectedClient.company_name,
+        client: selectedClient?.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
         subtotal: budgetSubTotal,
@@ -528,7 +528,7 @@ const AddBudget = () => {
               });
 
               const newBudget = {
-                client: selectedClient.company_name,
+                client: selectedClient?.company_name,
                 projectTitle: budgetData.projectTitle,
                 services: budgetData.services,
                 subtotal: budgetSubTotal,
@@ -622,7 +622,7 @@ const AddBudget = () => {
       });
 
       const newBudget = {
-        client: selectedClient.company_name,
+        client: selectedClient?.company_name,
         projectTitle: budgetData.projectTitle,
         services: budgetData.services,
         subtotal: budgetSubTotal,
@@ -1116,7 +1116,7 @@ const AddBudget = () => {
             >
               {/* <Typography>{boxClientName ? boxClientName : "Client Name"}</Typography> */}
               {selectedClient ? (
-                selectedClient.company_name || "Client Name"
+                selectedClient?.company_name || "Client Name"
               ) : (
                 <>
                   Client Name
@@ -1521,7 +1521,7 @@ const AddBudget = () => {
         sx={{
           display: "flex",
           justifyContent: "flex-end",
-          gap: "150px",
+          // gap: "150px",
           width: "100%",
           padding: "10px",
           gap: "20px",

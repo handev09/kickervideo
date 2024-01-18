@@ -1,4 +1,4 @@
-import { Navigate, useRoutes } from 'react-router-dom';
+import {Navigate, useRoutes} from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
@@ -27,55 +27,55 @@ import CrewDetails from './pages/CrewDetails';
 // ----------------------------------------------------------------------
 
 export default function Router() {
-  const routes = useRoutes([
-    {
-      path: '/dashboard',
-      element: <DashboardLayout />,
-      children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: 'app', element: <DashboardAppPage /> },
-        { path: 'crew', element: <CrewPage /> },
-        { path: 'items', element: <ItemsPage /> },
-        { path: 'expenses', element: <ExpensesPage /> },
-        { path: 'addcrew', element: <AddCrewForm /> },
-        { path: 'create-item', element: <CreateNewLineItem /> },
-        { path: 'drop-down', element: <MyDropdown /> },
-        { path: 'add-budget', element: <AddBudget /> },
-        { path: 'dropdown', element: <CustomDropdown /> },
-        { path: 'report', element: <Reports /> },
-        { path: 'pay', element: <PaymentForm /> },
-        { path: 'service', element: <Services /> },
-        { path: 'clients', element: <ClientsPage /> },
-        { path: 'client-details/:clientId', element: <ClientDetailsPage /> }, // Remove the leading slash '/'
-        { path: 'budget-details/:budgetId', element: <BudgetDetailsPage /> }, // Remove the leading slash '/'
-        { path: 'crew-details/:crewId', element: <CrewDetails /> }, // Remove the leading slash '/'
+    const routes = useRoutes([
+        {
+            path: '/dashboard',
+            element: <DashboardLayout/>,
+            children: [
+                {element: <Navigate to="/dashboard/app"/>, index: true},
+                {path: 'app', element: <DashboardAppPage/>},
+                {path: 'crew', element: <CrewPage/>},
+                {path: 'items', element: <ItemsPage/>},
+                {path: 'expenses', element: <ExpensesPage/>},
+                {path: 'addcrew', element: <AddCrewForm/>},
+                {path: 'create-item', element: <CreateNewLineItem/>},
+                {path: 'drop-down', element: <MyDropdown/>},
+                {path: 'add-budget', element: <AddBudget/>},
+                {path: 'dropdown', element: <CustomDropdown/>},
+                {path: 'report', element: <Reports/>},
+                {path: 'pay', element: <PaymentForm/>},
+                {path: 'service', element: <Services/>},
+                {path: 'clients', element: <ClientsPage/>},
+                {path: 'client-details/:clientId', element: <ClientDetailsPage/>}, // Remove the leading slash '/'
+                {path: 'budget-details/:budgetId', element: <BudgetDetailsPage/>}, // Remove the leading slash '/'
+                {path: 'crew-details/:crewId', element: <CrewDetails/>}, // Remove the leading slash '/'
 
-      ],
-    },
-    
-    {
-      path: 'login',
-      element: <LoginPage />,
-    },
-    {
-      path: 'signup',
-      element: <SignupPage />,
-    },
-    {
-      element: <SimpleLayout />,
-      children: [
-        { element: <Navigate to="/dashboard/app" />, index: true },
-        { path: '404', element: <Page404 /> },
-        { path: '*', element: <Navigate to="/404" /> },
-      ],
-    },
-    {
-      path: '*',
-      element: <Navigate to="/404" replace />,
-    },
-  ]);
+            ],
+        },
 
-  return routes;
+        {
+            path: 'login',
+            element: <LoginPage/>,
+        },
+        {
+            path: 'signup',
+            element: <SignupPage/>,
+        },
+        {
+            element: <SimpleLayout/>,
+            children: [
+                {element: <Navigate to="/dashboard/app"/>, index: true},
+                {path: '404', element: <Page404/>},
+                {path: '*', element: <Navigate to="/404"/>},
+            ],
+        },
+        {
+            path: '*',
+            element: <Navigate to="/404" replace/>,
+        },
+    ]);
+
+    return routes;
 }
 
 
