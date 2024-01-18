@@ -30,7 +30,7 @@ import CustomDropdown from "../components/item-price-dropdown/DropDown";
 import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
 import { getUser } from "../state/redux/actions/users/getUser";
 import { fetchItems } from "../state/redux/actions/items/fetch";
-
+import { updateBudget } from "../state/redux/actions/budget/update";
 import { useDispatch, useSelector } from "react-redux";
 import { addBudget } from "../state/redux/actions/budget/budgetActions";
 import { useNavigate, useParams } from "react-router-dom";
@@ -56,8 +56,8 @@ const BudgetDetailsPage = () => {
 
   const handleServiceDataChange = (data, index) => {
     setIgnore(false);
-    console.log(data.selectedItem && data.selectedItem.isCustom);
-    console.log(servicesData);
+    // console.log(data.selectedItem && data.selectedItem.isCustom);
+    // console.log(servicesData);
     if (
       data.selectedItem &&
       data.selectedItem.isCustom &&
@@ -75,7 +75,7 @@ const BudgetDetailsPage = () => {
       const serviceIndex = prevServicesData.findIndex(
         (service) => service.index === index
       );
-      console.log(serviceIndex);
+      // console.log(serviceIndex);
 
       // If the service data exists, update it; otherwise, add it to the state
       if (serviceIndex !== -1) {
@@ -114,11 +114,12 @@ const BudgetDetailsPage = () => {
   const [budgetDetails, setBudgetDetails] = useState(null);
   const [budgetItems, setBudgetItems] = useState([]);
   const [sortedItems, setSortedItems] = useState([]);
-  const [projectTitle, setProjectTitle]=useState(null)
+  // const [projectTitle, setProjectTitle] = useState(null);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [attachments, setAttachments] = useState("");
 
   // Service Comp
   const [serviceCount, setServiceCount] = useState(0);
-
 
   const [isTextFieldVisible, setTextFieldVisible] = useState(false);
   const [isTaxEdit, setisTaxEdit] = useState(false);
@@ -143,12 +144,10 @@ const BudgetDetailsPage = () => {
   ]);
 
   const budgets = useSelector((state) => state.budgets.budgets);
-  // console.log(budgets);
-  // setBudgetNumber(budgets.legth)
 
   const items = useSelector((state) => state.items.items);
   const contactz = useSelector((state) => state.contacts.contacts);
-  console.log(contactz);
+  // console.log(contactz);
 
   useEffect(() => {
     SetContacts(contactz);
@@ -159,17 +158,6 @@ const BudgetDetailsPage = () => {
     const updatedServiceComps = [...serviceComps];
     updatedServiceComps.splice(index, 1);
     setServiceComps(updatedServiceComps);
-    // console.log(serviceComps);
-
-    // const updatedServiceData = [...servicesData];
-    // updatedServiceData.splice(index, 1);
-    // setServicesData(updatedServiceData);
-    // // console.log(servicesData)
-    // if (serviceCount <= 0) {
-    //   setServiceCount(0);
-    // } else {
-    //   setServiceCount(serviceCount - 1);
-    // }
   };
 
   // States for Dialog
@@ -215,8 +203,6 @@ const BudgetDetailsPage = () => {
 
     fetchBudgetDetails();
     fetchBudgetItems();
-
-
   }, [budgetId]);
 
   useEffect(() => {
@@ -235,7 +221,7 @@ const BudgetDetailsPage = () => {
     setBudgetSubTotal(newSubtota);
     // setTotal(new)
 
-    console.log("new subtota:", newSubtota);
+    // console.log("new subtota:", newSubtota);
   }, [servicesData]);
 
   useEffect(() => {
@@ -243,8 +229,8 @@ const BudgetDetailsPage = () => {
   }, [budgetSubTotal]);
 
   const addServiceComp = (data) => {
-    console.log("new service comp");
-    console.log(data);
+    // console.log("new service comp");
+    // console.log(data);
     const newIndex = serviceCount + 1;
     setServiceCount(newIndex);
 
@@ -286,403 +272,184 @@ const BudgetDetailsPage = () => {
     attachments: [],
     createdAt: "",
     userId: "",
-    budgetId: uuidv4(),
+    budgetId: budgetId,
     status: "",
     budgetNumber: 0,
   });
-  const handleAddBudget = () => {
-    // Create the budget object
-    // console.log(budgetData.client);
-    // Logic for budget & image Upload
-    if (selectedImage) {
-      // console.log("Image Selected");
-      const storageRef = ref(storage, `budgets/${selectedImage.name}`);
-
-      // Upload the selected image
-      uploadBytes(storageRef, selectedImage)
-        .then((snapshot) => {
-          // File uploaded successfully, get the download URL
-          getDownloadURL(snapshot.ref)
-            .then((downloadURL) => {
-              // Use the downloadURL as needed, for example, you can save it to your database
-              // console.log("Download URL:", downloadURL);
-
-              // Your code to use the downloadURL
-              // ...
-              // Create an array of service objects
-              const serviceArray = servicesData.map((service) => {
-                const unitPrice = parseFloat(service.unitPrice);
-                const quantity = parseFloat(service.quantity);
-                const markupPercentage = parseFloat(
-                  service.selectedItem.markup
-                    ? service.selectedItem.markup
-                    : service.markup
-                );
-
-                // Calculate the cost based on unitPrice, quantity, and markup percentage
-                const cost =
-                  unitPrice * quantity +
-                  (unitPrice * quantity * markupPercentage) / 100;
-
-                return {
-                  id: uuidv4(),
-                  name: service.selectedItem.item_name
-                    ? service.selectedItem.item_name
-                    : service.name,
-                  description: service.selectedItem.item_desc
-                    ? service.selectedItem.item_desc
-                    : service.description,
-                  cost: cost,
-                  markup: markupPercentage,
-                  unitPrice: unitPrice,
-                  quantity: quantity,
-                  userId: user_id,
-                  budgetId: budgetData.budgetId,
-                  createdAt: new Date().toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  }),
-                  item_rate: "",
-                };
-              });
-
-              const newBudget = {
-                client: selectedClient.company_name,
-                projectTitle: budgetData.projectTitle,
-                services: budgetData.services,
-                subtotal: budgetSubTotal,
-                discount: discount,
-                tax: tax,
-                total: total,
-                internalNotes: budgetData.internalNotes,
-                // attachments: budgetData.attachments,
-                createdAt: new Date().toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                }),
-                userId: user_id,
-                budgetId: budgetData.budgetId,
-                status: "draft",
-                attachmentsUrl: downloadURL,
-                budgetNumber: budgetNumber,
-                clientName: selectedClientName,
-                serviceData: serviceArray,
-              };
-              console.log(newBudget);
-
-              // Dispatch the new budget tothe Redux store
-              dispatch(addBudget(newBudget))
-                .then((res) => {
-                  dispatch(fetchUserBudgets(user_id))
-                    .then(() => {
-                      dispatch(getUser(user_id));
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                    });
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-
-              //Navigate to Home Page
-              navigate("/");
-            })
-            .catch((error) => {
-              console.error("Error getting download URL:", error);
-              // Handle the error appropriately
-            });
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-          // Handle the error appropriately
-        });
-    } else {
-      console.error("No selected image to upload.");
-      // Handle the case where no image is selected
-      // Create an array of service objects
-      const serviceArray = servicesData.map((service) => {
-        const unitPrice = parseFloat(service.unitPrice);
-        const quantity = parseFloat(service.quantity);
-        const markupPercentage = parseFloat(
-          service.selectedItem.markup
-            ? service.selectedItem.markup
-            : service.markup
-        );
-
-        // Calculate the cost based on unitPrice, quantity, and markup percentage
-        const cost =
-          unitPrice * quantity +
-          (unitPrice * quantity * markupPercentage) / 100;
-
-        return {
-          id: uuidv4(),
-          name: service.selectedItem.item_name
-            ? service.selectedItem.item_name
-            : service.name,
-          description: service.selectedItem.item_desc
-            ? service.selectedItem.item_desc
-            : service.description,
-          cost: cost,
-          markup: markupPercentage,
-          unitPrice: unitPrice,
-          quantity: quantity,
-          userId: user_id,
-          budgetId: budgetData.budgetId,
-          createdAt: new Date().toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-          item_rate: "",
-        };
-      });
-
-      const newBudget = {
-        client: selectedClient.company_name,
-        projectTitle: budgetData.projectTitle,
-        services: budgetData.services,
-        subtotal: budgetSubTotal,
-        discount: discount,
-        tax: tax,
-        total: total,
-        internalNotes: budgetData.internalNotes,
-        // attachments: budgetData.attachments,
-        createdAt: new Date().toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }),
-        userId: user_id,
-        budgetId: budgetData.budgetId,
-        status: "draft",
-        attachmentsUrl: "",
-        budgetNumber: budgetNumber,
-        clientName: selectedClientName,
-        serviceData: serviceArray,
-      };
-      console.log(newBudget);
-
-      // Dispatch the new budget tothe Redux store
-      dispatch(addBudget(newBudget))
-        .then((res) => {
-          dispatch(fetchUserBudgets(user_id))
-            .then(() => {
-              dispatch(getUser(user_id));
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-
-      //Navigate to Home Page
-      navigate("/");
-    }
-  };
 
   const handleAddBudgetActive = () => {
-    // Create the budget object
-    // console.log(budgetData.client);
-    // Logic for budget & image Upload
-    if (selectedImage) {
-      // console.log("Image Selected");
-      const storageRef = ref(storage, `budgets/${selectedImage.name}`);
+    console.log(budgetItems);
+    console.log(sortedItems);
 
-      // Upload the selected image
-      uploadBytes(storageRef, selectedImage)
-        .then((snapshot) => {
-          // File uploaded successfully, get the download URL
-          getDownloadURL(snapshot.ref)
-            .then((downloadURL) => {
-              // Use the downloadURL as needed, for example, you can save it to your database
-              // console.log("Download URL:", downloadURL);
 
-              // Your code to use the downloadURL
-              // ...
-              // Create an array of service objects
-              const serviceArray = servicesData.map((service) => {
-                const unitPrice = parseFloat(service.unitPrice);
-                const quantity = parseFloat(service.quantity);
-                const markupPercentage = parseFloat(
-                  service.selectedItem.markup
-                    ? service.selectedItem.markup
-                    : service.markup
-                );
+    // console.log("Image Selected");
+    // if (selectedImage) {
+    //   const storageRef = ref(storage, `budgets/${selectedImage.name}`);
+    //   uploadBytes(storageRef, selectedImage)
+    //     .then((snapshot) => {
+    //       // File uploaded successfully, get the download URL
+    //       getDownloadURL(snapshot.ref)
+    //         .then((downloadURL) => {
+    //           console.log(servicesData);
+    //           const serviceArray = servicesData.map((service) => {
+    //             const unitPrice = parseFloat(service.unitPrice);
+    //             const quantity = parseFloat(service.quantity);
+    //             const markupPercentage = parseFloat(
+    //               service.selectedItem.markup
+    //                 ? service.selectedItem.markup
+    //                 : service.markup
+    //             );
 
-                // Calculate the cost based on unitPrice, quantity, and markup percentage
-                const cost =
-                  unitPrice * quantity +
-                  (unitPrice * quantity * markupPercentage) / 100;
+    //             // Calculate the cost based on unitPrice, quantity, and markup percentage
+    //             const cost =
+    //               unitPrice * quantity +
+    //               (unitPrice * quantity * markupPercentage) / 100;
 
-                return {
-                  id: uuidv4(),
-                  name: service.selectedItem.item_name
-                    ? service.selectedItem.item_name
-                    : service.name,
-                  description: service.selectedItem.item_desc
-                    ? service.selectedItem.item_desc
-                    : service.description,
-                  cost: cost,
-                  markup: markupPercentage,
-                  unitPrice: unitPrice,
-                  quantity: quantity,
-                  userId: user_id,
-                  budgetId: budgetData.budgetId,
-                  createdAt: new Date().toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  }),
-                  item_rate: "",
-                };
-              });
+    //             return {
+    //               id: service.selectedItem.item_id,
+    //               name: service.selectedItem.item_name
+    //                 ? service.selectedItem.item_name
+    //                 : service.name,
+    //               description: service.selectedItem.item_desc
+    //                 ? service.selectedItem.item_desc
+    //                 : service.description,
+    //               cost: cost,
+    //               markup: markupPercentage,
+    //               unitPrice: unitPrice,
+    //               quantity: quantity,
+    //               userId: user_id,
+    //               budgetId: budgetData.budgetId,
+    //               createdAt: service.created_at,
+    //               item_rate: "",
+    //             };
+    //           });
 
-              const newBudget = {
-                client: selectedClient.company_name,
-                projectTitle: budgetData.projectTitle,
-                services: budgetData.services,
-                subtotal: budgetSubTotal,
-                discount: discount,
-                tax: tax,
-                total: total,
-                internalNotes: budgetData.internalNotes,
-                // attachments: budgetData.attachments,
-                createdAt: new Date().toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                }),
-                userId: user_id,
-                budgetId: budgetData.budgetId,
-                status: "active",
-                attachmentsUrl: downloadURL,
-                budgetNumber: budgetNumber,
-                clientName: selectedClientName,
-                serviceData: serviceArray,
-              };
-              console.log(newBudget);
+    //           const newBudget = {
+    //             client: selectedClient.company_name,
+    //             projectTitle: budgetData.projectTitle,
+    //             subtotal: budgetSubTotal,
+    //             discount: discount,
+    //             tax: tax,
+    //             total: total,
+    //             internalNotes: budgetData.internalNotes,
+    //             createdAt: new Date().toLocaleDateString("en-US", {
+    //               month: "long",
+    //               day: "numeric",
+    //               year: "numeric",
+    //             }),
+    //             userId: user_id,
+    //             budgetId: budgetData.budgetId,
+    //             status: "active",
+    //             attachmentsUrl: downloadURL,
+    //             budgetNumber: budgetNumber,
+    //             clientName: selectedClientName,
+    //             serviceData: serviceArray,
+    //           };
+    //           console.log(newBudget);
 
-              // Dispatch the new budget tothe Redux store
-              dispatch(addBudget(newBudget))
-                .then((res) => {
-                  dispatch(fetchUserBudgets(user_id))
-                    .then(() => {
-                      dispatch(getUser(user_id));
-                    })
-                    .catch((error) => {
-                      console.log(error);
-                    });
-                })
-                .catch((error) => {
-                  console.log(error);
-                });
-              console.log(servicesData);
+    //           // Dispatch the new budget tothe Redux store
+    //           dispatch(updateBudget(budgetId, newBudget))
+    //             .then((res) => {
+    //               dispatch(fetchUserBudgets(user_id))
+    //                 .then(() => {
+    //                   dispatch(getUser(user_id));
+    //                 })
+    //                 .catch((error) => {
+    //                   console.log(error);
+    //                 });
+    //             })
+    //             .catch((error) => {
+    //               console.log(error);
+    //             });
+    //           console.log(servicesData);
 
-              //Navigate to Home Page
-              navigate("/");
-            })
-            .catch((error) => {
-              console.error("Error getting download URL:", error);
-              // Handle the error appropriately
-            });
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-          // Handle the error appropriately
-        });
-    } else {
-      console.error("No selected image to upload.");
-      // Handle the case where no image is selected
-      // Create an array of service objects
-      const serviceArray = servicesData.map((service) => {
-        const unitPrice = parseFloat(service.unitPrice);
-        const quantity = parseFloat(service.quantity);
-        const markupPercentage = parseFloat(
-          service.selectedItem.markup
-            ? service.selectedItem.markup
-            : service.markup
-        );
+    //           //Navigate to Home Page
+    //           // navigate("/");
+    //         })
+    //         .catch((error) => {
+    //           console.error("Error getting download URL:", error);
+    //           // Handle the error appropriately
+    //         });
+    //     })
+    //     .catch((error) => {
+    //       console.error("Error uploading image:", error);
+    //       // Handle the error appropriately
+    //     });
+    // } else {
+    //   console.log(projectTitle);
+    //   console.log(notes);
+    //   console.log(servicesData);
+    //   const serviceArray = servicesData.map((service) => {
+    //     console.log(service.selectedItem.item_id);
+    //     const unitPrice = parseFloat(service.unitPrice);
+    //     const quantity = parseFloat(service.quantity);
+    //     const markupPercentage = parseFloat(
+    //       service.selectedItem.markup
+    //         ? service.selectedItem.markup
+    //         : service.markup
+    //     );
 
-        // Calculate the cost based on unitPrice, quantity, and markup percentage
-        const cost =
-          unitPrice * quantity +
-          (unitPrice * quantity * markupPercentage) / 100;
+    //     // Calculate the cost based on unitPrice, quantity, and markup percentage
+    //     const cost =
+    //       unitPrice * quantity +
+    //       (unitPrice * quantity * markupPercentage) / 100;
 
-        return {
-          id: uuidv4(),
-          name: service.selectedItem.item_name
-            ? service.selectedItem.item_name
-            : service.name,
-          description: service.selectedItem.item_desc
-            ? service.selectedItem.item_desc
-            : service.description,
-          cost: cost,
-          markup: markupPercentage,
-          unitPrice: unitPrice,
-          quantity: quantity,
-          userId: user_id,
-          budgetId: budgetData.budgetId,
-          createdAt: new Date().toLocaleDateString("en-US", {
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          }),
-          item_rate: "",
-        };
-      });
+    //     return {
+    //       id: service.selectedItem.serviceId,
+    //       name: service.selectedItem.item_name
+    //         ? service.selectedItem.item_name
+    //         : service.name,
+    //       description: service.selectedItem.item_desc
+    //         ? service.selectedItem.item_desc
+    //         : service.description,
+    //       cost: cost,
+    //       markup: markupPercentage,
+    //       unitPrice: unitPrice,
+    //       quantity: quantity,
+    //       userId: user_id,
+    //       budgetId: budgetData.budgetId,
+    //       createdAt: budgetDetails.created_at,
+    //       item_rate: "",
+    //     };
+    //   });
 
-      const newBudget = {
-        client: selectedClient.company_name,
-        projectTitle: budgetData.projectTitle,
-        services: budgetData.services,
-        subtotal: budgetSubTotal,
-        discount: discount,
-        tax: tax,
-        total: total,
-        internalNotes: budgetData.internalNotes,
-        // attachments: budgetData.attachments,
-        createdAt: new Date().toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }),
-        userId: user_id,
-        budgetId: budgetData.budgetId,
-        status: "active",
-        attachmentsUrl: "",
-        budgetNumber: budgetNumber,
-        clientName: selectedClientName,
-        serviceData: serviceArray,
-      };
-      console.log(newBudget);
-
-      // Dispatch the new budget tothe Redux store
-      dispatch(addBudget(newBudget))
-        .then((res) => {
-          dispatch(fetchUserBudgets(user_id))
-            .then(() => {
-              dispatch(getUser(user_id));
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      console.log(budgetData);
-
-      //Navigate to Home Page
-      navigate("/");
-    }
+    //   const newBudget = {
+    //     client: selectedClient.company_name,
+    //     projectTitle: projectTitle,
+    //     services: budgetData.services,
+    //     subtotal: budgetSubTotal,
+    //     discount: discount,
+    //     tax: tax,
+    //     total: total,
+    //     internalNotes: notes,
+    //     // attachments: budgetData.attachments,
+    //     createdAt: budgetDetails.created_at,
+    //     userId: user_id,
+    //     budgetId: budgetData.budgetId,
+    //     status: budgetDetails.status,
+    //     attachmentsUrl: budgetDetails.attachments,
+    //     budgetNumber: budgetNumber,
+    //     clientName: selectedClientName,
+    //     serviceData: serviceArray,
+    //   };
+    //   console.log(newBudget);
+    //   dispatch(updateBudget(budgetId, newBudget))
+    //     .then((res) => {
+    //       dispatch(fetchUserBudgets(user_id))
+    //         .then(() => {
+    //           dispatch(getUser(user_id));
+    //         })
+    //         .catch((error) => {
+    //           console.log(error);
+    //         });
+    //     })
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    //   console.log(servicesData);
+    // }
   };
 
-  // Function to toggle text field visibility
   const toggleTextFieldVisibility = () => {
     setTextFieldVisible(!isTextFieldVisible);
   };
@@ -696,12 +463,12 @@ const BudgetDetailsPage = () => {
   };
 
   const handleDialogData = (data) => {
-    setSelectedClientName("")
+    setSelectedClientName("");
     setIgnore(true);
     ignorePop = true;
     // setDialogData(data)
-    console.log(data.index);
-    console.log(servicesData);
+    // console.log(data.index);
+    // console.log(servicesData);
 
     const newData = {
       index: data.index,
@@ -714,10 +481,6 @@ const BudgetDetailsPage = () => {
       unitPrice: data.unitPrice,
       cost: data.cost,
     };
-
-    // handleDeleteServiceComp(newData.index)
-    // addServiceComp(newData);
-
     // Find the index of the ServiceComp to be modified in the serviceComps array
     const serviceCompIndex = serviceComps.findIndex(
       (serviceComp) => serviceComp.props.index === data.index
@@ -749,7 +512,7 @@ const BudgetDetailsPage = () => {
         const serviceIndex = prevServicesData.findIndex(
           (service) => service.index === data.index
         );
-        console.log("indi " + serviceIndex);
+        // console.log("indi " + serviceIndex);
 
         const newData = {
           index: data.index,
@@ -765,9 +528,9 @@ const BudgetDetailsPage = () => {
         // If the service data exists, update it; otherwise, add it to the state
         if (serviceIndex !== -1) {
           const updatedServicesData = [...prevServicesData];
-          console.log(updatedServicesData);
+          // console.log(updatedServicesData);
           updatedServicesData[serviceIndex] = newData;
-          console.log(updatedServicesData);
+          // console.log(updatedServicesData);
           return updatedServicesData;
         }
       });
@@ -775,8 +538,6 @@ const BudgetDetailsPage = () => {
 
     if (data.name && data.description) {
       setDialogData((prevData) => [...prevData, data]);
-
-      // Update the services array in budgetData
       setBudgetData((prevBudgetData) => ({
         ...prevBudgetData,
         services: [...prevBudgetData.services, data],
@@ -829,15 +590,6 @@ const BudgetDetailsPage = () => {
     } else {
       setTax(0); // Set tax to 0 if the input is not a valid number
     }
-    // setTax(newTax);
-
-    // // Recalculate the total based on the new tax
-    // const subtotal = budgetSubTotal;
-    // const taxAmount = (subtotal * newTax) / 100;
-    // const discountAmount = (subtotal * discount) / 100;
-    // const total = subtotal + taxAmount - discountAmount;
-
-    // setTotal(total.toFixed(2));
   };
 
   useEffect(() => {
@@ -991,60 +743,26 @@ const BudgetDetailsPage = () => {
 
   const [selectedClient, setSelectedClient] = useState(null);
 
-  // useEffect(()=>{
-
-  //   if(budgetDetails){
-  //     const clientData={
-  //       company_name: budgetDetails.client_name,
-        
-  //     }
-  //     setSelectedClient(clientData)
-  //     setSelectedClientName(budgetDetails.company_client)
-  //     setProjectTitle(budgetDetails.project_title||"")
-      
-  //   }
-
-  //   if(budgetItems){
-  //     setServiceComps(()=>{
-  //       budgetItems.forEach((budgetItem)=>{
-  //         <ServiceComp
-  //   key={0}
-  //   index={0}
-  //   onDelete={() => handleDeleteServiceComp(0)}
-  //   onChange={handleServiceDataChange}
-  //   data={{
-  //     index: 0,
-  //     quantity: budgetItem.item_quantity,
-  //     selectedItem: {
-  //       item_name: budgetItem.item_name,
-  //       markup: budgetItem.item_markup,
-  //       item_desc: budgetItem.item_desc,
-  //     },
-  //     unitPrice: budgetItem.item_unitPrice,
-  //   }}
-  // />
-  //       })
-  //     })
-  //   }
-
-    
-    
-  // }, [budgetDetails,budgetItems])
-
-
   useEffect(() => {
     if (budgetDetails) {
       const clientData = {
         company_name: budgetDetails.client_name,
-      }
+      };
       setSelectedClient(clientData);
       setSelectedClientName(budgetDetails.company_client);
-      setProjectTitle(budgetDetails.project_title || "");
+      setProjectTitle(budgetDetails.project_title);
+      setNotes(budgetDetails.internal_notes);
+      setAttachments(budgetDetails.attachments);
+      setBudgetNumber(
+        budgetDetails.budget_num
+          ? budgetDetails.budget_num
+          : budgetDetails.budget_numb
+      );
     }
-  
+
     if (budgetItems) {
+      setServicesData(budgetItems);
       setServiceComps(() => {
-        // Check if budgetItems is an array before mapping over it
         if (Array.isArray(budgetItems)) {
           return budgetItems.map((budgetItem, index) => (
             <ServiceComp
@@ -1056,6 +774,7 @@ const BudgetDetailsPage = () => {
                 index: index,
                 quantity: budgetItem.item_quantity,
                 selectedItem: {
+                  // id: budgetItem.item_id,
                   item_name: budgetItem.item_name,
                   markup: parseFloat(budgetItem.item_markup),
                   item_desc: budgetItem.item_description,
@@ -1072,28 +791,29 @@ const BudgetDetailsPage = () => {
       });
     }
   }, [budgetDetails, budgetItems]);
-  
 
   const handleClientSelect = (clientData) => {
+    // console.log(client)
     // Handle the selected client data here
     // console.log("Selected Client Data:", clientData);
+    setSelectedClientName("");
     setSelectedClient(clientData); // You can update the parent's state with the selected client data
-    console.log(clientData)
+    // console.log(clientData);
     setOpenClientsBox(false);
   };
 
   if (!budgetDetails) {
     return <LoadingSpinner />;
   } else {
-    console.log(budgetDetails);
-    console.log(budgetItems);
+    // console.log(budgetDetails);
+    // console.log(budgetItems);
   }
 
   return (
     <form>
       <Box>
         <Typography variant="h4" gutterBottom sx={{ marginLeft: 3 }}>
-         Budget Details
+          Budget Details
         </Typography>
       </Box>
 
@@ -1117,7 +837,6 @@ const BudgetDetailsPage = () => {
             marginLeft: 0,
           }}
         >
-
           <div
             style={{
               display: "flex",
@@ -1174,15 +893,14 @@ const BudgetDetailsPage = () => {
 
           <Box sx={{ marginLeft: 0, marginTop: 2 }}>
             <Typography variant="h5">Contact Name</Typography>
-            {selectedClientName!==""? (
-              
+            {selectedClientName !== "" ? (
               <Typography variant="p">{selectedClientName}</Typography>
             ) : (
               <MyDropdown
                 options={contacts.map((contact) => contact.contact_name)}
                 onChange={(data) => {
                   setSelectedClientName(data);
-                  console.log(selectedClientName);
+                  // console.log(selectedClientName);
                 }}
               />
             )}
@@ -1204,10 +922,12 @@ const BudgetDetailsPage = () => {
               }}
               variant="outlined"
               InputProps={{ disableUnderline: true }}
-              value={projectTitle||""}
-              onChange={(e) =>
-                setBudgetData({ ...budgetData, projectTitle: e.target.value })
-              }
+              value={projectTitle}
+              onChange={(e) => {
+                // console.log(e.target.value);
+                setProjectTitle(e.target.value);
+                setBudgetData({ ...budgetData, projectTitle: e.target.value });
+              }}
             />
           </Box>
         </Box>
@@ -1245,7 +965,10 @@ const BudgetDetailsPage = () => {
               />
             ) : (
               <Typography variant="p" gutterBottom>
-                #{budgetDetails.budget_numb?budgetDetails.budget_numb:budgets.length + 1}
+                #
+                {budgetDetails.budget_numb
+                  ? budgetDetails.budget_numb
+                  : budgets.length + 1}
               </Typography>
             )}
 
@@ -1271,17 +994,6 @@ const BudgetDetailsPage = () => {
               <RatingContainer />
             </Container>
           </Container>
-
-          {/* ... Button for the add custom field ... */}
-
-          {/* <Container sx={{ mt: 2 }}>
-            <Button
-              variant="outlined"
-              sx={{ borderColor: "#E05858FF", color: "#E05858FF" }}
-            >
-              Add Custom Field
-            </Button>
-          </Container> */}
         </Container>
       </Stack>
 
@@ -1364,16 +1076,12 @@ const BudgetDetailsPage = () => {
                 placeholder="0"
                 size="small"
                 type="number"
-                // type="number"
                 value={discount}
-                // size="small"
-                // onChange={handleDiscountChange}
                 onChange={(e) => {
                   setDiscount(e.target.value);
                 }}
                 variant="outlined"
                 style={{}}
-                // ... (other props)
               />
               <IconButton onClick={toggleDiscountEdit}>
                 <Iconify icon="material-symbols:delete-outline" />
@@ -1407,10 +1115,7 @@ const BudgetDetailsPage = () => {
                 placeholder="0"
                 size="small"
                 type="number"
-                // type="number"
                 value={tax}
-                // size="small"
-                // onChange={handleTaxChange}
                 onChange={(e) => {
                   setTax(e.target.value);
                 }}
@@ -1468,7 +1173,7 @@ const BudgetDetailsPage = () => {
             rows={4}
             fullWidth
             variant="outlined"
-            value={budgetData.internalNotes}
+            value={notes}
             onChange={handleNotes}
           />
         </Box>
@@ -1483,25 +1188,13 @@ const BudgetDetailsPage = () => {
             alignItems: "center",
           }}
         >
-          <Container
-            // justifyContent="center"
-            // alignItems="center"
-            // flexDirection="column"
-            sx={{ marginTop: "0", marginBottom: "50px" }}
-          >
-            {/* <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
-                Receipt
-              </Typography> */}
-          </Container>
+          <Container sx={{ marginTop: "0", marginBottom: "50px" }}></Container>
           <Box
             sx={{
               marginBottom: "10px",
               textAlign: "center",
               display: "flex",
               flexDirection: "row",
-              // eslint-disable-next-line no-dupe-keys
-              // textAlign: "center",
-              // justifyContent: "center",
             }}
           >
             <div style={{ width: "100%" }}>
@@ -1533,7 +1226,11 @@ const BudgetDetailsPage = () => {
                 </Button>
                 {selectedImage && (
                   <img
-                    src={URL.createObjectURL(selectedImage)}
+                    src={
+                      attachments
+                        ? attachments
+                        : URL.createObjectURL(selectedImage)
+                    }
                     alt="Selected"
                     style={{ maxWidth: "100px", maxHeight: "100px" }}
                   />
@@ -1570,9 +1267,7 @@ const BudgetDetailsPage = () => {
           }}
         >
           <Button variant="outlined">Cancel</Button>
-          <Button variant="outlined" onClick={handleAddBudget}>
-            Save Draft
-          </Button>
+
           <Button
             aria-describedby={id}
             sx={{
@@ -1581,53 +1276,10 @@ const BudgetDetailsPage = () => {
               borderRadius: "3px",
             }}
             variant="filled"
-            endIcon={<ExpandMoreIcon />}
-            onClick={handleClick}
-            // onClick={handleAddBudget}
+            onClick={handleAddBudgetActive}
           >
-            Save And...
+            Update Budget
           </Button>
-          <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "center",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "center",
-            }}
-          >
-            <List>
-              <ListItemButton>
-                <ListItemIcon>
-                  <Iconify icon={"iwwa:file-pdf"} />
-                </ListItemIcon>
-                <ListItemText primary="Save PDF" />
-              </ListItemButton>
-              <ListItemButton>
-                <ListItemIcon>
-                  <Iconify
-                    icon={"mdi-light:grid"}
-                    sx={{ color: "#1DD75BFF" }}
-                  />
-                </ListItemIcon>
-                <ListItemText primary="Send to Google Sheets" />
-              </ListItemButton>
-              <ListItemButton onClick={handleAddBudgetActive}>
-                <ListItemIcon>
-                  <Iconify
-                    icon={"carbon:checkmark-outline"}
-                    sx={{ color: "#00A805FF" }}
-                  />
-                </ListItemIcon>
-                <ListItemText primary="Convert to Active" />
-              </ListItemButton>
-            </List>
-          </Popover>
         </Box>
       </Container>
 

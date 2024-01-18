@@ -200,32 +200,6 @@ const AddBudget = () => {
     setTotal(budgetSubTotal);
   }, [budgetSubTotal]);
 
-  // const addServiceComp = (data) => {
-  //   console.log('new service comp')
-  //   const newIndex = serviceCount + 1;
-  //   setServiceCount(newIndex);
-
-  //   setServiceComps((prevServiceComps) => [
-  //     ...prevServiceComps,
-  //     <ServiceComp
-  //       key={newIndex}
-  //       index={newIndex}
-  //       onDelete={handleDeleteServiceComp}
-  //       onChange={handleServiceDataChange}
-  //       data=data?data:{{
-  //         index: 0,
-  //         quantity: 1000,
-  //         selectedItem: {
-  //           item_name: "",
-  //           markup: 0,
-  //           item_desc: "",
-  //         },
-  //         unitPrice: 0,
-  //       }}
-  //     />,
-  //   ]);
-  // };
-
   const addServiceComp = (data) => {
     console.log('new service comp');
     console.log(data)
@@ -276,9 +250,6 @@ const AddBudget = () => {
     budgetNumber: 0,
   });
   const handleAddBudget = () => {
-    // Create the budget object
-    // console.log(budgetData.client);
-    // Logic for budget & image Upload
     if (selectedImage) {
       // console.log("Image Selected");
       const storageRef = ref(storage, `budgets/${selectedImage.name}`);
@@ -289,12 +260,6 @@ const AddBudget = () => {
           // File uploaded successfully, get the download URL
           getDownloadURL(snapshot.ref)
             .then((downloadURL) => {
-              // Use the downloadURL as needed, for example, you can save it to your database
-              // console.log("Download URL:", downloadURL);
-
-              // Your code to use the downloadURL
-              // ...
-              // Create an array of service objects
               const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
@@ -304,7 +269,6 @@ const AddBudget = () => {
                     : service.markup
                 );
 
-                // Calculate the cost based on unitPrice, quantity, and markup percentage
                 const cost =
                   unitPrice * quantity +
                   (unitPrice * quantity * markupPercentage) / 100;

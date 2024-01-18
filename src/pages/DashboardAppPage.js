@@ -669,7 +669,7 @@ export default function DashboardAppPage() {
                                 fontWeight: "bold",
                               }}
                             >
-                              {client_name}
+                              {project_title}
                             </Typography>
                           </Stack>
                         </TableCell>

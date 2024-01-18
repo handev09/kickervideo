@@ -29,26 +29,27 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
   const [cost, setCost] = useState(0);
   const [markup, setMarkup] = useState(0);
   const [unitPrice, setUnitPrice] = useState(0);
-  // const [value, setValue] = useState(null);
   const [value, setValue] = useState("");
   const [total, setTotal] = useState(0);
+  const [serviceId, setServiceId]=useState("")
 
   // Use a useEffect to set state variables based on the data prop
   useEffect(() => {
     if (data) {
       setSelectedItem(data.selectedItem || null);
-      // setQuantity(data.quantity || 1);
       setCost(data.cost || 0);
       setMarkup(data.selectedItem ? data.selectedItem.markup : 0);
-      // setUnitPrice(data.unitPrice || 0);
-      // Set other state variables based on the data prop
-      setValue(data.selectedItem ? data.selectedItem.item_name : "");
+      setValue(data.selectedItem ? data.selectedItem.item_name || "" : "");
+
+       // Find the corresponding item in the items array and set the serviceId
     }
   }, [data]);
 
   useEffect(() => {
     // Create an object with the relevant data
+    console.log(selectedItem)
     const serviceData = {
+      serviceId,
       selectedItem,
       quantity,
       unitPrice,
@@ -60,20 +61,17 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
   }, [selectedItem, quantity, unitPrice, index, onChange]);
 
   const handleInputChange = (event, value) => {
+    console.log(value)
     setValue(value); // Set the selected value
   };
 
   const handleCostChange = (newCost) => {
     setCost(newCost);
   };
-
   const handleMarkupChange = (newMarkup) => {
     setMarkup(newMarkup);
   };
-
   const handleCustomDropdownPriceChange = (id, newPrice) => {
-    // console.log(newPrice);
-    // Handle custom dropdown price change logic here
     setUnitPrice(newPrice);
   };
 
@@ -105,11 +103,12 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
             <Autocomplete
               value={value}
               onChange={(event, newValue) => {
+                console.log(newValue)
                 if (newValue) {
-                  //   console.log(newValue);
                   setMarkup(parseFloat(newValue.markup));
                   setCost(parseFloat(newValue.cost));
                   setSelectedItem(newValue);
+                  setServiceId(newValue.item_id)
                 }
 
                 if (typeof newValue === "string") {
@@ -141,10 +140,8 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
                     inputValue.toLowerCase() === option.item_name.toLowerCase()
                 );
                 console.log(isExisting);
-                // if (inputValue !== "" && !isExisting) {
-                // Inside the filterOptions function:
                 if (inputValue !== "" && !isExisting) {
-                  filtered.push({
+                  filtered.push({                  
                     inputValue,
                     name: inputValue,
                     isCustom: true,
@@ -227,10 +224,7 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
                   autoFocus="false"
                   {...params}
                   label="Search for Product/Service"
-                  // variant="outlined"
                   fullWidth
-                  //   sx={{width: '100%'}}
-                  // value={selectedItem ? selectedItem.item_name : ""}
                   freeSolo
                   size="small"
                   onChange={handleInputChange}
@@ -243,13 +237,6 @@ const ServiceComp = ({ onDelete, onChange, index, data }) => {
               )}
             />
           </Box>
-
-          {/* <TextareaAutosize
-            minRows={7} // You can adjust the number of rows as needed
-            placeholder="Description"
-            style={{ width: "100%", resize: "vertical" }}
-            value={selectedItem ? selectedItem.item_desc : ""}
-          /> */}
 
           <TextField
             id="description"
