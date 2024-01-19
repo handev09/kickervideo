@@ -22,6 +22,7 @@ import Services from './pages/Service';
 import ClientsPage from './pages/Clients';
 import ClientDetailsPage from './pages/ClientDetail';
 import BudgetDetailsPage from './pages/BudgetDetails';
+import BudgetDetailsPageOLD from './pages/BudgetDetailsOLD';
 import CrewDetails from './pages/CrewDetails';
 
 // ----------------------------------------------------------------------
@@ -48,6 +49,8 @@ export default function Router() {
                 {path: 'clients', element: <ClientsPage/>},
                 {path: 'client-details/:clientId', element: <ClientDetailsPage/>}, // Remove the leading slash '/'
                 {path: 'budget-details/:budgetId', element: <BudgetDetailsPage/>}, // Remove the leading slash '/'
+                // OLD BudgetDetailsPage
+                // {path: 'budget-details-old/:budgetId', element: <BudgetDetailsPageOLD/>}, // Remove the leading slash '/'
                 {path: 'crew-details/:crewId', element: <CrewDetails/>}, // Remove the leading slash '/'
 
             ],

@@ -32,8 +32,8 @@ import { storage } from "../components/firebase/firebase-config";
 
 const ClientDialog = ({ openDialog, onClose, onClientSelect }) => {
   const clientz = useSelector((state) => state.clients.clients);
-  console.log(clientz);
-  console.log(openDialog);
+  // console.log(clientz);
+  // console.log(openDialog);
   const [itemName, setItemName] = useState("");
   const [createdBy, setCreatedBy] = useState("");
   const [description, setDescription] = useState("");

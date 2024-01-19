@@ -14,68 +14,76 @@ import React, { useEffect, useRef, useState } from "react";
 
 // import Iconify from "../components/iconify";
 
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import MyDropdown from "../components/dropdown/DropDown";
 import Iconify from "../components/iconify";
 import RatingContainer from "../components/rating/Rating";
 import ClientDialog from "./ClientsDalog";
 import CreateClient from "./CreateClient";
 import CreateNewLineItem from "./CreateNewLineItem";
-import ServiceComp from "./Service";
+import ServiceComp from "./ServiceOLD";
+// import ServiceComp from "./Service";
 import LoadingSpinner from "./loadingSpinner";
 
-const initialServiceData = {
-    name: "",
-    description: "",
-    price: {
-        cost: "",
-        markup: "",
-        unitPrice: "",
-    },
-    crew: "",
-};
-
-const initialServiceComps = [
-    {
-        index: 0,
-        quantity: 0,
-        unitPrice: 0,
-        selectedItem: {
-            item_name: "",
-            markup: 0,
-            item_desc: "",
-        },
-    },
-];
-
-const BudgetDetailsPage = () => {
-    // Helper Hooks
+const BudgetDetailsPageOLD = () => {
     const { budgetId } = useParams();
-    // const navigate = useNavigate();
-    // const dispatch = useDispatch();
-    // const storedUser = localStorage.getItem("user");
-    // const parsedUser = JSON.parse(storedUser);
-    // const user_id = user.userId;
-
-    // Selectors
-    const budgets = useSelector((state) => state.budgets.budgets);
-    const contactz = useSelector((state) => state.contacts.contacts);
-    // const user = useSelector((state) => state.login.user);
-
-    // States
+    let ignorePop = false;
+    const [servicesData, setServicesData] = useState([]);
     const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
     const [customInputValue, setCustomInputValue] = useState("");
-    const [servicesData, setServicesData] = useState([]);
     const [ignore, setIgnore] = useState(false);
 
+    // Update the servicedata on change
+
+    const handleServiceDataChange = (data, index) => {
+        setIgnore(false);
+        // console.log(data.selectedItem && data.selectedItem.isCustom);
+        // console.log(servicesData);
+        if (
+            data.selectedItem &&
+            data.selectedItem.isCustom &&
+            ignorePop === false
+        ) {
+            // Access isCustom property safely'
+            setCustomInputValue(data.selectedItem.inputValue);
+            setCustomSelectedItemIndex(parseInt(index));
+            setIsDialogOpen(true);
+        }
+
+        // Use the functional form of setServicesData to ensure you have the latest state
+        setServicesData((prevServicesData) => {
+            // Find the index of the service data if it exists in the state
+            const serviceIndex = prevServicesData.findIndex(
+                (service) => service.index === index
+            );
+            // console.log(serviceIndex);
+
+            // If the service data exists, update it; otherwise, add it to the state
+            if (serviceIndex !== -1) {
+                const updatedServicesData = [...prevServicesData];
+                updatedServicesData[serviceIndex] = data;
+                return updatedServicesData;
+            } else {
+                return [...prevServicesData, data];
+            }
+        });
+    };
+
+    // console.log(servicesData);
+    const storedUser = localStorage.getItem("user");
+    const parsedUser = JSON.parse(storedUser);
+    // console.log(parsedUser);
+    const user = useSelector((state) => state.login.user);
+    // console.log(user.userId);
+    const user_id = user.userId;
     const [dialogData, setDialogData] = useState([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] = useState(1); // Initialize with a default quantity of 1
     const [customDropdownUnitPrice, setCustomDropdownUnitPrice] = useState(0);
     const [budgetSubTotal, setBudgetSubTotal] = useState(0);
-    // const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [uploadedFiles, setUploadedFiles] = useState([]);
     const [notes, setNotes] = useState("");
     const [selectedImage, setSelectedImage] = useState(null);
     const imageInputRef = useRef(null);
@@ -88,45 +96,96 @@ const BudgetDetailsPage = () => {
     const [budgetDetails, setBudgetDetails] = useState(null);
     const [budgetItems, setBudgetItems] = useState([]);
     const [sortedItems, setSortedItems] = useState([]);
+    // const [projectTitle, setProjectTitle] = useState(null);
     const [projectTitle, setProjectTitle] = useState("");
     const [attachments, setAttachments] = useState("");
+
     // Service Comp
+    const [serviceCount, setServiceCount] = useState(0);
+
     const [isTextFieldVisible, setTextFieldVisible] = useState(false);
     const [isTaxEdit, setisTaxEdit] = useState(false);
     const [isDiscountEdit, setisDiscountEdit] = useState(false);
+    const [serviceComps, setServiceComps] = useState([
+        <ServiceComp
+            key={0}
+            index={0}
+            updateServiceComp={updateServiceComp}
+            onDelete={() => handleDeleteServiceComp(0)}
+            onChange={handleServiceDataChange}
+            data={{
+                index: 0,
+                quantity: 0,
+                selectedItem: {
+                    item_name: "",
+                    markup: 0,
+                    item_desc: "",
+                },
+                unitPrice: 0,
+            }}
+        />,
+    ]);
 
-    // Here we should store "data" only not components.
-    const [serviceComps, setServiceComps] = useState(initialServiceComps);
+    const budgets = useSelector((state) => state.budgets.budgets);
 
-    // States for Dialog
-    // const [newService, setNewService] = useState(initialServiceData);
+    const items = useSelector((state) => state.items.items);
+    const contactz = useSelector((state) => state.contacts.contacts);
+    // console.log(contactz);
 
-    // File state
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    // Budget state
-    const [budgetData, setBudgetData] = useState({
-        client: "",
-        projectTitle: "",
-        services: [],
-        subtotal: 0,
-        discount: 0,
-        tax: 0,
-        total: 0,
-        internalNotes: "",
-        attachments: [],
-        createdAt: "",
-        userId: "",
-        budgetId: budgetId,
-        status: "",
-        budgetNumber: 0,
-    });
-
-    // Effects
     useEffect(() => {
         SetContacts(contactz);
     }, [contactz]);
+
+    // It must me function declaration, cuz we called it above
+    function updateServiceComp(index, newComp) {
+            const updateComp = (comp, idx) =>
+                idx === index ? (
+                    <ServiceComp
+                        key={idx}
+                        index={idx}
+                        updateServiceComp={updateServiceComp}
+                        onDelete={handleDeleteServiceComp}
+                        onChange={handleServiceDataChange}
+                        data={newComp}
+                    />
+                ) : (
+                    comp
+                );
+            // console.clear();
+        console.log("newComp", newComp);
+        console.log("prev", serviceComps);
+        console.log("updated", serviceComps.map(updateComp));
+        setServiceComps((prev) => prev.map(updateComp));
+    }
+    console.log({ serviceComps });
+
+    const handleDeleteServiceComp = (index) => {
+        // console.clear();
+        console.log(index);
+        console.log("old", serviceComps);
+        const updatedServiceComps = [...serviceComps];
+        updatedServiceComps.splice(index, 1);
+        console.log("new", updatedServiceComps);
+        setServiceComps(updatedServiceComps);
+    };
+    const ref = useRef([]);
+    useEffect(() => {
+        console.log("BudgetDetails RENDER:");
+        ref.current.push(serviceComps);
+        console.log("r", ref);
+    });
+
+    // States for Dialog
+    const [newService, setNewService] = useState({
+        name: "",
+        description: "",
+        price: {
+            cost: "",
+            markup: "",
+            unitPrice: "",
+        },
+        crew: "",
+    });
 
     useEffect(() => {
         // Fetch client details based on clientId (e.g., from an API or local data)
@@ -184,48 +243,15 @@ const BudgetDetailsPage = () => {
         setTotal(budgetSubTotal);
     }, [budgetSubTotal]);
 
-    // Others
-    let ignorePop = false;
+    const addServiceComp = (event) => {
+        // first parameter is event not data, because onClick={addServiceComp}
+        // const addServiceComp = (event) => {
 
-    // Functions
-    const handleDeleteServiceComp = (index, data) => {
-        const filterByIndex = (_, idx) => idx !== index;
-        setServiceComps([...serviceComps].filter(filterByIndex));
-    };
+        const newIndex = serviceComps.length;
+        // const newIndex = serviceCount + 1;
+        setServiceCount(serviceCount + 1);
 
-    function handleServiceDataChange(data, index) {
-        setIgnore(false);
-        if (
-            data.selectedItem &&
-            data.selectedItem.isCustom &&
-            ignorePop === false
-        ) {
-            // Access isCustom property safely'
-            setCustomInputValue(data.selectedItem?.inputValue);
-            setCustomSelectedItemIndex(parseInt(index));
-            setIsDialogOpen(true);
-        }
-
-        // Use the functional form of setServicesData to ensure you have the latest state
-        setServicesData((prevServicesData) => {
-            // Find the index of the service data if it exists in the state
-            const serviceIndex = prevServicesData.findIndex(
-                (service) => service.index === index
-            );
-            // console.log(serviceIndex);
-
-            // If the service data exists, update it; otherwise, add it to the state
-            if (serviceIndex !== -1) {
-                const updatedServicesData = [...prevServicesData];
-                updatedServicesData[serviceIndex] = data;
-                return updatedServicesData;
-            } else {
-                return [...prevServicesData, data];
-            }
-        });
-    }
-
-    const addServiceComp = () => {
+        // const newData = data || {
         const newData = {
             index: 0,
             quantity: 1000,
@@ -236,21 +262,43 @@ const BudgetDetailsPage = () => {
             },
             unitPrice: 0,
         };
-        setServiceComps((prev) => prev.concat(newData));
+
+        setServiceComps((prevServiceComps) => [
+            ...prevServiceComps,
+            <ServiceComp
+                key={newIndex}
+                index={newIndex}
+                updateServiceComp={updateServiceComp}
+                onDelete={handleDeleteServiceComp}
+                onChange={handleServiceDataChange}
+                data={newData}
+            />,
+        ]);
     };
 
-    const updateServiceComp = (index, properties) => {
-        // Find by index then update data properties with new one
-        const updateComp = (comp, idx) => (idx === index ? properties : comp);
-        setServiceComps((prev) => prev.map(updateComp));
-    };
+    const navigate = useNavigate();
+    // const [budget, setBudget] = useState('');
+    const dispatch = useDispatch();
+    const [budgetData, setBudgetData] = useState({
+        client: "",
+        projectTitle: "",
+        services: [],
+        subtotal: 0,
+        discount: 0,
+        tax: 0,
+        total: 0,
+        internalNotes: "",
+        attachments: [],
+        createdAt: "",
+        userId: "",
+        budgetId: budgetId,
+        status: "",
+        budgetNumber: 0,
+    });
 
     const handleAddBudgetActive = () => {
-        // Added, Updated service items
-        console.log("result =>", { serviceComps });
-
-        // console.log(budgetItems);
-        // console.log(sortedItems);
+        console.log(budgetItems);
+        console.log(sortedItems);
 
         // console.log("Image Selected");
         // if (selectedImage) {
@@ -633,42 +681,46 @@ const BudgetDetailsPage = () => {
         setQuantity(1);
     };
 
-    // const handleCostChange = (id, newCost) => {
-    //     const index = dialogData.findIndex((item) => item.id === id);
-    //     dialogData[index].cost = newCost;
+    const handleCostChange = (id, newCost) => {
+        const index = dialogData.findIndex((item) => item.id === id);
+        dialogData[index].cost = newCost;
 
-    //     setNewService((prevService) => ({
-    //         ...prevService,
-    //         price: newCost,
-    //     }));
-    // };
+        setNewService((prevService) => ({
+            ...prevService,
+            price: newCost,
+        }));
+    };
 
-    // const handleMarkupChange = (newMarkup) => {
-    //     setNewService((prevService) => ({
-    //         ...prevService,
-    //         markup: newMarkup,
-    //     }));
-    // };
+    const handleMarkupChange = (newMarkup) => {
+        setNewService((prevService) => ({
+            ...prevService,
+            markup: newMarkup,
+        }));
+    };
 
-    // const statusOptions = [
-    //     "Draft",
-    //     "Awaitingresponse",
-    //     "Approved",
-    //     "Changesrequested",
-    //     "Converted",
-    //     "Archived",
-    // ];
+    const statusOptions = [
+        "Draft",
+        "Awaitingresponse",
+        "Approved",
+        "Changesrequested",
+        "Converted",
+        "Archived",
+    ];
 
-    // const handleClick = (event) => {
-    //     setAnchorEl(event.currentTarget);
-    // };
+    const [anchorEl, setAnchorEl] = useState(null);
 
-    // const handleClose = () => {
-    //     setAnchorEl(null);
-    // };
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const open = Boolean(anchorEl);
     const id = open ? "popover" : undefined;
+
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -731,17 +783,29 @@ const BudgetDetailsPage = () => {
             setServicesData(budgetItems);
             setServiceComps(() => {
                 if (Array.isArray(budgetItems)) {
-                    return budgetItems.map((budgetItem, index) => ({
-                        index: index,
-                        quantity: budgetItem.item_quantity,
-                        selectedItem: {
-                            item_name: budgetItem.item_name,
-                            markup: parseFloat(budgetItem.item_markup),
-                            item_desc: budgetItem.item_description,
-                        },
-                        unitPrice: parseFloat(budgetItem.item_unitPrice),
-                        cost: parseFloat(budgetItem.item_unitPrice),
-                    }));
+                    return budgetItems.map((budgetItem, index) => (
+                        <ServiceComp
+                            key={index}
+                            index={index}
+                            updateServiceComp={updateServiceComp}
+                            onDelete={() => handleDeleteServiceComp(index)}
+                            onChange={handleServiceDataChange}
+                            data={{
+                                index: index,
+                                quantity: budgetItem.item_quantity,
+                                selectedItem: {
+                                    // id: budgetItem.item_id,
+                                    item_name: budgetItem.item_name,
+                                    markup: parseFloat(budgetItem.item_markup),
+                                    item_desc: budgetItem.item_description,
+                                },
+                                unitPrice: parseFloat(
+                                    budgetItem.item_unitPrice
+                                ),
+                                cost: parseFloat(budgetItem.item_unitPrice),
+                            }}
+                        />
+                    ));
                 } else {
                     // Handle the case where budgetItems is not an array
                     return [];
@@ -811,7 +875,7 @@ const BudgetDetailsPage = () => {
                             Budget for
                         </Typography>
 
-                        <div
+                        <span
                             onClick={handleOpenBox}
                             style={{
                                 display: "flex",
@@ -852,7 +916,7 @@ const BudgetDetailsPage = () => {
                                     border: "1px dotted #000", // Adjust the border style as needed
                                 }}
                             ></div>
-                        </div>
+                        </span>
                     </div>
 
                     <Box sx={{ marginLeft: 0, marginTop: 2 }}>
@@ -989,16 +1053,8 @@ const BudgetDetailsPage = () => {
                         PRODUCT/SERVICE
                     </Typography>
                     <Box>
-                        {console.log(serviceComps)}
-                        {serviceComps.map((data, index) => (
-                            <div key={index}>
-                                <ServiceComp
-                                    index={index}
-                                    updateServiceComp={updateServiceComp}
-                                    onDelete={handleDeleteServiceComp}
-                                    data={data}
-                                />
-                            </div>
+                        {serviceComps.map((service, index) => (
+                            <div key={index}>{service}</div>
                         ))}
                     </Box>
                     <Button
@@ -1254,7 +1310,7 @@ const BudgetDetailsPage = () => {
                 sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    // gap: "150px",
+                    gap: "150px",
                     width: "100%",
                     padding: "10px",
                     gap: "20px",
@@ -1297,4 +1353,4 @@ const BudgetDetailsPage = () => {
     );
 };
 
-export default BudgetDetailsPage;
+export default BudgetDetailsPageOLD;

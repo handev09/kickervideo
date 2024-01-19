@@ -1,5 +1,6 @@
 /** @format */
 
+import React, { useEffect, useState } from "react";
 import {
     Autocomplete,
     Box,
@@ -8,64 +9,85 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import React from "react";
 
+import CustomDropdown from "../components/item-price-dropdown/DropDownOLD";
 import { useSelector } from "react-redux";
-import CustomDropdown from "../components/item-price-dropdown/DropDown";
 
-const ServiceComp = ({
+const ServiceCompOLD = ({
     onDelete,
     onChange,
     index,
     data,
     updateServiceComp,
 }) => {
+    const uniPrice = data ? data.unitPrice : 0;
+
     // Selectors
     const items = useSelector((state) => state.items.items);
 
-    const {
-        total = 0,
-        quantity = 1,
-        serviceId = "",
-        unitPrice = 0,
-        cost = data.cost || 0,
-        selectedItem: selectedItemFromData,
-        markup = data?.selectedItem?.markup || 0,
-        value = data.selectedItem?.item_name || "",
-    } = data;
+    // States
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [serviceId, setServiceId] = useState("");
+    const [unitPrice, setUnitPrice] = useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [markup, setMarkup] = useState(0);
+    const [value, setValue] = useState("");
+    const [total, setTotal] = useState(0);
+    const [cost, setCost] = useState(0);
 
-    const selectedItem =
-        typeof value === "object" ? data.value : selectedItemFromData;
+    // Effects
+    // Use a useEffect to set state variables based on the data prop
+    useEffect(() => {
+        if (data) {
+            setSelectedItem(data.selectedItem || null);
+            setCost(data.cost || 0);
+            setMarkup(data.selectedItem ? data.selectedItem.markup : 0);
+            setValue(
+                data.selectedItem ? data.selectedItem.item_name || "" : ""
+            );
+            // Find the corresponding item in the items array and set the serviceId
+        }
+    }, [data]);
+
+    useEffect(() => {
+        // Create an object with the relevant data
+        console.log(selectedItem);
+        const serviceData = {
+            serviceId,
+            selectedItem,
+            quantity,
+            unitPrice,
+            index,
+            total,
+        };
+
+        onChange(serviceData, index);
+    }, [selectedItem, quantity, unitPrice, index, onChange]);
 
     // Functions
-    // Univeral update function
-    function update(properties) {
-        updateServiceComp(index, {
-            ...data,
-            ...properties,
-        });
-    }
-
     const handleInputChange = (event, value) => {
-        // console.log("handleInputChange");
-        // console.log(value);
+        console.log(value);
+        setValue(value); // Set the selected value
+        updateServiceComp(index, {value});
     };
 
-    const handleCostChange = (cost = 0) => {
-        update({ cost });
+    const handleCostChange = (newCost) => {
+        setCost(newCost);
     };
-    const handleMarkupChange = (markup = "") => {
-        if (markup) update({ markup });
+    const handleMarkupChange = (newMarkup) => {
+        setMarkup(newMarkup);
     };
-    const handleCustomDropdownPriceChange = (unitPrice) => {
-        update({ unitPrice });
+    const handleCustomDropdownPriceChange = (id, newPrice) => {
+        setUnitPrice(newPrice);
     };
 
     const handleQuantityChange = (event) => {
-        const quantity = parseInt(event.target.value);
-        // - We only need to update quantity beacuse inside DropDown
-        //  we calculate the total based on the new quantity and unitPrice
-        update({ quantity });
+        const newQuantity = parseInt(event.target.value);
+        setQuantity(newQuantity);
+
+        // Calculate the total based on the new quantity and unitPrice
+        const total = newQuantity * unitPrice;
+        setUnitPrice(total);
     };
 
     return (
@@ -87,32 +109,25 @@ const ServiceComp = ({
                         <Autocomplete
                             value={value}
                             onChange={(event, newValue) => {
+                                console.log(newValue);
                                 if (newValue) {
-                                    update({
-                                        markup: parseFloat(newValue?.markup),
-                                        cost: parseFloat(newValue?.cost),
-                                        selectedItem: newValue,
-                                        serviceId: newValue?.item_id,
-                                    });
+                                    setMarkup(parseFloat(newValue.markup));
+                                    setCost(parseFloat(newValue.cost));
+                                    setSelectedItem(newValue);
+                                    setServiceId(newValue.item_id);
                                 }
 
                                 if (typeof newValue === "string") {
-                                    update({
-                                        value: {
-                                            ...value,
-                                            name: newValue,
-                                        },
+                                    setValue({
+                                        name: newValue,
                                     });
-                                } else if (newValue && newValue?.inputValue) {
+                                } else if (newValue && newValue.inputValue) {
                                     // Create a new value from the user input
-                                    update({
-                                        value: {
-                                            ...value,
-                                            name: newValue.inputValue,
-                                        },
+                                    setValue({
+                                        name: newValue.inputValue,
                                     });
                                 } else {
-                                    update({ value: newValue });
+                                    setValue(newValue);
                                 }
                             }}
                             filterOptions={(options, params) => {
@@ -124,13 +139,14 @@ const ServiceComp = ({
                                         .includes(inputValue.toLowerCase())
                                 );
 
+                                console.log(inputValue);
                                 // Suggest the creation of a new value
                                 const isExisting = options.some(
                                     (option) =>
                                         inputValue.toLowerCase() ===
                                         option.item_name.toLowerCase()
                                 );
-
+                                console.log(isExisting);
                                 if (inputValue !== "" && !isExisting) {
                                     filtered.push({
                                         inputValue,
@@ -181,6 +197,7 @@ const ServiceComp = ({
                                             <button
                                                 onClick={() => {
                                                     const createNew = true;
+
                                                     // Add your custom logic here for handling the button click
                                                 }}
                                             >
@@ -249,7 +266,7 @@ const ServiceComp = ({
                         rows={4}
                         fullWidth
                         variant="outlined"
-                        value={selectedItem ? selectedItem?.item_desc : ""}
+                        value={selectedItem ? selectedItem.item_desc : ""}
                         // onChange={handleNotes}
                     />
                 </Stack>
@@ -259,6 +276,7 @@ const ServiceComp = ({
                     sx={{
                         display: "flex",
                         flexDirection: "column",
+                        // justifyContent: "space-between",
                         gap: "20px",
                     }}
                 >
@@ -289,9 +307,7 @@ const ServiceComp = ({
                                 onCostChange={handleCostChange}
                                 onMarkupChange={handleMarkupChange}
                                 selectServiceId={
-                                    selectedItem?.selectedItem
-                                        ? selectedItem?.selectedItem.id
-                                        : ""
+                                    selectedItem ? selectedItem.id : ""
                                 }
                                 onUnitPriceChange={
                                     handleCustomDropdownPriceChange
@@ -306,7 +322,7 @@ const ServiceComp = ({
                                 size="small"
                                 value={
                                     !isNaN(unitPrice) && !isNaN(quantity)
-                                        ? (unitPrice * quantity).toFixed(2)
+                                        ? (quantity * unitPrice).toFixed(2)
                                         : ""
                                 }
                             />
@@ -315,6 +331,7 @@ const ServiceComp = ({
                     <Box
                         sx={{
                             display: "flex",
+                            // flexDirection: "row",
                             justifyContent: "flex-end",
                             gap: "20px",
                         }}
@@ -335,4 +352,4 @@ const ServiceComp = ({
     );
 };
 
-export default ServiceComp;
+export default ServiceCompOLD;
