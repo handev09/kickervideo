@@ -44,6 +44,17 @@ const ServiceComp = ({
             ...data,
             ...properties,
         });
+        onChange(
+            {
+                serviceId,
+                selectedItem,
+                quantity,
+                unitPrice,
+                index,
+                total,
+            },
+            index
+        );
     }
 
     const handleInputChange = (event, value) => {

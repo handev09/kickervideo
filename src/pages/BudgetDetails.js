@@ -24,34 +24,19 @@ import CreateClient from "./CreateClient";
 import CreateNewLineItem from "./CreateNewLineItem";
 import ServiceComp from "./Service";
 import LoadingSpinner from "./loadingSpinner";
-
-const initialServiceData = {
-    name: "",
-    description: "",
-    price: {
-        cost: "",
-        markup: "",
-        unitPrice: "",
-    },
-    crew: "",
-};
-
-const initialServiceComps = [
-    {
-        index: 0,
-        quantity: 0,
-        unitPrice: 0,
-        selectedItem: {
-            item_name: "",
-            markup: 0,
-            item_desc: "",
-        },
-    },
-];
+import { useServiceComps } from "../hooks/useServiceComps";
 
 const BudgetDetailsPage = () => {
     // Helper Hooks
     const { budgetId } = useParams();
+    const {
+        serviceComps,
+        setServiceComps,
+        addServiceComp,
+        updateServiceComp,
+        deleteServiceComp,
+    } = useServiceComps();
+
     // const navigate = useNavigate();
     // const dispatch = useDispatch();
     // const storedUser = localStorage.getItem("user");
@@ -94,9 +79,6 @@ const BudgetDetailsPage = () => {
     const [isTextFieldVisible, setTextFieldVisible] = useState(false);
     const [isTaxEdit, setisTaxEdit] = useState(false);
     const [isDiscountEdit, setisDiscountEdit] = useState(false);
-
-    // Here we should store "data" only not components.
-    const [serviceComps, setServiceComps] = useState(initialServiceComps);
 
     // States for Dialog
     // const [newService, setNewService] = useState(initialServiceData);
@@ -188,11 +170,6 @@ const BudgetDetailsPage = () => {
     let ignorePop = false;
 
     // Functions
-    const handleDeleteServiceComp = (index, data) => {
-        const filterByIndex = (_, idx) => idx !== index;
-        setServiceComps([...serviceComps].filter(filterByIndex));
-    };
-
     function handleServiceDataChange(data, index) {
         setIgnore(false);
         if (
@@ -224,26 +201,6 @@ const BudgetDetailsPage = () => {
             }
         });
     }
-
-    const addServiceComp = () => {
-        const newData = {
-            index: 0,
-            quantity: 1000,
-            selectedItem: {
-                item_name: "",
-                markup: 0,
-                item_desc: "",
-            },
-            unitPrice: 0,
-        };
-        setServiceComps((prev) => prev.concat(newData));
-    };
-
-    const updateServiceComp = (index, properties) => {
-        // Find by index then update data properties with new one
-        const updateComp = (comp, idx) => (idx === index ? properties : comp);
-        setServiceComps((prev) => prev.map(updateComp));
-    };
 
     const handleAddBudgetActive = () => {
         // Added, Updated service items
@@ -453,7 +410,7 @@ const BudgetDetailsPage = () => {
         };
         // Find the index of the ServiceComp to be modified in the serviceComps array
         const serviceCompIndex = serviceComps.findIndex(
-            (serviceComp,index) => index === data.index
+            (serviceComp, index) => index === data.index
         );
 
         if (serviceCompIndex !== -1) {
@@ -464,7 +421,7 @@ const BudgetDetailsPage = () => {
                     key={data.index}
                     index={data.index}
                     updateServiceComp={updateServiceComp}
-                    onDelete={handleDeleteServiceComp}
+                    onDelete={deleteServiceComp}
                     onChange={handleServiceDataChange}
                     data={newData}
                 />
@@ -989,13 +946,13 @@ const BudgetDetailsPage = () => {
                         PRODUCT/SERVICE
                     </Typography>
                     <Box>
-                        {console.log(serviceComps)}
                         {serviceComps.map((data, index) => (
                             <div key={index}>
                                 <ServiceComp
                                     index={index}
                                     updateServiceComp={updateServiceComp}
-                                    onDelete={handleDeleteServiceComp}
+                                    onDelete={deleteServiceComp}
+                                    onChange={handleServiceDataChange}
                                     data={data}
                                 />
                             </div>
