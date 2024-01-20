@@ -59,6 +59,14 @@ const AddBudget = () => {
 
     // Functions
     // Update the servicedata on change
+    const handleServiceDelete = (index) => {
+        setServicesData((prev) => {
+            const updated = [...prev];
+            updated.splice(index, 1);
+            return updated;
+        });
+        deleteServiceComp(index);
+    };
     const handleServiceDataChange = (data, index) => {
         setIgnore(false);
         console.log(data.selectedItem && data.selectedItem.isCustom);
@@ -80,7 +88,7 @@ const AddBudget = () => {
             const serviceIndex = prevServicesData.findIndex(
                 (service) => service.index === index
             );
-            console.log(serviceIndex);
+            // console.log(serviceIndex);
 
             // If the service data exists, update it; otherwise, add it to the state
             if (serviceIndex !== -1) {
@@ -270,25 +278,31 @@ const AddBudget = () => {
                                 clientName: selectedClientName,
                                 serviceData: serviceArray,
                             };
-                            console.log(newBudget);
+                            console.log({ newBudget });
+                            console.log({ newBudget });
+                            console.log({ newBudget });
+                            console.log({ newBudget });
+                            console.log({ newBudget });
+                            console.log({ newBudget });
+                            console.log({ newBudget });
 
                             // Dispatch the new budget tothe Redux store
-                            dispatch(addBudget(newBudget))
-                                .then((res) => {
-                                    dispatch(fetchUserBudgets(user_id))
-                                        .then(() => {
-                                            dispatch(getUser(user_id));
-                                        })
-                                        .catch((error) => {
-                                            console.log(error);
-                                        });
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                            // dispatch(addBudget(newBudget))
+                            //     .then((res) => {
+                            //         dispatch(fetchUserBudgets(user_id))
+                            //             .then(() => {
+                            //                 dispatch(getUser(user_id));
+                            //             })
+                            //             .catch((error) => {
+                            //                 console.log(error);
+                            //             });
+                            //     })
+                            //     .catch((error) => {
+                            //         console.log(error);
+                            //     });
 
                             //Navigate to Home Page
-                            navigate("/");
+                            // navigate("/");
                         })
                         .catch((error) => {
                             console.error("Error getting download URL:", error);
@@ -621,13 +635,13 @@ const AddBudget = () => {
 
         // Find the index of the ServiceComp to be modified in the serviceComps array
         const serviceCompIndex = serviceComps.findIndex(
-            (serviceComp) => serviceComp.props.index === data.index
+            (_, index) => index === data.index
         );
 
         if (serviceCompIndex !== -1) {
             // Create the updated ServiceComp with the new data
 
-            const updatedServiceComp = newData
+            const updatedServiceComp = newData;
 
             // Create a copy of the serviceComps array and replace the old ServiceComp with the updated one
             const updatedServiceComps = [...serviceComps];
@@ -1197,7 +1211,7 @@ const AddBudget = () => {
                                 <ServiceComp
                                     index={index}
                                     updateServiceComp={updateServiceComp}
-                                    onDelete={deleteServiceComp}
+                                    onDelete={handleServiceDelete}
                                     onChange={handleServiceDataChange}
                                     data={data}
                                 />

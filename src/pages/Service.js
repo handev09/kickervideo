@@ -336,7 +336,7 @@ const ServiceComp = ({
                                     onDelete(index);
                                 }}
                             >
-                                Delete {index}
+                                Delete
                             </Button>
                         )}
                     </Box>
