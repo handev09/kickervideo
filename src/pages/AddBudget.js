@@ -60,9 +60,12 @@ const AddBudget = () => {
     // Functions
     // Update the servicedata on change
     const handleServiceDelete = (index) => {
+        console.clear();
         setServicesData((prev) => {
+            console.log({prev});
             const updated = [...prev];
             updated.splice(index, 1);
+            console.log({updated});
             return updated;
         });
         deleteServiceComp(index);
@@ -212,6 +215,7 @@ const AddBudget = () => {
                     // File uploaded successfully, get the download URL
                     getDownloadURL(snapshot.ref)
                         .then((downloadURL) => {
+                            console.log({servicesData});
                             const serviceArray = servicesData.map((service) => {
                                 const unitPrice = parseFloat(service.unitPrice);
                                 const quantity = parseFloat(service.quantity);
@@ -278,31 +282,24 @@ const AddBudget = () => {
                                 clientName: selectedClientName,
                                 serviceData: serviceArray,
                             };
-                            console.log({ newBudget });
-                            console.log({ newBudget });
-                            console.log({ newBudget });
-                            console.log({ newBudget });
-                            console.log({ newBudget });
-                            console.log({ newBudget });
-                            console.log({ newBudget });
 
                             // Dispatch the new budget tothe Redux store
-                            // dispatch(addBudget(newBudget))
-                            //     .then((res) => {
-                            //         dispatch(fetchUserBudgets(user_id))
-                            //             .then(() => {
-                            //                 dispatch(getUser(user_id));
-                            //             })
-                            //             .catch((error) => {
-                            //                 console.log(error);
-                            //             });
-                            //     })
-                            //     .catch((error) => {
-                            //         console.log(error);
-                            //     });
+                            dispatch(addBudget(newBudget))
+                                .then((res) => {
+                                    dispatch(fetchUserBudgets(user_id))
+                                        .then(() => {
+                                            dispatch(getUser(user_id));
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        });
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
 
-                            //Navigate to Home Page
-                            // navigate("/");
+                            // Navigate to Home Page
+                            navigate("/");
                         })
                         .catch((error) => {
                             console.error("Error getting download URL:", error);
@@ -317,6 +314,7 @@ const AddBudget = () => {
             console.error("No selected image to upload.");
             // Handle the case where no image is selected
             // Create an array of service objects
+            console.log(servicesData);
             const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
