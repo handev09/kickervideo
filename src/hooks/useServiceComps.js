@@ -5,7 +5,7 @@ import { useState } from "react";
 const initialServiceComps = [
     {
         index: 0,
-        quantity: 0,
+        quantity: 1000,
         unitPrice: 0,
         selectedItem: {
             item_name: "",
