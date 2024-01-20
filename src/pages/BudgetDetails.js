@@ -416,16 +416,7 @@ const BudgetDetailsPage = () => {
         if (serviceCompIndex !== -1) {
             // Create the updated ServiceComp with the new data
 
-            const updatedServiceComp = (
-                <ServiceComp
-                    key={data.index}
-                    index={data.index}
-                    updateServiceComp={updateServiceComp}
-                    onDelete={deleteServiceComp}
-                    onChange={handleServiceDataChange}
-                    data={newData}
-                />
-            );
+            const updatedServiceComp = newData;
 
             // Create a copy of the serviceComps array and replace the old ServiceComp with the updated one
             const updatedServiceComps = [...serviceComps];

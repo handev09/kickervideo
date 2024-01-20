@@ -303,8 +303,6 @@ const AddBudget = () => {
             console.error("No selected image to upload.");
             // Handle the case where no image is selected
             // Create an array of service objects
-            console.log({servicesData})
-            alert("")
             const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
@@ -629,16 +627,7 @@ const AddBudget = () => {
         if (serviceCompIndex !== -1) {
             // Create the updated ServiceComp with the new data
 
-            const updatedServiceComp = (
-                <ServiceComp
-                    key={data.index}
-                    index={data.index}
-                    onDelete={deleteServiceComp}
-                    updateServiceComp={updateServiceComp}
-                    onChange={handleServiceDataChange}
-                    data={newData}
-                />
-            );
+            const updatedServiceComp = newData
 
             // Create a copy of the serviceComps array and replace the old ServiceComp with the updated one
             const updatedServiceComps = [...serviceComps];
