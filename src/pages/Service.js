@@ -22,6 +22,7 @@ const ServiceComp = ({
 }) => {
     // Selectors
     const items = useSelector((state) => state.items.items);
+    // console.log({ data });
 
     const {
         total = 0,
@@ -33,13 +34,16 @@ const ServiceComp = ({
         markup = data?.selectedItem?.markup || 0,
         value = data.selectedItem?.item_name || "",
     } = data;
-
     const selectedItem =
         typeof value === "object" ? data.value : selectedItemFromData;
 
     // Functions
     // Univeral update function
     function update(properties) {
+        console.log(">>>>>>>", {
+            ...data,
+            ...properties,
+        });
         updateServiceComp(index, {
             ...data,
             ...properties,
@@ -58,8 +62,8 @@ const ServiceComp = ({
     }
 
     const handleInputChange = (event, value) => {
-        // console.log("handleInputChange");
-        // console.log(value);
+        console.log("handleInputChange");
+        console.log(value);
     };
 
     const handleCostChange = (cost = 0) => {
@@ -99,6 +103,7 @@ const ServiceComp = ({
                             value={value}
                             onChange={(event, newValue) => {
                                 if (newValue) {
+                                    console.log(parseFloat(newValue?.cost));
                                     update({
                                         markup: parseFloat(newValue?.markup),
                                         cost: parseFloat(newValue?.cost),
@@ -108,6 +113,7 @@ const ServiceComp = ({
                                 }
 
                                 if (typeof newValue === "string") {
+                                    console.log("2");
                                     update({
                                         value: {
                                             ...value,
@@ -115,6 +121,7 @@ const ServiceComp = ({
                                         },
                                     });
                                 } else if (newValue && newValue?.inputValue) {
+                                    console.log("3");
                                     // Create a new value from the user input
                                     update({
                                         value: {
@@ -123,7 +130,8 @@ const ServiceComp = ({
                                         },
                                     });
                                 } else {
-                                    update({ value: newValue });
+                                    console.log("4");
+                                    // update({ value: newValue });
                                 }
                             }}
                             filterOptions={(options, params) => {
@@ -261,7 +269,14 @@ const ServiceComp = ({
                         fullWidth
                         variant="outlined"
                         value={selectedItem ? selectedItem?.item_desc : ""}
-                        // onChange={handleNotes}
+                        onChange={(value) =>
+                            update({
+                                selectedItem: {
+                                    ...selectedItem,
+                                    item_desc: value.target.value,
+                                },
+                            })
+                        }
                     />
                 </Stack>
 

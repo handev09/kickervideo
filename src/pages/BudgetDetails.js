@@ -14,8 +14,8 @@ import React, { useEffect, useRef, useState } from "react";
 
 // import Iconify from "../components/iconify";
 
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import MyDropdown from "../components/dropdown/DropDown";
 import Iconify from "../components/iconify";
 import RatingContainer from "../components/rating/Rating";
@@ -25,6 +25,11 @@ import CreateNewLineItem from "./CreateNewLineItem";
 import ServiceComp from "./Service";
 import LoadingSpinner from "./loadingSpinner";
 import { useServiceComps } from "../hooks/useServiceComps";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../components/firebase/firebase-config";
+import { updateBudget } from "./../state/redux/actions/budget/update";
+import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
+import { getUser } from "../state/redux/actions/users/getUser";
 
 const BudgetDetailsPage = () => {
     // Helper Hooks
@@ -37,8 +42,8 @@ const BudgetDetailsPage = () => {
         deleteServiceComp,
     } = useServiceComps();
 
-    // const navigate = useNavigate();
-    // const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     // const storedUser = localStorage.getItem("user");
     // const parsedUser = JSON.parse(storedUser);
     // const user_id = user.userId;
@@ -46,7 +51,8 @@ const BudgetDetailsPage = () => {
     // Selectors
     const budgets = useSelector((state) => state.budgets.budgets);
     const contactz = useSelector((state) => state.contacts.contacts);
-    // const user = useSelector((state) => state.login.user);
+    const user = useSelector((state) => state.login.user);
+    const user_id = user.userId;
 
     // States
     const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
@@ -204,177 +210,171 @@ const BudgetDetailsPage = () => {
 
     const handleAddBudgetActive = () => {
         // Added, Updated service items
-        console.log("result =>", { serviceComps });
-
         // console.log(budgetItems);
         // console.log(sortedItems);
 
         // console.log("Image Selected");
-        // if (selectedImage) {
-        //   const storageRef = ref(storage, `budgets/${selectedImage.name}`);
-        //   uploadBytes(storageRef, selectedImage)
-        //     .then((snapshot) => {
-        //       // File uploaded successfully, get the download URL
-        //       getDownloadURL(snapshot.ref)
-        //         .then((downloadURL) => {
-        //           console.log(servicesData);
-        //           const serviceArray = servicesData.map((service) => {
-        //             const unitPrice = parseFloat(service.unitPrice);
-        //             const quantity = parseFloat(service.quantity);
-        //             const markupPercentage = parseFloat(
-        //               service.selectedItem.markup
-        //                 ? service.selectedItem.markup
-        //                 : service.markup
-        //             );
+        if (selectedImage) {
+            const storageRef = ref(storage, `budgets/${selectedImage.name}`);
+            uploadBytes(storageRef, selectedImage)
+                .then((snapshot) => {
+                    // File uploaded successfully, get the download URL
+                    getDownloadURL(snapshot.ref)
+                        .then((downloadURL) => {
+                            console.log(servicesData);
+                            const serviceArray = servicesData.map((service) => {
+                                const unitPrice = parseFloat(service.unitPrice);
+                                const quantity = parseFloat(service.quantity);
+                                const markupPercentage = parseFloat(
+                                    service.selectedItem?.markup
+                                        ? service.selectedItem?.markup
+                                        : service?.markup
+                                );
 
-        //             // Calculate the cost based on unitPrice, quantity, and markup percentage
-        //             const cost =
-        //               unitPrice * quantity +
-        //               (unitPrice * quantity * markupPercentage) / 100;
+                                // Calculate the cost based on unitPrice, quantity, and markup percentage
+                                const cost =
+                                    unitPrice * quantity +
+                                    (unitPrice * quantity * markupPercentage) /
+                                        100;
 
-        //             return {
-        //               id: service.selectedItem.item_id,
-        //               name: service.selectedItem.item_name
-        //                 ? service.selectedItem.item_name
-        //                 : service.name,
-        //               description: service.selectedItem.item_desc
-        //                 ? service.selectedItem.item_desc
-        //                 : service.description,
-        //               cost: cost,
-        //               markup: markupPercentage,
-        //               unitPrice: unitPrice,
-        //               quantity: quantity,
-        //               userId: user_id,
-        //               budgetId: budgetData.budgetId,
-        //               createdAt: service.created_at,
-        //               item_rate: "",
-        //             };
-        //           });
+                                return {
+                                    id: service.selectedItem?.item_id,
+                                    name: service.selectedItem?.item_name
+                                        ? service.selectedItem?.item_name
+                                        : service.name,
+                                    description: service.selectedItem?.item_desc
+                                        ? service.selectedItem?.item_desc
+                                        : service.description,
+                                    cost: cost,
+                                    markup: markupPercentage,
+                                    unitPrice: unitPrice,
+                                    quantity: quantity,
+                                    userId: user_id,
+                                    budgetId: budgetData.budgetId,
+                                    createdAt: service.created_at,
+                                    item_rate: "",
+                                };
+                            });
 
-        //           const newBudget = {
-        //             client: selectedClient.company_name,
-        //             projectTitle: budgetData.projectTitle,
-        //             subtotal: budgetSubTotal,
-        //             discount: discount,
-        //             tax: tax,
-        //             total: total,
-        //             internalNotes: budgetData.internalNotes,
-        //             createdAt: new Date().toLocaleDateString("en-US", {
-        //               month: "long",
-        //               day: "numeric",
-        //               year: "numeric",
-        //             }),
-        //             userId: user_id,
-        //             budgetId: budgetData.budgetId,
-        //             status: "active",
-        //             attachmentsUrl: downloadURL,
-        //             budgetNumber: budgetNumber,
-        //             clientName: selectedClientName,
-        //             serviceData: serviceArray,
-        //           };
-        //           console.log(newBudget);
+                            const newBudget = {
+                                client: selectedClient.company_name,
+                                projectTitle: budgetData.projectTitle,
+                                subtotal: budgetSubTotal,
+                                discount: discount,
+                                tax: tax,
+                                total: total,
+                                internalNotes: budgetData.internalNotes,
+                                createdAt: new Date().toLocaleDateString(
+                                    "en-US",
+                                    {
+                                        month: "long",
+                                        day: "numeric",
+                                        year: "numeric",
+                                    }
+                                ),
+                                userId: user_id,
+                                budgetId: budgetData.budgetId,
+                                status: "active",
+                                attachmentsUrl: downloadURL,
+                                budgetNumber: budgetNumber,
+                                clientName: selectedClientName,
+                                serviceData: serviceArray,
+                            };
+                            console.log(newBudget);
 
-        //           // Dispatch the new budget tothe Redux store
-        //           dispatch(updateBudget(budgetId, newBudget))
-        //             .then((res) => {
-        //               dispatch(fetchUserBudgets(user_id))
-        //                 .then(() => {
-        //                   dispatch(getUser(user_id));
-        //                 })
-        //                 .catch((error) => {
-        //                   console.log(error);
-        //                 });
-        //             })
-        //             .catch((error) => {
-        //               console.log(error);
-        //             });
-        //           console.log(servicesData);
+                            // Dispatch the new budget tothe Redux store
+                            dispatch(updateBudget(budgetId, newBudget))
+                                .then((res) => {
+                                    dispatch(fetchUserBudgets(user_id))
+                                        .then(() => {
+                                            dispatch(getUser(user_id));
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        });
+                                    navigate("/");
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
+                        })
+                        .catch((error) => {
+                            console.error("Error getting download URL:", error);
+                            // Handle the error appropriately
+                        });
+                })
+                .catch((error) => {
+                    console.error("Error uploading image:", error);
+                    // Handle the error appropriately
+                });
+        } else {
+            // console.log(projectTitle);
+            // console.log(notes);
+            console.log("================================================");
+            console.log({ servicesData });
+            const serviceArray = servicesData.map((service) => {
+                const unitPrice = parseFloat(service.unitPrice);
+                const quantity = parseFloat(service.quantity);
+                const markupPercentage = parseFloat(
+                    service.selectedItem?.markup || service.markup
+                );
 
-        //           //Navigate to Home Page
-        //           // navigate("/");
-        //         })
-        //         .catch((error) => {
-        //           console.error("Error getting download URL:", error);
-        //           // Handle the error appropriately
-        //         });
-        //     })
-        //     .catch((error) => {
-        //       console.error("Error uploading image:", error);
-        //       // Handle the error appropriately
-        //     });
-        // } else {
-        //   console.log(projectTitle);
-        //   console.log(notes);
-        //   console.log(servicesData);
-        //   const serviceArray = servicesData.map((service) => {
-        //     console.log(service.selectedItem.item_id);
-        //     const unitPrice = parseFloat(service.unitPrice);
-        //     const quantity = parseFloat(service.quantity);
-        //     const markupPercentage = parseFloat(
-        //       service.selectedItem.markup
-        //         ? service.selectedItem.markup
-        //         : service.markup
-        //     );
+                // Calculate the cost based on unitPrice, quantity, and markup percentage
+                const cost =
+                    unitPrice * quantity +
+                    (unitPrice * quantity * markupPercentage) / 100;
 
-        //     // Calculate the cost based on unitPrice, quantity, and markup percentage
-        //     const cost =
-        //       unitPrice * quantity +
-        //       (unitPrice * quantity * markupPercentage) / 100;
+                return {
+                    id: service.selectedItem?.serviceId,
+                    name: service.selectedItem?.item_name || service.name,
+                    description:
+                        service.selectedItem?.item_desc || service.description,
+                    cost: cost,
+                    markup: markupPercentage,
+                    unitPrice: unitPrice,
+                    quantity: quantity,
+                    userId: user_id,
+                    budgetId: budgetData.budgetId,
+                    createdAt: budgetDetails.created_at,
+                    item_rate: "",
+                };
+            });
 
-        //     return {
-        //       id: service.selectedItem.serviceId,
-        //       name: service.selectedItem.item_name
-        //         ? service.selectedItem.item_name
-        //         : service.name,
-        //       description: service.selectedItem.item_desc
-        //         ? service.selectedItem.item_desc
-        //         : service.description,
-        //       cost: cost,
-        //       markup: markupPercentage,
-        //       unitPrice: unitPrice,
-        //       quantity: quantity,
-        //       userId: user_id,
-        //       budgetId: budgetData.budgetId,
-        //       createdAt: budgetDetails.created_at,
-        //       item_rate: "",
-        //     };
-        //   });
-
-        //   const newBudget = {
-        //     client: selectedClient.company_name,
-        //     projectTitle: projectTitle,
-        //     services: budgetData.services,
-        //     subtotal: budgetSubTotal,
-        //     discount: discount,
-        //     tax: tax,
-        //     total: total,
-        //     internalNotes: notes,
-        //     // attachments: budgetData.attachments,
-        //     createdAt: budgetDetails.created_at,
-        //     userId: user_id,
-        //     budgetId: budgetData.budgetId,
-        //     status: budgetDetails.status,
-        //     attachmentsUrl: budgetDetails.attachments,
-        //     budgetNumber: budgetNumber,
-        //     clientName: selectedClientName,
-        //     serviceData: serviceArray,
-        //   };
-        //   console.log(newBudget);
-        //   dispatch(updateBudget(budgetId, newBudget))
-        //     .then((res) => {
-        //       dispatch(fetchUserBudgets(user_id))
-        //         .then(() => {
-        //           dispatch(getUser(user_id));
-        //         })
-        //         .catch((error) => {
-        //           console.log(error);
-        //         });
-        //     })
-        //     .catch((error) => {
-        //       console.log(error);
-        //     });
-        //   console.log(servicesData);
-        // }
+            const newBudget = {
+                client: selectedClient.company_name,
+                projectTitle: projectTitle,
+                services: budgetData.services,
+                subtotal: budgetSubTotal,
+                discount: discount,
+                tax: tax,
+                total: total,
+                internalNotes: notes,
+                // attachments: budgetData.attachments,
+                createdAt: budgetDetails.created_at,
+                userId: user_id,
+                budgetId: budgetData.budgetId,
+                status: budgetDetails.status,
+                attachmentsUrl: budgetDetails.attachments,
+                budgetNumber: budgetNumber,
+                clientName: selectedClientName,
+                serviceData: serviceArray,
+            };
+            console.log({ newBudget });
+            dispatch(updateBudget(budgetId, newBudget))
+                .then((res) => {
+                    dispatch(fetchUserBudgets(user_id))
+                        .then(() => {
+                            dispatch(getUser(user_id));
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                        });
+                    navigate("/");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     };
 
     const toggleTextFieldVisibility = () => {
@@ -537,6 +537,19 @@ const BudgetDetailsPage = () => {
         }));
     }, [discount, tax]);
 
+    const handleServiceDelete = (index) => {
+        console.clear();
+        console.log({ servicesData });
+        setServicesData((prev) => {
+            const updated = [...prev];
+            updated.splice(index, 1);
+            console.log(updated);
+            return updated;
+        });
+        deleteServiceComp(index);
+    };
+    console.log("out", { servicesData });
+
     const handleCustomDropdownPriceChange = (id, newPrice) => {
         setCustomDropdownUnitPrice(newPrice);
         // const index = dialogData.findIndex(item => item.id === id);
@@ -676,7 +689,7 @@ const BudgetDetailsPage = () => {
         }
 
         if (budgetItems) {
-            setServicesData(budgetItems);
+            // setServicesData(budgetItems);
             setServiceComps(() => {
                 if (Array.isArray(budgetItems)) {
                     return budgetItems.map((budgetItem, index) => ({
@@ -942,7 +955,7 @@ const BudgetDetailsPage = () => {
                                 <ServiceComp
                                     index={index}
                                     updateServiceComp={updateServiceComp}
-                                    onDelete={deleteServiceComp}
+                                    onDelete={handleServiceDelete}
                                     onChange={handleServiceDataChange}
                                     data={data}
                                 />
