@@ -45,13 +45,16 @@ import CreateClient from "./CreateClient";
 
 const AddBudget = () => {
   let ignorePop=false
+
+  // States
   const [servicesData, setServicesData] = useState([]);
   const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
   const [customInputValue, setCustomInputValue] = useState("");
   const [ignore, setIgnore]=useState(false)
 
-  // Update the servicedata on change
 
+  // Functions
+    // Update the servicedata on change
   const handleServiceDataChange = (data, index) => {
     setIgnore(false)
     console.log(data.selectedItem&&data.selectedItem.isCustom);

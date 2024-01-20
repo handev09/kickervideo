@@ -453,7 +453,7 @@ const BudgetDetailsPage = () => {
         };
         // Find the index of the ServiceComp to be modified in the serviceComps array
         const serviceCompIndex = serviceComps.findIndex(
-            (serviceComp) => serviceComp.props.index === data.index
+            (serviceComp,index) => index === data.index
         );
 
         if (serviceCompIndex !== -1) {
