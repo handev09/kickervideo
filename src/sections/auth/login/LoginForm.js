@@ -1,6 +1,8 @@
-import {useState, useEffect} from "react";
-import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+/** @format */
+
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 // @mui
 import {
     Link,
@@ -11,20 +13,17 @@ import {
     Checkbox,
     FormControlLabel,
 } from "@mui/material";
-import {LoadingButton} from "@mui/lab";
+import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
-import {loginRequest} from "../../../state/redux/actions/users/loginUser";
+import { loginRequest } from "../../../state/redux/actions/users/loginUser";
 import CircularProgress from "@mui/material/CircularProgress";
 
 // ----------------------------------------------------------------------
 
 export default function LoginForm() {
-
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
 
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
@@ -55,6 +54,17 @@ export default function LoginForm() {
 
     // };
 
+    // Added by Muhammadamin
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            // Navigate to the dashboard
+            localStorage.setItem("user", JSON.stringify(user));
+            navigate("/dashboard", { replace: true });
+        } else {
+            // Handle login failure, if needed
+        }
+    }, [user, isAuthenticated]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -62,20 +72,23 @@ export default function LoginForm() {
         try {
             await dispatch(loginRequest(email, password));
 
-            if (isAuthenticated) {
-                // Navigate to the dashboard
-                localStorage.setItem("user", JSON.stringify(user));
-                navigate("/dashboard", {replace: true});
-            } else {
-                // Handle login failure, if needed
-            }
+            // Muhammadamin: This is not going to work, because the code above "dispatch(loginRequest(email, password));"
+            // is a async function, it takes time, but below  code "isAuthenticated", "user" from "useSelector" are sync.
+            // I converted this code to useEffect().
+            // ______________________
+            // if (isAuthenticated) {
+            //     // Navigate to the dashboard
+            //     localStorage.setItem("user", JSON.stringify(user));
+            //     navigate("/dashboard", { replace: true });
+            // } else {
+            //     // Handle login failure, if needed
+            // }
         } catch (error) {
             console.error(error);
         } finally {
             setLoading(false);
         }
     };
-
 
     return (
         <form>
@@ -97,11 +110,17 @@ export default function LoginForm() {
                         endAdornment: (
                             <InputAdornment position="end">
                                 <IconButton
-                                    onClick={() => setShowPassword(!showPassword)}
+                                    onClick={() =>
+                                        setShowPassword(!showPassword)
+                                    }
                                     edge="end"
                                 >
                                     <Iconify
-                                        icon={showPassword ? "eva:eye-fill" : "eva:eye-off-fill"}
+                                        icon={
+                                            showPassword
+                                                ? "eva:eye-fill"
+                                                : "eva:eye-off-fill"
+                                        }
                                     />
                                 </IconButton>
                             </InputAdornment>
@@ -114,13 +133,13 @@ export default function LoginForm() {
                 direction="row"
                 alignItems="center"
                 justifyContent="space-between"
-                sx={{my: 2}}
+                sx={{ my: 2 }}
             >
                 {/* <Checkbox name="remember" label="Remember me" />
-         */}
+                 */}
 
                 <FormControlLabel
-                    control={<Checkbox name="remember"/>}
+                    control={<Checkbox name="remember" />}
                     label="Remember me"
                 />
                 <Link variant="subtitle2" underline="hover">
@@ -144,7 +163,7 @@ export default function LoginForm() {
                 }}
             >
                 {loading ? (
-                    <CircularProgress size={24}/> // Show loading spinner
+                    <CircularProgress size={24} /> // Show loading spinner
                 ) : (
                     "Sign In"
                 )}

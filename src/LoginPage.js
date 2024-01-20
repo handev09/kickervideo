@@ -35,7 +35,9 @@ const LoginPage = () => {
 
       const data = await response.json();
 
+      console.log(response)
       if (response.ok) {
+        console.log("okay__________________________________________________")
         setResponseMessage(`Registration successful! Welcome, ${data.name}.`);
         navigate(
           `/dashboard?userId=${data.userId}&name=${encodeURIComponent(
