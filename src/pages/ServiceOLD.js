@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
     Autocomplete,
     Box,
@@ -11,15 +11,15 @@ import {
 } from "@mui/material";
 
 import CustomDropdown from "../components/item-price-dropdown/DropDownOLD";
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 
 const ServiceCompOLD = ({
-    onDelete,
-    onChange,
-    index,
-    data,
-    updateServiceComp,
-}) => {
+                            onDelete,
+                            onChange,
+                            index,
+                            data,
+                            updateServiceComp,
+                        }) => {
     const uniPrice = data ? data.unitPrice : 0;
 
     // Selectors
@@ -51,7 +51,6 @@ const ServiceCompOLD = ({
 
     useEffect(() => {
         // Create an object with the relevant data
-        console.log(selectedItem);
         const serviceData = {
             serviceId,
             selectedItem,
@@ -103,7 +102,7 @@ const ServiceCompOLD = ({
             >
                 <Stack
                     flexDirection="column"
-                    sx={{ width: "50%", marginBottom: "20px" }}
+                    sx={{width: "50%", marginBottom: "20px"}}
                 >
                     <Box>
                         <Autocomplete
@@ -131,7 +130,7 @@ const ServiceCompOLD = ({
                                 }
                             }}
                             filterOptions={(options, params) => {
-                                const { inputValue } = params;
+                                const {inputValue} = params;
                                 // console.log(params)
                                 const filtered = options.filter((option) =>
                                     option.item_name
@@ -238,7 +237,7 @@ const ServiceCompOLD = ({
                                     )}
                                 </li>
                             )}
-                            sx={{ width: "100%" }}
+                            sx={{width: "100%"}}
                             freeSolo
                             renderInput={(params) => (
                                 <TextField
@@ -342,7 +341,7 @@ const ServiceCompOLD = ({
                                     onDelete(index);
                                 }}
                             >
-                                Delete {index}
+                                Delete
                             </Button>
                         )}
                     </Box>

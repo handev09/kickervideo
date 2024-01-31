@@ -10,16 +10,16 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import { useSelector } from "react-redux";
+import {useSelector} from "react-redux";
 import CustomDropdown from "../components/item-price-dropdown/DropDown";
 
 const ServiceComp = ({
-    onDelete,
-    onChange,
-    index,
-    data,
-    updateServiceComp,
-}) => {
+                         onDelete,
+                         onChange,
+                         index,
+                         data,
+                         updateServiceComp,
+                     }) => {
     // Selectors
     const items = useSelector((state) => state.items.items);
     // console.log({ data });
@@ -40,10 +40,6 @@ const ServiceComp = ({
     // Functions
     // Univeral update function
     function update(properties) {
-        console.log(">>>>>>>", {
-            ...data,
-            ...properties,
-        });
         updateServiceComp(index, {
             ...data,
             ...properties,
@@ -67,20 +63,20 @@ const ServiceComp = ({
     };
 
     const handleCostChange = (cost = 0) => {
-        update({ cost });
+        update({cost});
     };
     const handleMarkupChange = (markup = "") => {
-        if (markup) update({ markup });
+        if (markup) update({markup});
     };
     const handleCustomDropdownPriceChange = (unitPrice) => {
-        update({ unitPrice });
+        update({unitPrice});
     };
 
     const handleQuantityChange = (event) => {
         const quantity = parseInt(event.target.value);
         // - We only need to update quantity beacuse inside DropDown
         //  we calculate the total based on the new quantity and unitPrice
-        update({ quantity });
+        update({quantity});
     };
 
     return (
@@ -96,14 +92,15 @@ const ServiceComp = ({
             >
                 <Stack
                     flexDirection="column"
-                    sx={{ width: "50%", marginBottom: "20px" }}
+                    sx={{width: "50%", marginBottom: "20px"}}
                 >
                     <Box>
                         <Autocomplete
                             value={value}
                             onChange={(event, newValue) => {
                                 if (newValue) {
-                                    console.log(parseFloat(newValue?.cost));
+                                    console.log("1")
+                                    console.log(newValue)
                                     update({
                                         markup: parseFloat(newValue?.markup),
                                         cost: parseFloat(newValue?.cost),
@@ -113,7 +110,7 @@ const ServiceComp = ({
                                 }
 
                                 if (typeof newValue === "string") {
-                                    console.log("2");
+                                    console.log("2")
                                     update({
                                         value: {
                                             ...value,
@@ -131,11 +128,11 @@ const ServiceComp = ({
                                     });
                                 } else {
                                     console.log("4");
-                                    // update({ value: newValue });
+                                    // update({value: newValue});
                                 }
                             }}
                             filterOptions={(options, params) => {
-                                const { inputValue } = params;
+                                const {inputValue} = params;
                                 // console.log(params)
                                 const filtered = options.filter((option) =>
                                     option.item_name
@@ -240,7 +237,7 @@ const ServiceComp = ({
                                     )}
                                 </li>
                             )}
-                            sx={{ width: "100%" }}
+                            sx={{width: "100%"}}
                             freeSolo
                             renderInput={(params) => (
                                 <TextField

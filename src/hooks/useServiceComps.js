@@ -17,11 +17,10 @@ const initialServiceComps = [
 
 export function useServiceComps() {
     // States
-    const [serviceComps, setA] = useState(initialServiceComps);
+    const [serviceComps, setServiceComps] = useState(initialServiceComps);
 
     // Functions
     const addServiceComp = () => {
-        console.log("ADD");
         const newComp = { ...initialServiceComps[0], quantity: 1000 };
         setServiceComps((prev) => prev.concat(newComp));
     };
@@ -36,11 +35,6 @@ export function useServiceComps() {
         setServiceComps((prev) => prev.map(updateComp));
     };
 
-    const setServiceComps = (a) => {
-        console.log("CHAAAAA");
-        console.log(a);
-        setA(a);
-    };
     return {
         serviceComps,
         setServiceComps,

@@ -10,12 +10,12 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 // import Iconify from "../components/iconify";
 
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate, useParams} from "react-router-dom";
 import MyDropdown from "../components/dropdown/DropDown";
 import Iconify from "../components/iconify";
 import RatingContainer from "../components/rating/Rating";
@@ -24,16 +24,16 @@ import CreateClient from "./CreateClient";
 import CreateNewLineItem from "./CreateNewLineItem";
 import ServiceComp from "./Service";
 import LoadingSpinner from "./loadingSpinner";
-import { useServiceComps } from "../hooks/useServiceComps";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../components/firebase/firebase-config";
-import { updateBudget } from "./../state/redux/actions/budget/update";
-import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
-import { getUser } from "../state/redux/actions/users/getUser";
+import {useServiceComps} from "../hooks/useServiceComps";
+import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
+import {storage} from "../components/firebase/firebase-config";
+import {updateBudget} from "./../state/redux/actions/budget/update";
+import {fetchUserBudgets} from "../state/redux/actions/budget/updateUserBudgetsAction";
+import {getUser} from "../state/redux/actions/users/getUser";
 
 const BudgetDetailsPage = () => {
     // Helper Hooks
-    const { budgetId } = useParams();
+    const {budgetId} = useParams();
     const {
         serviceComps,
         setServiceComps,
@@ -151,7 +151,7 @@ const BudgetDetailsPage = () => {
 
     useEffect(() => {
         const newSubtota = servicesData.reduce((subtotal, serviceData) => {
-            const { quantity, unitPrice } = serviceData;
+            const {quantity, unitPrice} = serviceData;
 
             // Check if quantity and unitPrice are valid numbers
             if (!isNaN(quantity) && !isNaN(unitPrice)) {
@@ -235,7 +235,7 @@ const BudgetDetailsPage = () => {
                                 const cost =
                                     unitPrice * quantity +
                                     (unitPrice * quantity * markupPercentage) /
-                                        100;
+                                    100;
 
                                 return {
                                     id: service.selectedItem?.item_id,
@@ -283,20 +283,20 @@ const BudgetDetailsPage = () => {
                             console.log(newBudget);
 
                             // Dispatch the new budget tothe Redux store
-                            dispatch(updateBudget(budgetId, newBudget))
-                                .then((res) => {
-                                    dispatch(fetchUserBudgets(user_id))
-                                        .then(() => {
-                                            dispatch(getUser(user_id));
-                                        })
-                                        .catch((error) => {
-                                            console.log(error);
-                                        });
-                                    navigate("/");
-                                })
-                                .catch((error) => {
-                                    console.log(error);
-                                });
+                            // dispatch(updateBudget(budgetId, newBudget))
+                            //     .then((res) => {
+                            //         dispatch(fetchUserBudgets(user_id))
+                            //             .then(() => {
+                            //                 dispatch(getUser(user_id));
+                            //             })
+                            //             .catch((error) => {
+                            //                 console.log(error);
+                            //             });
+                            //         navigate("/");
+                            //     })
+                            //     .catch((error) => {
+                            //         console.log(error);
+                            //     });
                         })
                         .catch((error) => {
                             console.error("Error getting download URL:", error);
@@ -310,8 +310,8 @@ const BudgetDetailsPage = () => {
         } else {
             // console.log(projectTitle);
             // console.log(notes);
-            console.log("================================================");
-            console.log({ servicesData });
+            console.log("=================");
+            console.log({servicesData});
             const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
@@ -359,7 +359,7 @@ const BudgetDetailsPage = () => {
                 clientName: selectedClientName,
                 serviceData: serviceArray,
             };
-            console.log({ newBudget });
+            console.log({newBudget});
             dispatch(updateBudget(budgetId, newBudget))
                 .then((res) => {
                     dispatch(fetchUserBudgets(user_id))
@@ -539,7 +539,7 @@ const BudgetDetailsPage = () => {
 
     const handleServiceDelete = (index) => {
         console.clear();
-        console.log({ servicesData });
+        console.log({servicesData});
         setServicesData((prev) => {
             const updated = [...prev];
             updated.splice(index, 1);
@@ -548,7 +548,7 @@ const BudgetDetailsPage = () => {
         });
         deleteServiceComp(index);
     };
-    console.log("out", { servicesData });
+    console.log("out", {servicesData});
 
     const handleCustomDropdownPriceChange = (id, newPrice) => {
         setCustomDropdownUnitPrice(newPrice);
@@ -557,7 +557,7 @@ const BudgetDetailsPage = () => {
 
         const updatedDialogData = dialogData.map((item) => {
             if (item.id === id) {
-                return { ...item, unitPrice: customDropdownUnitPrice };
+                return {...item, unitPrice: customDropdownUnitPrice};
             }
             return item;
         });
@@ -586,9 +586,9 @@ const BudgetDetailsPage = () => {
     //have to handle option showing error screen at first select***
 
     const handleServiceOptionSelect = (id, unitPrice, cost, markup) => {
-        setSelectedService({ id, unitPrice, cost, markup }); // Store the selected service's data
+        setSelectedService({id, unitPrice, cost, markup}); // Store the selected service's data
         // console.log(selectedService.unitPrice);
-        setSelectedOption({ id, unitPrice, cost, markup });
+        setSelectedOption({id, unitPrice, cost, markup});
         // console.log(selectedOption.id);
         // console.log(`Dropdown act: ${selectedOption.unitPrice}`);
         setQuantity(1);
@@ -722,7 +722,7 @@ const BudgetDetailsPage = () => {
     };
 
     if (!budgetDetails) {
-        return <LoadingSpinner />;
+        return <LoadingSpinner/>;
     } else {
         // console.log(budgetDetails);
         // console.log(budgetItems);
@@ -731,7 +731,7 @@ const BudgetDetailsPage = () => {
     return (
         <form>
             <Box>
-                <Typography variant="h4" gutterBottom sx={{ marginLeft: 3 }}>
+                <Typography variant="h4" gutterBottom sx={{marginLeft: 3}}>
                     Budget Details
                 </Typography>
             </Box>
@@ -767,7 +767,7 @@ const BudgetDetailsPage = () => {
                         }}
                     >
                         <Typography
-                            sx={{ fontSize: "34px", fontWeight: "Bold" }}
+                            sx={{fontSize: "34px", fontWeight: "Bold"}}
                         >
                             Budget for
                         </Typography>
@@ -816,7 +816,7 @@ const BudgetDetailsPage = () => {
                         </div>
                     </div>
 
-                    <Box sx={{ marginLeft: 0, marginTop: 2 }}>
+                    <Box sx={{marginLeft: 0, marginTop: 2}}>
                         <Typography variant="h5">Contact Name</Typography>
                         {selectedClientName !== "" ? (
                             <Typography variant="p">
@@ -850,7 +850,7 @@ const BudgetDetailsPage = () => {
                                 },
                             }}
                             variant="outlined"
-                            InputProps={{ disableUnderline: true }}
+                            InputProps={{disableUnderline: true}}
                             value={projectTitle}
                             onChange={(e) => {
                                 // console.log(e.target.value);
@@ -868,7 +868,7 @@ const BudgetDetailsPage = () => {
                     <Typography
                         variant="p"
                         gutterBottom
-                        sx={{ marginLeft: 3, marginBottom: 10 }}
+                        sx={{marginLeft: 3, marginBottom: 10}}
                     >
                         Budget details
                     </Typography>
@@ -924,13 +924,13 @@ const BudgetDetailsPage = () => {
                         <Typography
                             variant="p"
                             gutterBottom
-                            sx={{ width: "100%" }}
+                            sx={{width: "100%"}}
                         >
                             Rate opportunity
                         </Typography>
 
                         <Container>
-                            <RatingContainer />
+                            <RatingContainer/>
                         </Container>
                     </Container>
                 </Container>
@@ -945,7 +945,7 @@ const BudgetDetailsPage = () => {
                     padding: "20px",
                 }}
             >
-                <Box sx={{ mt: 1, width: "100%" }}>
+                <Box sx={{mt: 1, width: "100%"}}>
                     <Typography variant="p" sx={{}}>
                         PRODUCT/SERVICE
                     </Typography>
@@ -1035,7 +1035,7 @@ const BudgetDetailsPage = () => {
                                 style={{}}
                             />
                             <IconButton onClick={toggleDiscountEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1075,7 +1075,7 @@ const BudgetDetailsPage = () => {
                                 // ... (other props)
                             />
                             <IconButton onClick={toggleTaxEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1105,22 +1105,22 @@ const BudgetDetailsPage = () => {
                 >
                     <Typography variant="body1">Total</Typography>
 
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="body1" sx={{fontWeight: "bold"}}>
                         ${total}
                     </Typography>
                 </Box>
             </Container>
 
-            <Container sx={{ padding: "20px", mt: 20 }}>
+            <Container sx={{padding: "20px", mt: 20}}>
                 <Typography
                     variant="h3"
-                    sx={{ marginBottom: "10px", marginTop: "30px" }}
+                    sx={{marginBottom: "10px", marginTop: "30px"}}
                 >
                     Internal notes & attachments @
                 </Typography>
 
                 {/* Internal Notes */}
-                <Box sx={{ marginBottom: "20px" }}>
+                <Box sx={{marginBottom: "20px"}}>
                     <TextField
                         id="note-details"
                         multiline
@@ -1144,7 +1144,7 @@ const BudgetDetailsPage = () => {
                     }}
                 >
                     <Container
-                        sx={{ marginTop: "0", marginBottom: "50px" }}
+                        sx={{marginTop: "0", marginBottom: "50px"}}
                     ></Container>
                     <Box
                         sx={{
@@ -1154,7 +1154,7 @@ const BudgetDetailsPage = () => {
                             flexDirection: "row",
                         }}
                     >
-                        <div style={{ width: "100%" }}>
+                        <div style={{width: "100%"}}>
                             <Paper
                                 // className={classes.dropArea}
                                 onDragOver={handleDragOver}
@@ -1187,8 +1187,8 @@ const BudgetDetailsPage = () => {
                                             attachments
                                                 ? attachments
                                                 : URL.createObjectURL(
-                                                      selectedImage
-                                                  )
+                                                    selectedImage
+                                                )
                                         }
                                         alt="Selected"
                                         style={{

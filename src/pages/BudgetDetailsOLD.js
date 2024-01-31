@@ -1,21 +1,11 @@
 /** @format */
 
-import {
-    Box,
-    Button,
-    Container,
-    IconButton,
-    Paper,
-    Stack,
-    TextField,
-    Typography,
-} from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import {Box, Button, Container, IconButton, Paper, Stack, TextField, Typography,} from "@mui/material";
+import React, {useEffect, useRef, useState} from "react";
 
 // import Iconify from "../components/iconify";
-
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate, useParams} from "react-router-dom";
 import MyDropdown from "../components/dropdown/DropDown";
 import Iconify from "../components/iconify";
 import RatingContainer from "../components/rating/Rating";
@@ -27,7 +17,8 @@ import ServiceComp from "./ServiceOLD";
 import LoadingSpinner from "./loadingSpinner";
 
 const BudgetDetailsPageOLD = () => {
-    const { budgetId } = useParams();
+    const {budgetId} = useParams();
+
     let ignorePop = false;
     const [servicesData, setServicesData] = useState([]);
     const [customSelectedItemIndex, setCustomSelectedItemIndex] = useState(0);
@@ -138,36 +129,41 @@ const BudgetDetailsPageOLD = () => {
 
     // It must me function declaration, cuz we called it above
     function updateServiceComp(index, newComp) {
-            const updateComp = (comp, idx) =>
-                idx === index ? (
-                    <ServiceComp
-                        key={idx}
-                        index={idx}
-                        updateServiceComp={updateServiceComp}
-                        onDelete={handleDeleteServiceComp}
-                        onChange={handleServiceDataChange}
-                        data={newComp}
-                    />
-                ) : (
-                    comp
-                );
-            // console.clear();
+        const updateComp = (comp, idx) =>
+            idx === index ? (
+                <ServiceComp
+                    key={idx}
+                    index={idx}
+                    updateServiceComp={updateServiceComp}
+                    onDelete={handleDeleteServiceComp}
+                    onChange={handleServiceDataChange}
+                    data={newComp}
+                />
+            ) : (
+                comp
+            );
+        // console.clear();
         console.log("newComp", newComp);
         console.log("prev", serviceComps);
         console.log("updated", serviceComps.map(updateComp));
         setServiceComps((prev) => prev.map(updateComp));
     }
-    console.log({ serviceComps });
+
+    console.log("{serviceComps}");
+    console.log("{serviceComps}");
+    console.log("{serviceComps}");
+    console.log("{serviceComps}");
+    console.log("{serviceComps}");
+    console.log({serviceComps});
 
     const handleDeleteServiceComp = (index) => {
-        // console.clear();
-        console.log(index);
-        console.log("old", serviceComps);
-        const updatedServiceComps = [...serviceComps];
-        updatedServiceComps.splice(index, 1);
-        console.log("new", updatedServiceComps);
-        setServiceComps(updatedServiceComps);
+        setServiceComps(prev => {
+            const updatedServiceComps = [...prev];
+            updatedServiceComps.splice(index, 1);
+            return updatedServiceComps
+        });
     };
+
     const ref = useRef([]);
     useEffect(() => {
         console.log("BudgetDetails RENDER:");
@@ -222,7 +218,7 @@ const BudgetDetailsPageOLD = () => {
 
     useEffect(() => {
         const newSubtota = servicesData.reduce((subtotal, serviceData) => {
-            const { quantity, unitPrice } = serviceData;
+            const {quantity, unitPrice} = serviceData;
 
             // Check if quantity and unitPrice are valid numbers
             if (!isNaN(quantity) && !isNaN(unitPrice)) {
@@ -266,10 +262,10 @@ const BudgetDetailsPageOLD = () => {
         setServiceComps((prevServiceComps) => [
             ...prevServiceComps,
             <ServiceComp
-                key={newIndex}
+                // key={newIndex}
                 index={newIndex}
                 updateServiceComp={updateServiceComp}
-                onDelete={handleDeleteServiceComp}
+                onDelete={() => handleDeleteServiceComp(newIndex)}
                 onChange={handleServiceDataChange}
                 data={newData}
             />,
@@ -644,7 +640,7 @@ const BudgetDetailsPageOLD = () => {
 
         const updatedDialogData = dialogData.map((item) => {
             if (item.id === id) {
-                return { ...item, unitPrice: customDropdownUnitPrice };
+                return {...item, unitPrice: customDropdownUnitPrice};
             }
             return item;
         });
@@ -673,9 +669,9 @@ const BudgetDetailsPageOLD = () => {
     //have to handle option showing error screen at first select***
 
     const handleServiceOptionSelect = (id, unitPrice, cost, markup) => {
-        setSelectedService({ id, unitPrice, cost, markup }); // Store the selected service's data
+        setSelectedService({id, unitPrice, cost, markup}); // Store the selected service's data
         // console.log(selectedService.unitPrice);
-        setSelectedOption({ id, unitPrice, cost, markup });
+        setSelectedOption({id, unitPrice, cost, markup});
         // console.log(selectedOption.id);
         // console.log(`Dropdown act: ${selectedOption.unitPrice}`);
         setQuantity(1);
@@ -825,7 +821,7 @@ const BudgetDetailsPageOLD = () => {
     };
 
     if (!budgetDetails) {
-        return <LoadingSpinner />;
+        return <LoadingSpinner/>;
     } else {
         // console.log(budgetDetails);
         // console.log(budgetItems);
@@ -834,7 +830,7 @@ const BudgetDetailsPageOLD = () => {
     return (
         <form>
             <Box>
-                <Typography variant="h4" gutterBottom sx={{ marginLeft: 3 }}>
+                <Typography variant="h4" gutterBottom sx={{marginLeft: 3}}>
                     Budget Details
                 </Typography>
             </Box>
@@ -870,7 +866,7 @@ const BudgetDetailsPageOLD = () => {
                         }}
                     >
                         <Typography
-                            sx={{ fontSize: "34px", fontWeight: "Bold" }}
+                            sx={{fontSize: "34px", fontWeight: "Bold"}}
                         >
                             Budget for
                         </Typography>
@@ -919,7 +915,7 @@ const BudgetDetailsPageOLD = () => {
                         </span>
                     </div>
 
-                    <Box sx={{ marginLeft: 0, marginTop: 2 }}>
+                    <Box sx={{marginLeft: 0, marginTop: 2}}>
                         <Typography variant="h5">Contact Name</Typography>
                         {selectedClientName !== "" ? (
                             <Typography variant="p">
@@ -953,7 +949,7 @@ const BudgetDetailsPageOLD = () => {
                                 },
                             }}
                             variant="outlined"
-                            InputProps={{ disableUnderline: true }}
+                            InputProps={{disableUnderline: true}}
                             value={projectTitle}
                             onChange={(e) => {
                                 // console.log(e.target.value);
@@ -971,7 +967,7 @@ const BudgetDetailsPageOLD = () => {
                     <Typography
                         variant="p"
                         gutterBottom
-                        sx={{ marginLeft: 3, marginBottom: 10 }}
+                        sx={{marginLeft: 3, marginBottom: 10}}
                     >
                         Budget details
                     </Typography>
@@ -1027,13 +1023,13 @@ const BudgetDetailsPageOLD = () => {
                         <Typography
                             variant="p"
                             gutterBottom
-                            sx={{ width: "100%" }}
+                            sx={{width: "100%"}}
                         >
                             Rate opportunity
                         </Typography>
 
                         <Container>
-                            <RatingContainer />
+                            <RatingContainer/>
                         </Container>
                     </Container>
                 </Container>
@@ -1048,7 +1044,7 @@ const BudgetDetailsPageOLD = () => {
                     padding: "20px",
                 }}
             >
-                <Box sx={{ mt: 1, width: "100%" }}>
+                <Box sx={{mt: 1, width: "100%"}}>
                     <Typography variant="p" sx={{}}>
                         PRODUCT/SERVICE
                     </Typography>
@@ -1130,7 +1126,7 @@ const BudgetDetailsPageOLD = () => {
                                 style={{}}
                             />
                             <IconButton onClick={toggleDiscountEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1170,7 +1166,7 @@ const BudgetDetailsPageOLD = () => {
                                 // ... (other props)
                             />
                             <IconButton onClick={toggleTaxEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1200,22 +1196,22 @@ const BudgetDetailsPageOLD = () => {
                 >
                     <Typography variant="body1">Total</Typography>
 
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="body1" sx={{fontWeight: "bold"}}>
                         ${total}
                     </Typography>
                 </Box>
             </Container>
 
-            <Container sx={{ padding: "20px", mt: 20 }}>
+            <Container sx={{padding: "20px", mt: 20}}>
                 <Typography
                     variant="h3"
-                    sx={{ marginBottom: "10px", marginTop: "30px" }}
+                    sx={{marginBottom: "10px", marginTop: "30px"}}
                 >
                     Internal notes & attachments @
                 </Typography>
 
                 {/* Internal Notes */}
-                <Box sx={{ marginBottom: "20px" }}>
+                <Box sx={{marginBottom: "20px"}}>
                     <TextField
                         id="note-details"
                         multiline
@@ -1239,7 +1235,7 @@ const BudgetDetailsPageOLD = () => {
                     }}
                 >
                     <Container
-                        sx={{ marginTop: "0", marginBottom: "50px" }}
+                        sx={{marginTop: "0", marginBottom: "50px"}}
                     ></Container>
                     <Box
                         sx={{
@@ -1249,7 +1245,7 @@ const BudgetDetailsPageOLD = () => {
                             flexDirection: "row",
                         }}
                     >
-                        <div style={{ width: "100%" }}>
+                        <div style={{width: "100%"}}>
                             <Paper
                                 // className={classes.dropArea}
                                 onDragOver={handleDragOver}
@@ -1282,8 +1278,8 @@ const BudgetDetailsPageOLD = () => {
                                             attachments
                                                 ? attachments
                                                 : URL.createObjectURL(
-                                                      selectedImage
-                                                  )
+                                                    selectedImage
+                                                )
                                         }
                                         alt="Selected"
                                         style={{
@@ -1310,7 +1306,7 @@ const BudgetDetailsPageOLD = () => {
                 sx={{
                     display: "flex",
                     justifyContent: "flex-end",
-                    gap: "150px",
+                    // gap: "150px",
                     width: "100%",
                     padding: "10px",
                     gap: "20px",
