@@ -15,28 +15,28 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 // import Iconify from "../components/iconify";
-import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
+import {ExpandMore as ExpandMoreIcon} from "@mui/icons-material";
 
 import RatingContainer from "../components/rating/Rating";
-import { fetchUserBudgets } from "../state/redux/actions/budget/updateUserBudgetsAction";
-import { getUser } from "../state/redux/actions/users/getUser";
+import {fetchUserBudgets} from "../state/redux/actions/budget/updateUserBudgetsAction";
+import {getUser} from "../state/redux/actions/users/getUser";
 import CreateNewLineItem from "./CreateNewLineItem";
 
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { v4 as uuidv4 } from "uuid";
+import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {v4 as uuidv4} from "uuid";
 import MyDropdown from "../components/dropdown/DropDown";
-import { storage } from "../components/firebase/firebase-config";
+import {storage} from "../components/firebase/firebase-config";
 import Iconify from "../components/iconify";
-import { addBudget } from "../state/redux/actions/budget/budgetActions";
+import {addBudget} from "../state/redux/actions/budget/budgetActions";
 import ClientDialog from "./ClientsDalog";
 import CreateClient from "./CreateClient";
 import ServiceComp from "./Service";
-import { useServiceComps } from "../hooks/useServiceComps";
+import {useServiceComps} from "../hooks/useServiceComps";
 
 const AddBudget = () => {
     //  Helper Hooks
@@ -62,18 +62,18 @@ const AddBudget = () => {
     const handleServiceDelete = (index) => {
         // console.clear();
         setServicesData((prev) => {
-            console.log({ prev });
+            console.log({prev});
             const updated = [...prev];
             updated.splice(index, 1);
-            console.log({ updated });
+            console.log({updated});
             return updated;
         });
         deleteServiceComp(index);
     };
     const handleServiceDataChange = (data, index) => {
         setIgnore(false);
-        console.log(data.selectedItem && data.selectedItem.isCustom);
-        console.log(servicesData);
+        // console.log(data.selectedItem && data.selectedItem.isCustom);
+        // console.log(servicesData);
         if (
             data.selectedItem &&
             data.selectedItem.isCustom &&
@@ -165,7 +165,7 @@ const AddBudget = () => {
 
     useEffect(() => {
         const newSubtota = servicesData.reduce((subtotal, serviceData) => {
-            const { quantity, unitPrice } = serviceData;
+            const {quantity, unitPrice} = serviceData;
 
             // Check if quantity and unitPrice are valid numbers
             if (!isNaN(quantity) && !isNaN(unitPrice)) {
@@ -179,7 +179,7 @@ const AddBudget = () => {
         setBudgetSubTotal(newSubtota);
         // setTotal(new)
 
-        console.log("new subtota:", newSubtota);
+        // console.log("new subtota:", newSubtota);
     }, [servicesData]);
 
     useEffect(() => {
@@ -215,7 +215,7 @@ const AddBudget = () => {
                     // File uploaded successfully, get the download URL
                     getDownloadURL(snapshot.ref)
                         .then((downloadURL) => {
-                            console.log({ servicesData });
+                            // console.log({servicesData});
                             const serviceArray = servicesData.map((service) => {
                                 const unitPrice = parseFloat(service.unitPrice);
                                 const quantity = parseFloat(service.quantity);
@@ -225,10 +225,10 @@ const AddBudget = () => {
                                         : service.markup
                                 );
 
-                                const cost =
-                                    unitPrice * quantity +
-                                    (unitPrice * quantity * markupPercentage) /
-                                        100;
+                                // const cost =
+                                //     unitPrice * quantity +
+                                //     (unitPrice * quantity * markupPercentage) /
+                                //     100;
 
                                 return {
                                     id: uuidv4(),
@@ -238,7 +238,8 @@ const AddBudget = () => {
                                     description: service.selectedItem.item_desc
                                         ? service.selectedItem.item_desc
                                         : service.description,
-                                    cost: cost,
+                                    // cost: cost,
+                                    cost: service.selectedItem?.cost,
                                     markup: markupPercentage,
                                     unitPrice: unitPrice,
                                     quantity: quantity,
@@ -315,7 +316,7 @@ const AddBudget = () => {
             // Handle the case where no image is selected
             // Create an array of service objects
             // console.clear();
-            console.log({ servicesData });
+            // console.log({servicesData});
             const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
@@ -333,7 +334,8 @@ const AddBudget = () => {
                     name: service.selectedItem?.item_name || service.name,
                     description:
                         service.selectedItem?.item_desc || service.description,
-                    cost: cost,
+                    // cost: cost,
+                    cost: service.selectedItem?.cost,
                     markup: markupPercentage,
                     unitPrice: unitPrice,
                     quantity: quantity,
@@ -371,8 +373,6 @@ const AddBudget = () => {
                 clientName: selectedClientName,
                 serviceData: serviceArray,
             };
-
-            console.log({ newBudget });
 
             // Dispatch the new budget tothe Redux store
             dispatch(addBudget(newBudget))
@@ -424,10 +424,10 @@ const AddBudget = () => {
                                 );
 
                                 // Calculate the cost based on unitPrice, quantity, and markup percentage
-                                const cost =
-                                    unitPrice * quantity +
-                                    (unitPrice * quantity * markupPercentage) /
-                                        100;
+                                // const cost =
+                                //     unitPrice * quantity +
+                                //     (unitPrice * quantity * markupPercentage) /
+                                //     100;
 
                                 return {
                                     id: uuidv4(),
@@ -437,7 +437,7 @@ const AddBudget = () => {
                                     description: service.selectedItem.item_desc
                                         ? service.selectedItem.item_desc
                                         : service.description,
-                                    cost: cost,
+                                    cost: service.selectedItem?.cost,
                                     markup: markupPercentage,
                                     unitPrice: unitPrice,
                                     quantity: quantity,
@@ -481,7 +481,7 @@ const AddBudget = () => {
                                 clientName: selectedClientName,
                                 serviceData: serviceArray,
                             };
-                            console.log(newBudget);
+                            // console.log(newBudget);
 
                             // Dispatch the new budget tothe Redux store
                             dispatch(addBudget(newBudget))
@@ -525,9 +525,9 @@ const AddBudget = () => {
                 );
 
                 // Calculate the cost based on unitPrice, quantity, and markup percentage
-                const cost =
-                    unitPrice * quantity +
-                    (unitPrice * quantity * markupPercentage) / 100;
+                // const cost =
+                //     unitPrice * quantity +
+                //     (unitPrice * quantity * markupPercentage) / 100;
 
                 return {
                     id: uuidv4(),
@@ -537,7 +537,8 @@ const AddBudget = () => {
                     description: service.selectedItem.item_desc
                         ? service.selectedItem.item_desc
                         : service.description,
-                    cost: cost,
+                    // cost: cost,
+                    cost: service.selectedItem?.cost,
                     markup: markupPercentage,
                     unitPrice: unitPrice,
                     quantity: quantity,
@@ -575,7 +576,7 @@ const AddBudget = () => {
                 clientName: selectedClientName,
                 serviceData: serviceArray,
             };
-            console.log(newBudget);
+            // console.log(newBudget);
 
             // Dispatch the new budget tothe Redux store
             dispatch(addBudget(newBudget))
@@ -591,7 +592,6 @@ const AddBudget = () => {
                 .catch((error) => {
                     console.log(error);
                 });
-            console.log(budgetData);
 
             //Navigate to Home Page
             navigate("/");
@@ -615,8 +615,8 @@ const AddBudget = () => {
         setIgnore(true);
         ignorePop = true;
         // setDialogData(data)
-        console.log(data.index);
-        console.log(servicesData);
+        // console.log(data.index);
+        // console.log(servicesData);
 
         const newData = {
             index: data.index,
@@ -656,7 +656,6 @@ const AddBudget = () => {
                 const serviceIndex = prevServicesData.findIndex(
                     (service) => service.index === data.index
                 );
-                console.log("indi " + serviceIndex);
 
                 const newData = {
                     index: data.index,
@@ -672,9 +671,7 @@ const AddBudget = () => {
                 // If the service data exists, update it; otherwise, add it to the state
                 if (serviceIndex !== -1) {
                     const updatedServicesData = [...prevServicesData];
-                    console.log(updatedServicesData);
                     updatedServicesData[serviceIndex] = newData;
-                    console.log(updatedServicesData);
                     return updatedServicesData;
                 }
             });
@@ -846,7 +843,7 @@ const AddBudget = () => {
 
         const updatedDialogData = dialogData.map((item) => {
             if (item.id === id) {
-                return { ...item, unitPrice: customDropdownUnitPrice };
+                return {...item, unitPrice: customDropdownUnitPrice};
             }
             return item;
         });
@@ -875,9 +872,9 @@ const AddBudget = () => {
     //have to handle option showing error screen at first select***
 
     const handleServiceOptionSelect = (id, unitPrice, cost, markup) => {
-        setSelectedService({ id, unitPrice, cost, markup }); // Store the selected service's data
+        setSelectedService({id, unitPrice, cost, markup}); // Store the selected service's data
         // console.log(selectedService.unitPrice);
-        setSelectedOption({ id, unitPrice, cost, markup });
+        setSelectedOption({id, unitPrice, cost, markup});
         // console.log(selectedOption.id);
         // console.log(`Dropdown act: ${selectedOption.unitPrice}`);
         setQuantity(1);
@@ -974,7 +971,7 @@ const AddBudget = () => {
     return (
         <form>
             <Box>
-                <Typography variant="h4" gutterBottom sx={{ marginLeft: 3 }}>
+                <Typography variant="h4" gutterBottom sx={{marginLeft: 3}}>
                     New Budget
                 </Typography>
             </Box>
@@ -1017,7 +1014,7 @@ const AddBudget = () => {
                         }}
                     >
                         <Typography
-                            sx={{ fontSize: "34px", fontWeight: "Bold" }}
+                            sx={{fontSize: "34px", fontWeight: "Bold"}}
                         >
                             Budget for
                         </Typography>
@@ -1066,7 +1063,7 @@ const AddBudget = () => {
                         </span>
                     </div>
 
-                    <Box sx={{ marginLeft: 0, marginTop: 2 }}>
+                    <Box sx={{marginLeft: 0, marginTop: 2}}>
                         <Typography variant="h5">Contact Name</Typography>
                         {selectedClient ? (
                             <MyDropdown
@@ -1100,7 +1097,7 @@ const AddBudget = () => {
                                 },
                             }}
                             variant="outlined"
-                            InputProps={{ disableUnderline: true }}
+                            InputProps={{disableUnderline: true}}
                             value={budgetData.projectTitle}
                             onChange={(e) =>
                                 setBudgetData({
@@ -1116,7 +1113,7 @@ const AddBudget = () => {
                     <Typography
                         variant="p"
                         gutterBottom
-                        sx={{ marginLeft: 3, marginBottom: 10 }}
+                        sx={{marginLeft: 3, marginBottom: 10}}
                     >
                         Budget details
                     </Typography>
@@ -1169,13 +1166,13 @@ const AddBudget = () => {
                         <Typography
                             variant="p"
                             gutterBottom
-                            sx={{ width: "100%" }}
+                            sx={{width: "100%"}}
                         >
                             Rate opportunity
                         </Typography>
 
                         <Container>
-                            <RatingContainer />
+                            <RatingContainer/>
                         </Container>
                     </Container>
 
@@ -1201,7 +1198,7 @@ const AddBudget = () => {
                     padding: "20px",
                 }}
             >
-                <Box sx={{ mt: 1, width: "100%" }}>
+                <Box sx={{mt: 1, width: "100%"}}>
                     <Typography variant="p" sx={{}}>
                         PRODUCT/SERVICE
                     </Typography>
@@ -1295,7 +1292,7 @@ const AddBudget = () => {
                                 // ... (other props)
                             />
                             <IconButton onClick={toggleDiscountEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1338,7 +1335,7 @@ const AddBudget = () => {
                                 // ... (other props)
                             />
                             <IconButton onClick={toggleTaxEdit}>
-                                <Iconify icon="material-symbols:delete-outline" />
+                                <Iconify icon="material-symbols:delete-outline"/>
                             </IconButton>
                         </Stack>
                     ) : (
@@ -1368,22 +1365,22 @@ const AddBudget = () => {
                 >
                     <Typography variant="body1">Total</Typography>
 
-                    <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                    <Typography variant="body1" sx={{fontWeight: "bold"}}>
                         ${total}
                     </Typography>
                 </Box>
             </Container>
 
-            <Container sx={{ padding: "20px", mt: 20 }}>
+            <Container sx={{padding: "20px", mt: 20}}>
                 <Typography
                     variant="h3"
-                    sx={{ marginBottom: "10px", marginTop: "30px" }}
+                    sx={{marginBottom: "10px", marginTop: "30px"}}
                 >
                     Internal notes & attachments @
                 </Typography>
 
                 {/* Internal Notes */}
-                <Box sx={{ marginBottom: "20px" }}>
+                <Box sx={{marginBottom: "20px"}}>
                     <TextField
                         id="note-details"
                         multiline
@@ -1410,7 +1407,7 @@ const AddBudget = () => {
                         // justifyContent="center"
                         // alignItems="center"
                         // flexDirection="column"
-                        sx={{ marginTop: "0", marginBottom: "50px" }}
+                        sx={{marginTop: "0", marginBottom: "50px"}}
                     >
                         {/* <Typography variant="p" sx={{ marginBottom: "30px", marginRight: '20px' }}>
                 Receipt
@@ -1427,7 +1424,7 @@ const AddBudget = () => {
                             // justifyContent: "center",
                         }}
                     >
-                        <div style={{ width: "100%" }}>
+                        <div style={{width: "100%"}}>
                             <Paper
                                 // className={classes.dropArea}
                                 onDragOver={handleDragOver}
@@ -1507,7 +1504,7 @@ const AddBudget = () => {
                             borderRadius: "3px",
                         }}
                         variant="filled"
-                        endIcon={<ExpandMoreIcon />}
+                        endIcon={<ExpandMoreIcon/>}
                         onClick={handleClick}
                         // onClick={handleAddBudget}
                     >
@@ -1530,27 +1527,27 @@ const AddBudget = () => {
                         <List>
                             <ListItemButton>
                                 <ListItemIcon>
-                                    <Iconify icon={"iwwa:file-pdf"} />
+                                    <Iconify icon={"iwwa:file-pdf"}/>
                                 </ListItemIcon>
-                                <ListItemText primary="Save PDF" />
+                                <ListItemText primary="Save PDF"/>
                             </ListItemButton>
                             <ListItemButton>
                                 <ListItemIcon>
                                     <Iconify
                                         icon={"mdi-light:grid"}
-                                        sx={{ color: "#1DD75BFF" }}
+                                        sx={{color: "#1DD75BFF"}}
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary="Send to Google Sheets" />
+                                <ListItemText primary="Send to Google Sheets"/>
                             </ListItemButton>
                             <ListItemButton onClick={handleAddBudgetActive}>
                                 <ListItemIcon>
                                     <Iconify
                                         icon={"carbon:checkmark-outline"}
-                                        sx={{ color: "#00A805FF" }}
+                                        sx={{color: "#00A805FF"}}
                                     />
                                 </ListItemIcon>
-                                <ListItemText primary="Convert to Active" />
+                                <ListItemText primary="Convert to Active"/>
                             </ListItemButton>
                         </List>
                     </Popover>

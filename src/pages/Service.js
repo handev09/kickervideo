@@ -44,12 +44,20 @@ const ServiceComp = ({
             ...data,
             ...properties,
         });
+        console.log({
+            serviceId,
+            selectedItem,
+            quantity: properties,
+            unitPrice,
+            index,
+            total,
+        })
         onChange(
             {
                 serviceId,
                 selectedItem,
-                quantity,
-                unitPrice,
+                quantity: properties.quantity ?? quantity,
+                unitPrice: properties.unitPrice ?? unitPrice,
                 index,
                 total,
             },

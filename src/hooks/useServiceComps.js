@@ -1,11 +1,11 @@
 /** @format */
 
-import { useState } from "react";
+import {useState} from "react";
 
 const initialServiceComps = [
     {
         index: 0,
-        quantity: 1000,
+        quantity: 1,
         unitPrice: 0,
         selectedItem: {
             item_name: "",
@@ -21,7 +21,7 @@ export function useServiceComps() {
 
     // Functions
     const addServiceComp = () => {
-        const newComp = { ...initialServiceComps[0], quantity: 1000 };
+        const newComp = {...initialServiceComps[0], quantity: 1};
         setServiceComps((prev) => prev.concat(newComp));
     };
 

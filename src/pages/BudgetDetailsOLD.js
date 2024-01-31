@@ -250,7 +250,7 @@ const BudgetDetailsPageOLD = () => {
         // const newData = data || {
         const newData = {
             index: 0,
-            quantity: 1000,
+            quantity: 1,
             selectedItem: {
                 item_name: "",
                 markup: 0,

@@ -178,6 +178,8 @@ const BudgetDetailsPage = () => {
     // Functions
     function handleServiceDataChange(data, index) {
         setIgnore(false);
+        console.log("data&&", data)
+
         if (
             data.selectedItem &&
             data.selectedItem.isCustom &&
@@ -195,14 +197,20 @@ const BudgetDetailsPage = () => {
             const serviceIndex = prevServicesData.findIndex(
                 (service) => service.index === index
             );
-            // console.log(serviceIndex);
+            console.log({serviceIndex});
 
             // If the service data exists, update it; otherwise, add it to the state
             if (serviceIndex !== -1) {
                 const updatedServicesData = [...prevServicesData];
                 updatedServicesData[serviceIndex] = data;
+                console.log("TASIR: handleServiceDataChange 1 chisi")
+                console.log(updatedServicesData)
+
                 return updatedServicesData;
             } else {
+                console.log("TASIR: handleServiceDataChange")
+                console.log([...prevServicesData, data])
+
                 return [...prevServicesData, data];
             }
         });
@@ -221,7 +229,6 @@ const BudgetDetailsPage = () => {
                     // File uploaded successfully, get the download URL
                     getDownloadURL(snapshot.ref)
                         .then((downloadURL) => {
-                            console.log(servicesData);
                             const serviceArray = servicesData.map((service) => {
                                 const unitPrice = parseFloat(service.unitPrice);
                                 const quantity = parseFloat(service.quantity);
@@ -232,10 +239,10 @@ const BudgetDetailsPage = () => {
                                 );
 
                                 // Calculate the cost based on unitPrice, quantity, and markup percentage
-                                const cost =
-                                    unitPrice * quantity +
-                                    (unitPrice * quantity * markupPercentage) /
-                                    100;
+                                // const cost =
+                                //     unitPrice * quantity +
+                                //     (unitPrice * quantity * markupPercentage) /
+                                //     100;
 
                                 return {
                                     id: service.selectedItem?.item_id,
@@ -245,7 +252,8 @@ const BudgetDetailsPage = () => {
                                     description: service.selectedItem?.item_desc
                                         ? service.selectedItem?.item_desc
                                         : service.description,
-                                    cost: cost,
+                                    // cost: cost,
+                                    cost: service.selectedItem?.cost,
                                     markup: markupPercentage,
                                     unitPrice: unitPrice,
                                     quantity: quantity,
@@ -280,23 +288,21 @@ const BudgetDetailsPage = () => {
                                 clientName: selectedClientName,
                                 serviceData: serviceArray,
                             };
-                            console.log(newBudget);
-
                             // Dispatch the new budget tothe Redux store
-                            // dispatch(updateBudget(budgetId, newBudget))
-                            //     .then((res) => {
-                            //         dispatch(fetchUserBudgets(user_id))
-                            //             .then(() => {
-                            //                 dispatch(getUser(user_id));
-                            //             })
-                            //             .catch((error) => {
-                            //                 console.log(error);
-                            //             });
-                            //         navigate("/");
-                            //     })
-                            //     .catch((error) => {
-                            //         console.log(error);
-                            //     });
+                            dispatch(updateBudget(budgetId, newBudget))
+                                .then((res) => {
+                                    dispatch(fetchUserBudgets(user_id))
+                                        .then(() => {
+                                            dispatch(getUser(user_id));
+                                        })
+                                        .catch((error) => {
+                                            console.log(error);
+                                        });
+                                    navigate("/");
+                                })
+                                .catch((error) => {
+                                    console.log(error);
+                                });
                         })
                         .catch((error) => {
                             console.error("Error getting download URL:", error);
@@ -308,10 +314,8 @@ const BudgetDetailsPage = () => {
                     // Handle the error appropriately
                 });
         } else {
-            // console.log(projectTitle);
-            // console.log(notes);
-            console.log("=================");
-            console.log({servicesData});
+            // console.log("=================");
+            // console.log({servicesData});
             const serviceArray = servicesData.map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
@@ -320,16 +324,17 @@ const BudgetDetailsPage = () => {
                 );
 
                 // Calculate the cost based on unitPrice, quantity, and markup percentage
-                const cost =
-                    unitPrice * quantity +
-                    (unitPrice * quantity * markupPercentage) / 100;
+                // const cost =
+                //     unitPrice * quantity +
+                //     (unitPrice * quantity * markupPercentage) / 100;
 
                 return {
-                    id: service.selectedItem?.serviceId,
+                    id: service.serviceId,
                     name: service.selectedItem?.item_name || service.name,
                     description:
                         service.selectedItem?.item_desc || service.description,
-                    cost: cost,
+                    // cost: cost,
+                    cost: service.selectedItem?.cost,
                     markup: markupPercentage,
                     unitPrice: unitPrice,
                     quantity: quantity,
@@ -359,7 +364,9 @@ const BudgetDetailsPage = () => {
                 clientName: selectedClientName,
                 serviceData: serviceArray,
             };
-            console.log({newBudget});
+            // console.log("This budget is sent");
+            // console.log({newBudget});
+
             dispatch(updateBudget(budgetId, newBudget))
                 .then((res) => {
                     dispatch(fetchUserBudgets(user_id))
@@ -390,12 +397,12 @@ const BudgetDetailsPage = () => {
     };
 
     const handleDialogData = (data) => {
+        // console.log("handleDialogData");
+        // console.log("________________________", {data});
         setSelectedClientName("");
         setIgnore(true);
         ignorePop = true;
         // setDialogData(data)
-        // console.log(data.index);
-        // console.log(servicesData);
 
         const newData = {
             index: data.index,
@@ -403,6 +410,7 @@ const BudgetDetailsPage = () => {
             selectedItem: {
                 item_name: data.name,
                 markup: data.markup,
+                cost: data.cost,
                 item_desc: data.description,
             },
             unitPrice: data.unitPrice,
@@ -431,7 +439,6 @@ const BudgetDetailsPage = () => {
                 const serviceIndex = prevServicesData.findIndex(
                     (service) => service.index === data.index
                 );
-                // console.log("indi " + serviceIndex);
 
                 const newData = {
                     index: data.index,
@@ -439,6 +446,7 @@ const BudgetDetailsPage = () => {
                     selectedItem: {
                         item_name: data.name,
                         markup: data.markup,
+                        cost: data.cost,
                         item_desc: data.description,
                     },
                     unitPrice: data.unitPrice,
@@ -498,8 +506,7 @@ const BudgetDetailsPage = () => {
             budgetNumber: newNumber,
         }));
     };
-
-    // console.log("BugNum: " + budgetNumber);
+    // console.log({servicesData})
 
     const handleTaxChange = (event) => {
         // console.log("TaxValue: " + event.target.value);
@@ -538,8 +545,7 @@ const BudgetDetailsPage = () => {
     }, [discount, tax]);
 
     const handleServiceDelete = (index) => {
-        console.clear();
-        console.log({servicesData});
+        // console.log({servicesData});
         setServicesData((prev) => {
             const updated = [...prev];
             updated.splice(index, 1);
@@ -548,7 +554,6 @@ const BudgetDetailsPage = () => {
         });
         deleteServiceComp(index);
     };
-    console.log("out", {servicesData});
 
     const handleCustomDropdownPriceChange = (id, newPrice) => {
         setCustomDropdownUnitPrice(newPrice);
@@ -694,14 +699,16 @@ const BudgetDetailsPage = () => {
                 if (Array.isArray(budgetItems)) {
                     return budgetItems.map((budgetItem, index) => ({
                         index: index,
+                        serviceId: budgetItem.item_id,
                         quantity: budgetItem.item_quantity,
                         selectedItem: {
                             item_name: budgetItem.item_name,
+                            cost: budgetItem.item_cost,
                             markup: parseFloat(budgetItem.item_markup),
                             item_desc: budgetItem.item_description,
                         },
                         unitPrice: parseFloat(budgetItem.item_unitPrice),
-                        cost: parseFloat(budgetItem.item_unitPrice),
+                        cost: parseFloat(budgetItem.item_cost),
                     }));
                 } else {
                     // Handle the case where budgetItems is not an array
