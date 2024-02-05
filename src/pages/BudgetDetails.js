@@ -30,6 +30,7 @@ import {storage} from "../components/firebase/firebase-config";
 import {updateBudget} from "./../state/redux/actions/budget/update";
 import {fetchUserBudgets} from "../state/redux/actions/budget/updateUserBudgetsAction";
 import {getUser} from "../state/redux/actions/users/getUser";
+import {filterForEmpty} from "../utils/helpers";
 
 const BudgetDetailsPage = () => {
     // Helper Hooks
@@ -229,7 +230,7 @@ const BudgetDetailsPage = () => {
                     // File uploaded successfully, get the download URL
                     getDownloadURL(snapshot.ref)
                         .then((downloadURL) => {
-                            const serviceArray = servicesData.map((service) => {
+                            const serviceArray = servicesData.filter(filterForEmpty).map((service) => {
                                 const unitPrice = parseFloat(service.unitPrice);
                                 const quantity = parseFloat(service.quantity);
                                 const markupPercentage = parseFloat(
@@ -316,7 +317,7 @@ const BudgetDetailsPage = () => {
         } else {
             // console.log("=================");
             // console.log({servicesData});
-            const serviceArray = servicesData.map((service) => {
+            const serviceArray = servicesData.filter(filterForEmpty).map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
                 const markupPercentage = parseFloat(
@@ -570,16 +571,16 @@ const BudgetDetailsPage = () => {
 
     const handleServiceDelete = async (index, id) => {
         console.log(id);
-    
+
         setServicesData((prev) => {
             const updated = [...prev];
             updated.splice(index, 1);
             console.log(updated);
             return updated;
         });
-    
+
         deleteServiceComp(index);
-    
+
         try {
             const response = await fetch(
                 `https://kickervideoapi.vercel.app/api/v1/budget-items/delete/${id}`,
@@ -588,7 +589,7 @@ const BudgetDetailsPage = () => {
                     method: 'DELETE',
                 }
             );
-    
+
             if (response.ok) {
                 // The status code is in the range 200-299
                 alert("Budget deleted successfully");
@@ -600,8 +601,7 @@ const BudgetDetailsPage = () => {
             console.error("Error fetching client details:", error);
         }
     };
-    
-    
+
 
     const handleCustomDropdownPriceChange = (id, newPrice) => {
         setCustomDropdownUnitPrice(newPrice);

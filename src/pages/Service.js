@@ -36,7 +36,6 @@ const ServiceComp = ({
     // Functions
     // Universal update function
     function update(properties) {
-        console.log({properties})
         updateServiceComp(index, {
             ...data,
             ...properties,

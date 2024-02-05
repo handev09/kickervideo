@@ -73,7 +73,6 @@ const AddBudget = () => {
     };
     const handleServiceDataChange = (data, index) => {
         setIgnore(false);
-        console.log({data});
         if (
             data.selectedItem &&
             data.selectedItem.isCustom &&
