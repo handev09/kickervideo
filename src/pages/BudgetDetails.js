@@ -544,16 +544,64 @@ const BudgetDetailsPage = () => {
         }));
     }, [discount, tax]);
 
-    const handleServiceDelete = (index) => {
-        // console.log({servicesData});
+    // const handleServiceDelete = (index,id) => {
+    //     console.log(id)      // console.log({servicesData});
+    //     setServicesData((prev) => {
+    //         const updated = [...prev];
+    //         updated.splice(index, 1);
+    //         console.log(updated);
+    //         return updated;
+    //     });
+    //     deleteServiceComp(index);
+
+    //     try {
+    //         // Replace this with your actual data fetching logic
+    //         const response = await fetch(
+    //             `https://kickervideoapi.vercel.app/api/v1/budget/budget-details?budgetId=${budgetId}`
+    //         );
+    //         const data = await response.json();
+    //         setBudgetDetails(data[0]);
+    //     } catch (error) {
+    //         console.error("Error fetching client details:", error);
+    //     }
+
+    // };
+
+
+    const handleServiceDelete = async (index, id) => {
+        console.log(id);
+    
         setServicesData((prev) => {
             const updated = [...prev];
             updated.splice(index, 1);
             console.log(updated);
             return updated;
         });
+    
         deleteServiceComp(index);
+    
+        try {
+            const response = await fetch(
+                // `http://kickervideoapi.vercel.app/api/v1/budget-items/delete/${id}`,
+                `http://localhost:3001/api/v1/budget-items/delete/${id}`,
+                {
+                    method: 'DELETE',
+                }
+            );
+    
+            if (response.ok) {
+                // The status code is in the range 200-299
+                alert("Budget deleted successfully");
+            } else {
+                // Handle other status codes (e.g., 404 for not found)
+                console.error("Failed to delete budget. Status code:", response.status);
+            }
+        } catch (error) {
+            console.error("Error fetching client details:", error);
+        }
     };
+    
+    
 
     const handleCustomDropdownPriceChange = (id, newPrice) => {
         setCustomDropdownUnitPrice(newPrice);

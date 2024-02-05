@@ -345,7 +345,8 @@ const ServiceComp = ({
                         {index > 0 && (
                             <Button
                                 onClick={() => {
-                                    onDelete(index);
+                                    // console.log(data)
+                                    onDelete(index,data.serviceId);
                                 }}
                             >
                                 Delete
