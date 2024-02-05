@@ -37,6 +37,7 @@ import ClientDialog from "./ClientsDalog";
 import CreateClient from "./CreateClient";
 import ServiceComp from "./Service";
 import {useServiceComps} from "../hooks/useServiceComps";
+import {filterForEmpty} from "../utils/helpers";
 
 const AddBudget = () => {
     //  Helper Hooks
@@ -72,8 +73,7 @@ const AddBudget = () => {
     };
     const handleServiceDataChange = (data, index) => {
         setIgnore(false);
-        // console.log(data.selectedItem && data.selectedItem.isCustom);
-        // console.log(servicesData);
+        console.log({data});
         if (
             data.selectedItem &&
             data.selectedItem.isCustom &&
@@ -216,13 +216,11 @@ const AddBudget = () => {
                     getDownloadURL(snapshot.ref)
                         .then((downloadURL) => {
                             // console.log({servicesData});
-                            const serviceArray = servicesData.map((service) => {
+                            const serviceArray = servicesData.filter(filterForEmpty).map((service) => {
                                 const unitPrice = parseFloat(service.unitPrice);
                                 const quantity = parseFloat(service.quantity);
                                 const markupPercentage = parseFloat(
-                                    service.selectedItem?.markup
-                                        ? service.selectedItem?.markup
-                                        : service.markup
+                                    service.selectedItem?.markup || service.markup
                                 );
 
                                 // const cost =
@@ -232,12 +230,8 @@ const AddBudget = () => {
 
                                 return {
                                     id: uuidv4(),
-                                    name: service.selectedItem.item_name
-                                        ? service.selectedItem.item_name
-                                        : service.name,
-                                    description: service.selectedItem.item_desc
-                                        ? service.selectedItem.item_desc
-                                        : service.description,
+                                    name: service.selectedItem.item_name || service.name,
+                                    description: service.selectedItem.item_desc || service.description,
                                     // cost: cost,
                                     cost: service.selectedItem?.cost,
                                     markup: markupPercentage,
@@ -317,7 +311,7 @@ const AddBudget = () => {
             // Create an array of service objects
             // console.clear();
             // console.log({servicesData});
-            const serviceArray = servicesData.map((service) => {
+            const serviceArray = servicesData.filter(filterForEmpty).map((service) => {
                 const unitPrice = parseFloat(service.unitPrice);
                 const quantity = parseFloat(service.quantity);
                 const markupPercentage = parseFloat(
@@ -332,8 +326,7 @@ const AddBudget = () => {
                 return {
                     id: uuidv4(),
                     name: service.selectedItem?.item_name || service.name,
-                    description:
-                        service.selectedItem?.item_desc || service.description,
+                    description: service.selectedItem?.item_desc || service.description,
                     // cost: cost,
                     cost: service.selectedItem?.cost,
                     markup: markupPercentage,

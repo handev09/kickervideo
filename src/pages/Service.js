@@ -1,5 +1,3 @@
-/** @format */
-
 import {
     Autocomplete,
     Box,
@@ -22,7 +20,6 @@ const ServiceComp = ({
                      }) => {
     // Selectors
     const items = useSelector((state) => state.items.items);
-    // console.log({ data });
 
     const {
         total = 0,
@@ -34,12 +31,12 @@ const ServiceComp = ({
         markup = data?.selectedItem?.markup || 0,
         value = data.selectedItem?.item_name || "",
     } = data;
-    const selectedItem =
-        typeof value === "object" ? data.value : selectedItemFromData;
+    const selectedItem = typeof value === "object" ? data.value : selectedItemFromData;
 
     // Functions
-    // Univeral update function
+    // Universal update function
     function update(properties) {
+        console.log({properties})
         updateServiceComp(index, {
             ...data,
             ...properties,
@@ -47,7 +44,7 @@ const ServiceComp = ({
         onChange(
             {
                 serviceId,
-                selectedItem,
+                selectedItem: {...selectedItem, isCustom: properties?.selectedItem?.isCustom},
                 quantity: properties.quantity ?? quantity,
                 unitPrice: properties.unitPrice ?? unitPrice,
                 index,
@@ -99,8 +96,6 @@ const ServiceComp = ({
                             value={value}
                             onChange={(event, newValue) => {
                                 if (newValue) {
-                                    console.log("1")
-                                    console.log(newValue)
                                     update({
                                         markup: parseFloat(newValue?.markup),
                                         cost: parseFloat(newValue?.cost),
@@ -110,7 +105,6 @@ const ServiceComp = ({
                                 }
 
                                 if (typeof newValue === "string") {
-                                    console.log("2")
                                     update({
                                         value: {
                                             ...value,
@@ -118,7 +112,6 @@ const ServiceComp = ({
                                         },
                                     });
                                 } else if (newValue && newValue?.inputValue) {
-                                    console.log("3");
                                     // Create a new value from the user input
                                     update({
                                         value: {
@@ -127,7 +120,6 @@ const ServiceComp = ({
                                         },
                                     });
                                 } else {
-                                    console.log("4");
                                     // update({value: newValue});
                                 }
                             }}
@@ -135,9 +127,7 @@ const ServiceComp = ({
                                 const {inputValue} = params;
                                 // console.log(params)
                                 const filtered = options.filter((option) =>
-                                    option.item_name
-                                        .toLowerCase()
-                                        .includes(inputValue.toLowerCase())
+                                    option.item_name.toLowerCase().includes(inputValue.toLowerCase())
                                 );
 
                                 // Suggest the creation of a new value
@@ -146,7 +136,6 @@ const ServiceComp = ({
                                         inputValue.toLowerCase() ===
                                         option.item_name.toLowerCase()
                                 );
-
                                 if (inputValue !== "" && !isExisting) {
                                     filtered.push({
                                         inputValue,
@@ -191,12 +180,12 @@ const ServiceComp = ({
                                             }}
                                         >
                                             <Typography variant="subtitle1">
-                                                Would you like to add this new
-                                                item?
+                                                Would you like to add this new item?
                                             </Typography>
                                             <button
                                                 onClick={() => {
                                                     const createNew = true;
+
                                                     // Add your custom logic here for handling the button click
                                                 }}
                                             >
@@ -346,7 +335,7 @@ const ServiceComp = ({
                             <Button
                                 onClick={() => {
                                     // console.log(data)
-                                    onDelete(index,data.serviceId);
+                                    onDelete(index, data.serviceId);
                                 }}
                             >
                                 Delete
