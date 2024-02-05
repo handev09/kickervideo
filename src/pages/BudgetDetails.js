@@ -582,8 +582,8 @@ const BudgetDetailsPage = () => {
     
         try {
             const response = await fetch(
-                // `http://kickervideoapi.vercel.app/api/v1/budget-items/delete/${id}`,
-                `http://localhost:3001/api/v1/budget-items/delete/${id}`,
+                `https://kickervideoapi.vercel.app/api/v1/budget-items/delete/${id}`,
+                // `http://localhost:3001/api/v1/budget-items/delete/${id}`,
                 {
                     method: 'DELETE',
                 }
